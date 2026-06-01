@@ -717,7 +717,7 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:150,jdResult:null,jdBusy:false};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:150,jdResult:null,jdBusy:false,exLimit:200};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -745,7 +745,7 @@ function loadAI(){try{var r=JSON.parse(localStorage.getItem(AKEY)||"{}");state.a
 function persistAI(){try{localStorage.setItem(AKEY,JSON.stringify({key:state.apiKey,use:state.useAI}));}catch(e){}}
 /* 调用 DeepSeek(OpenAI 兼容)把四段回答翻译成一条结果导向的简历 bullet。key 仅存在本机 localStorage,不写进文件。 */
 function translateAI(f){
- var sys="你是资深中文简历教练。把实习生填写的真实记录,改写成 1 条能直接写进简历的中文 bullet。\n\n【铁律·最重要】\n1. 绝对不许编造输入里没有的任何事实——尤其是数字、百分比、金额、倍数、公司/产品名、人数、时间、排名、奖项。输入没给数字,成品里就绝对不能出现任何数字或百分比。\n2. 只能使用①②③④中真实出现的信息,不许添加输入中不存在的成果、影响或动机。\n3. 如果输入信息太少或无意义(例如只填了「1」「无」「123」、单字、乱填、看不出具体做了什么),不要硬编成绩,只输出一个词:NEED_MORE(全大写,别的什么都不要输出)。\n\n【写法】\n- 动词开头,按真实程度选词:信息足才用「主导/独立负责/推动」,一般情况用「负责/参与/完成/整理/协助/搭建/对接/跟进」,别一律拔高成「主导」。\n- 必须具体:写清做的对象和内容(做了什么事、对什么东西)。禁止「优化流程」「提升效率」「赋能」「实现…提升」这类空洞套话。\n- 有真实结果/数字才写结果;没有结果就只客观陈述做了什么,不要凑一个虚的成效。\n- 简历书面语,克制、不浮夸、不堆形容词。\n- 22-48 字,只输出这一句,不要引号、解释、换行。";
+ var sys="你是资深中文简历教练。把实习生填写的真实记录,改写成 1 条能直接写进简历的中文 bullet。\n\n【铁律·最重要】\n1. 绝对不许编造输入里没有的任何事实——尤其是数字、百分比、金额、倍数、公司/产品名、人数、时间、排名、奖项。输入没给数字,成品里就绝对不能出现任何数字或百分比。\n2. 只能使用①②③④中真实出现的信息,不许添加输入中不存在的成果、影响或动机。\n3. 如果输入信息太少或无意义(例如只填了「1」「无」「123」、单字、乱填、看不出具体做了什么),不要硬编成绩,只输出一个词:NEED_MORE(全大写,别的什么都不要输出)。\n\n【写法】\n- 动词开头,按真实程度选词:信息足才用「主导/独立负责/推动」,一般情况用「负责/参与/完成/整理/协助/搭建/对接/跟进」,别一律拔高成「主导」。\n- 必须具体:写清做的对象和内容(做了什么事、对什么东西)。禁止「优化流程」「提升效率」「赋能」「实现…提升」这类空洞套话。\n- 有真实结果/数字才写结果;没有结果就只客观陈述做了什么,不要凑一个虚的成效。\n- 充分利用①②③④里的真实信息:他填得多,就把关键细节(做法、对象、结果)都收进来,别压缩得太干瘪。\n- 简历书面语,克制、不浮夸、不堆形容词。\n- 40-75 字一句话(信息少则短、信息多可到 75 字),只输出这一句,不要引号、解释、换行。";
  var usr="① 做了什么:"+(f.q1||"无")+"\n② 在项目里的位置/解决什么:"+(f.q2||"无")+"\n③ 怎么想的/试了什么:"+(f.q3||"无")+"\n④ 交付结果/变化或数字:"+(f.q4||"无");
  return fetch("https://api.deepseek.com/chat/completions",{
   method:"POST",
@@ -1067,15 +1067,26 @@ function renderExport(){
      '<div class="jdcount">共 '+jr.paragraph.length+' 字'+(jr.paragraph.length>lim?' · ⚠️ 略超上限,可点「重新定制」再压':' · 在 '+lim+' 字内 ✓')+'</div>'+
      '<button class="btn ghost" id="jdCopy" style="width:100%;margin-top:10px">复制这段 📋</button></div>'):"")+
    '</div>';
+ var exlim=state.exLimit||200;
  var intro='<div class="card"><div style="font-size:14.5px;line-height:1.7;color:var(--ink-2)">不挑岗位的话,也可以把你攒的 <b>'+state.entries.length+' 条真东西</b>,合成一份通用简历项目段 + 面试深挖回溯——全部来自你真实填的,经得起追问。</div>'+
+   '<div class="jdrow" style="margin-top:10px"><label>简历段总字数上限</label><input type="number" id="exLimit" min="60" max="600" value="'+exlim+'"><span class="jdunit">字</span></div>'+
    '<div class="btnrow"><button class="btn" id="goExport"'+(can?'':' disabled')+'>'+(state.showExport?"重新生成":"生成通用简历 + 面试深挖")+'</button>'+(can?'':'<span class="hint">先去「今日投喂」记几条</span>')+'</div></div>';
  var body="";
  if(state.showExport&&can){
+  var EXLIM=Math.max(60,Math.min(600,state.exLimit||200));
   var groups={},order=[];
   for(var i=0;i<state.entries.length;i++){var th=themeOf(state.entries[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(state.entries[i]);}
-  // 排优先级:每个方向去重 + 量化成果优先,只精选最强的 3 条
-  var CAP=3;var curated={},totalSel=0,flat=[];
-  for(var g=0;g<order.length;g++){var th=order[g];curated[th]=curateBullets(groups[th],CAP);totalSel+=curated[th].length;flat=flat.concat(curated[th]);}
+  // 每个方向先去重 + 量化成果优先
+  var curatedAll={};for(var g=0;g<order.length;g++){curatedAll[order[g]]=curateBullets(groups[order[g]],3);}
+  // 按「简历段总字数上限」挑选:按方向顺序累加 bullet 字数,超了就停(保证至少一条)
+  var curated={},neworder=[],totalSel=0,flat=[],cum=0,capped=false;
+  for(var g=0;g<order.length;g++){var th=order[g],arr=curatedAll[th],keep=[];
+   for(var m=0;m<arr.length;m++){var L=(arr[m].bullet||"").length+1;
+    if((totalSel>0)&&(cum+L>EXLIM)){capped=true;break;}
+    keep.push(arr[m]);cum+=L;totalSel++;}
+   if(keep.length){curated[th]=keep;neworder.push(th);flat=flat.concat(keep);}
+   if(capped)break;}
+  order=neworder;
   // 成品段:可整段直接复制进简历
   var finalHtml="",finalText="项目经历\n";
   for(var g=0;g<order.length;g++){var th=order[g],arr=curated[th];
@@ -1084,19 +1095,13 @@ function renderExport(){
    for(var m=0;m<arr.length;m++){finalHtml+='<div class="rfbul"><span class="rfdash">·</span><span class="rftext">'+hl(arr[m].bullet)+'</span></div>';finalText+="· "+arr[m].bullet+"\n";}
    finalHtml+='</div>';}
   var dropped=state.entries.length-totalSel;
-  var p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">已按优先级精选去重——有量化成果的优先,每个方向只留最能打的几条(真实产出,不堆砌)</div>'+
+  var p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">已按优先级精选去重、并压到你设的 '+EXLIM+' 字内——有量化成果的优先,真实产出不堆砌</div>'+
     '<div class="exsum"><div class="sm"><b>'+totalSel+'</b><span>精选 bullet</span></div>'+
     '<div class="sm"><b>'+order.length+'</b><span>个能力方向</span></div>'+
-    '<div class="sm"><b>结果<br>导向</b><span>写法</span></div></div>'+
+    '<div class="sm"><b>'+cum+'</b><span>约 / '+EXLIM+' 字</span></div></div>'+
     '<div class="rfinal">'+finalHtml+'</div>'+
     '<button class="btn" id="copyResume" style="width:100%;margin-top:14px">一键复制整段简历项目段 📋</button>'+
-    (dropped>0?'<div class="rgnote" style="margin-top:14px">已从你的 '+state.entries.length+' 条记录里筛掉 '+dropped+' 条重复 / 较弱的——简历讲的是<b>优先级</b>,不是越多越好。完整记录都在「今日投喂」日历里,随时可回溯。</div>':'<div class="rgnote" style="margin-top:14px">下面每条都标了「来自 Day 几」,方便你面试前对照原始细节。</div>')+
-    '<div class="rgnote" style="margin-top:10px">精选明细(带 Day 出处)↓</div>';
-  for(var g=0;g<order.length;g++){var th=order[g],arr=curated[th];
-   p1+='<div class="rgroup"><div class="rgrouphead"><span class="rgnum">'+("0"+(g+1)).slice(-2)+'</span><span class="rgtheme">'+esc(th)+'</span><span class="rgcount">'+arr.length+' 条</span></div><div class="rgbody">';
-   for(var m=0;m<arr.length;m++){p1+='<div class="rgitem"><span class="rgday">Day '+dayNo(arr[m])+'</span><span class="rgtext">'+hl(arr[m].bullet)+'</span></div>';}
-   p1+='</div></div>';}
-  p1+='<div class="paperfoot">每条都来自你真做过的事 ↓</div></div>';
+    '<div class="rgnote" style="margin-top:14px">'+(capped||dropped>0?'已精选最能打的 '+totalSel+' 条、压在 '+EXLIM+' 字内'+(dropped>0?'(筛掉 '+dropped+' 条较弱/重复的)':'')+'。想要更长/更短,改上面「字数上限」再点重新生成。完整记录在「今日投喂」日历里随时可回溯。':'下面 PART 2 把每条拆成面试深挖,面试前对照着练。')+'</div></div>';
   var divr='<div class="exdivider"><span>注水的简历,深挖三层就穿;你的每一条,都能回溯到你真做过的细节。</span></div>';
   var p2='<div class="paper"><div class="eyebrow">PART 2 · 进面试前</div><div class="ptitle">面试深挖回溯</div><div class="psub">面试官会逐条追问,先预演他怎么挖、你怎么用记录接住</div>'+
     '<div class="flowbox"><div class="flowcap">面试官的「深挖逻辑」长这样 ↓ 每条经历都会走一遍</div>'+
@@ -1145,8 +1150,9 @@ function renderExport(){
  var jb=document.getElementById("jdBox");if(jb)jb.addEventListener("input",function(){state.jd=jb.value;});
  var jg=document.getElementById("jdGo");if(jg&&!jg.disabled)jg.addEventListener("click",jdTailor);
  var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.paragraph);});
+ var el=document.getElementById("exLimit");if(el)el.addEventListener("input",function(){state.exLimit=Math.max(60,Math.min(600,parseInt(el.value,10)||200));});
  var ge=document.getElementById("goExport");
- if(ge&&!ge.disabled)ge.addEventListener("click",function(){state.showExport=true;renderExport();});
+ if(ge&&!ge.disabled)ge.addEventListener("click",function(){var e2=document.getElementById("exLimit");if(e2)state.exLimit=Math.max(60,Math.min(600,parseInt(e2.value,10)||200));state.showExport=true;renderExport();});
  var cr=document.getElementById("copyResume");if(cr)cr.addEventListener("click",function(){copyText(finalText);});
  var hb=document.getElementById("hookBtn");
  if(hb)hb.addEventListener("click",function(){alert("这里换成你的关注主页 / 进群二维码链接");});
