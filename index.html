@@ -731,12 +731,12 @@ function loadAI(){try{var r=JSON.parse(localStorage.getItem(AKEY)||"{}");state.a
 function persistAI(){try{localStorage.setItem(AKEY,JSON.stringify({key:state.apiKey,use:state.useAI}));}catch(e){}}
 /* 调用 DeepSeek(OpenAI 兼容)把四段回答翻译成一条结果导向的简历 bullet。key 仅存在本机 localStorage,不写进文件。 */
 function translateAI(f){
- var sys="你是资深简历教练。把实习生的零散记录改写成 1 条中文简历 bullet:结果导向(先抛成果/影响,再讲怎么做的),有数字优先用数字,动词开头(主导/独立负责/推动/优化等),真实克制不浮夸不堆砌,28-55 字,只输出这一句,不要引号、不要解释、不要换行。";
- var usr="① 做了什么:"+(f.q1||"")+"\n② 在项目里的位置/解决什么:"+(f.q2||"无")+"\n③ 怎么想的/试了什么:"+(f.q3||"无")+"\n④ 交付结果/变化或数字:"+(f.q4||"无");
+ var sys="你是资深中文简历教练。把实习生填写的真实记录,改写成 1 条能直接写进简历的中文 bullet。\n\n【铁律·最重要】\n1. 绝对不许编造输入里没有的任何事实——尤其是数字、百分比、金额、倍数、公司/产品名、人数、时间、排名、奖项。输入没给数字,成品里就绝对不能出现任何数字或百分比。\n2. 只能使用①②③④中真实出现的信息,不许添加输入中不存在的成果、影响或动机。\n3. 如果输入信息太少或无意义(例如只填了「1」「无」「123」、单字、乱填、看不出具体做了什么),不要硬编成绩,只输出一个词:NEED_MORE(全大写,别的什么都不要输出)。\n\n【写法】\n- 动词开头,按真实程度选词:信息足才用「主导/独立负责/推动」,一般情况用「负责/参与/完成/整理/协助/搭建/对接/跟进」,别一律拔高成「主导」。\n- 必须具体:写清做的对象和内容(做了什么事、对什么东西)。禁止「优化流程」「提升效率」「赋能」「实现…提升」这类空洞套话。\n- 有真实结果/数字才写结果;没有结果就只客观陈述做了什么,不要凑一个虚的成效。\n- 简历书面语,克制、不浮夸、不堆形容词。\n- 22-48 字,只输出这一句,不要引号、解释、换行。";
+ var usr="① 做了什么:"+(f.q1||"无")+"\n② 在项目里的位置/解决什么:"+(f.q2||"无")+"\n③ 怎么想的/试了什么:"+(f.q3||"无")+"\n④ 交付结果/变化或数字:"+(f.q4||"无");
  return fetch("https://api.deepseek.com/chat/completions",{
   method:"POST",
   headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
-  body:JSON.stringify({model:"deepseek-chat",temperature:0.4,max_tokens:300,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.2,max_tokens:300,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
   var t=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
   t=(t||"").trim().replace(/^["「『]+|["」』]+$/g,"").replace(/\s+/g," ");
@@ -927,6 +927,11 @@ function doTranslate(){
  if(!f.q1.trim()){toast("先写一句今天做了啥");return;}
  state.busy=true;renderToday();
  function finish(bullet){
+  // AI 判定信息太少:不硬编,提示补充,不入池
+  if(/^NEED_MORE\b/i.test((bullet||"").trim())){
+   state.busy=false;renderToday();
+   toast("信息太少啦~ 把「做了什么」写具体一点(做了哪件事、对什么),锦鲤才不会瞎编 🐟");
+   return;}
   var tip=f.q2.trim()?"想更值钱,下次补个具体数字。":"这条还缺「全局位置」——明天问一句 mentor,它会更扛追问。";
   if(state.editing){var e=findEntry(state.editing);if(e){e.q1=f.q1;e.q2=f.q2;e.q3=f.q3;e.q4=f.q4;e.bullet=bullet;}state.editing=null;state.busy=false;persist();syncStats();renderToday();toast("已更新这条");return;}
   var prevLv=koiLevel(state.entries.length);
