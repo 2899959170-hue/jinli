@@ -1203,7 +1203,19 @@ function renderExport(){
     '</div></div>';
   body=p1+divr+p2+hook;
  }
- panel.innerHTML=jdCard+intro+body;
+ var migCard='<div class="card">'+
+   '<div class="jdhd">🧳 数据迁移包 · 防丢/换设备</div>'+
+   '<div class="jdsub">换手机、换浏览器,或作者换网址时,先在<b>老页面</b>点「打包」复制那串迁移码(也可下载成文件存微信收藏),到<b>新页面</b>这张卡片下半部分粘进去点「恢复」,你攒的记录就全搬过去了。建议每攒一阵就备份一次。</div>'+
+   '<button class="btn" id="migPack" style="width:100%;margin-top:10px"'+(can?'':' disabled')+'>📦 打包我的全部记录('+state.entries.length+' 条)</button>'+
+   (can?'':'<div class="hint" style="margin-top:6px">还没有记录可打包</div>')+
+   '<textarea id="migOut" class="jdbox" readonly placeholder="点上面按钮,这里会出现一串迁移码,复制它保存好…" style="margin-top:10px;min-height:70px"></textarea>'+
+   '<div class="btnrow"><button class="btn ghost" id="migCopy">复制迁移码 📋</button><button class="btn ghost" id="migFile">下载备份文件 💾</button></div>'+
+   '<div style="border-top:1px dashed var(--border);margin:16px 0 12px"></div>'+
+   '<div class="jdsub"><b>恢复数据</b>:把之前打包的迁移码粘到下面,点恢复(会用迁移码里的记录覆盖当前邀请码下的数据)。</div>'+
+   '<textarea id="migIn" class="jdbox" placeholder="把迁移码粘到这里…" style="margin-top:8px;min-height:70px"></textarea>'+
+   '<button class="btn" id="migRestore" style="width:100%;margin-top:8px">⬇️ 用迁移码恢复记录</button>'+
+   '</div>';
+ panel.innerHTML=jdCard+intro+body+migCard;
  var jb=document.getElementById("jdBox");if(jb)jb.addEventListener("input",function(){state.jd=jb.value;});
  var jg=document.getElementById("jdGo");if(jg&&!jg.disabled)jg.addEventListener("click",jdTailor);
  var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.bullets.map(function(b){return "· "+b;}).join("\n"));});
@@ -1213,7 +1225,31 @@ function renderExport(){
  var cr=document.getElementById("copyResume");if(cr)cr.addEventListener("click",function(){copyText(finalText);});
  var hb=document.getElementById("hookBtn");
  if(hb)hb.addEventListener("click",function(){alert("这里换成你的关注主页 / 进群二维码链接");});
+ var mp=document.getElementById("migPack");if(mp&&!mp.disabled)mp.addEventListener("click",function(){var o=document.getElementById("migOut");if(o){o.value=packData();o.focus();o.select();}toast("已打包,复制这串迁移码存好 📦");});
+ var mc=document.getElementById("migCopy");if(mc)mc.addEventListener("click",function(){var o=document.getElementById("migOut");if(!o||!o.value){toast("先点上面「打包」");return;}copyText(o.value);});
+ var mf=document.getElementById("migFile");if(mf)mf.addEventListener("click",function(){var o=document.getElementById("migOut");var data=(o&&o.value)||packData();downloadText("实习翻译机-备份-"+ymdStr(new Date())+".txt",data);});
+ var mr=document.getElementById("migRestore");if(mr)mr.addEventListener("click",doMigRestore);
 }
+/* ── 数据迁移包:打包/恢复 ── */
+function packData(){var payload={v:1,code:activeCode(),ts:Date.now(),n:state.entries.length,entries:state.entries};
+ try{return "KOI1:"+btoa(unescape(encodeURIComponent(JSON.stringify(payload))));}catch(e){return "KOI1:"+btoa(encodeURIComponent(JSON.stringify(payload)));}}
+function unpackData(str){str=(str||"").trim().replace(/\s/g,"");if(!str)throw new Error("迁移码是空的");
+ if(str.indexOf("KOI1:")===0)str=str.slice(5);
+ var json;try{json=decodeURIComponent(escape(atob(str)));}catch(e){json=decodeURIComponent(atob(str));}
+ var obj=JSON.parse(json);
+ if(!obj||!obj.entries||Object.prototype.toString.call(obj.entries)!=="[object Array]")throw new Error("迁移码格式不对");
+ return obj;}
+function doMigRestore(){var ta=document.getElementById("migIn");var raw=ta?ta.value:"";
+ var obj;try{obj=unpackData(raw);}catch(e){toast("恢复失败:"+(e.message||"迁移码无效"));return;}
+ var incoming=obj.entries.length;
+ var msg=state.entries.length>0?("当前邀请码下已有 "+state.entries.length+" 条,迁移码里有 "+incoming+" 条。\n确定用迁移码【覆盖】当前数据吗?(当前这些会被替换)"):("将恢复 "+incoming+" 条记录,确定?");
+ if(!confirm(msg))return;
+ state.entries=obj.entries;state.result=null;state.editing=null;persist();syncStats();render();
+ toast("已恢复 "+incoming+" 条记录 🎉");}
+function downloadText(name,text){try{var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);
+ var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();
+ setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);toast("已下载备份文件 💾");}
+ catch(e){toast("此浏览器不支持下载,请改用「复制迁移码」");}}
 
 /* ── 周报:框定时间段,把这段时间攒的记录导出成一份实习周报 ── */
 function ymdStr(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
