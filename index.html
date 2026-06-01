@@ -717,7 +717,7 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:150,jdResult:null,jdBusy:false,exLimit:200,exResult:null,exBusy:false};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -773,11 +773,11 @@ function jdTailor(){
   .catch(function(err){state.jdBusy=false;renderExport();toast("定制失败,稍后重试("+(err&&err.message||"网络错误")+")");});
 }
 function jdTailorAI(jd,lim,exp){
- var sys="你是资深简历教练,按岗位 JD 定制简历经历。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心关键词;\n2. 从候选人经历里挑与 JD 最相关的,改写成 3-6 条【简历 bullet 条目】(不是一整段!),JD 最相关的排在最前面;\n3. 每条都是可直接写进简历的经历:动词开头、具体、含真实结果。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(经历里没有化学背景就绝不能写「化学专业背景」)。\n- 绝不编造数字、成果、公司名;经历里没有的数字坚决不能出现。\n- 不要写「相关能力可迁移至…」「具备…能力可胜任…」这类自我评价或求职信式句子,只输出经历 bullet 本身;若与 JD 相关性低,就只挑最沾边的真实经历,可以少写几条,绝不硬凑。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话。\n- 所有 bullet 正文合计不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"bullets\":[\"…\"]} —— 不要任何多余文字,不要 markdown 代码块。";
+ var sys="你是顶级大厂简历教练,按岗位 JD 把候选人真实经历改写成「一眼就很强」的简历 bullet。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心关键词;\n2. 从候选人经历里挑与 JD 最相关的,改写成 4-6 条【简历 bullet 条目】(绝不是一整段流水账!),JD 最相关的排在最前面;\n3. 每条都按「动词开头 + 做了什么 + 怎么做 + 量化结果」的强简历句式,要专业、有信息密度,读起来像大厂正式简历,而不是岗位职责复述。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(经历里没有化学背景就绝不能写「化学专业背景」)。\n- 绝不编造数字、成果、公司名;经历里有的真实数字必须保留并突出,经历里没有的数字坚决不能出现、不能瞎编百分比。\n- 不要写「相关能力可迁移至…」「具备…能力可胜任…」这类自我评价或求职信式句子,绝不写「协助…定期…维护…」这种被动职责复述,只输出有结果、有亮点的经历 bullet 本身。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话套话。\n- 每条 bullet 30-55 字,所有 bullet 正文合计不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"bullets\":[\"…\"]} —— 不要任何多余文字,不要 markdown 代码块。";
  var usr="【目标岗位 JD】\n"+jd+"\n\n【候选人真实经历】\n"+exp;
  return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
   headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
-  body:JSON.stringify({model:"deepseek-chat",temperature:0.3,max_tokens:700,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.3,max_tokens:1000,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
  }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
   var t=(j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"").trim();
   t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
