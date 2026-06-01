@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>邀请码批量生成器 · 锦鲤版</title>
+<style>
+ *{box-sizing:border-box}
+ body{margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:#FAF5EC;color:#2B2722;padding:18px;max-width:680px;margin:0 auto;}
+ h1{font-size:19px;margin:6px 0 2px;}
+ .sub{font-size:12.5px;color:#9A8F7E;margin-bottom:16px;line-height:1.6;}
+ .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+ label{font-size:13px;font-weight:600;}
+ input[type=number],input[type=text]{border:1px solid #E3D8C5;border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;}
+ input[type=number]{width:90px;}
+ input[type=text]{flex:1;min-width:160px;}
+ button{border:none;border-radius:9px;padding:9px 16px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;}
+ .gen{background:#E0694A;color:#fff;}
+ .gen:active{background:#C24E32;}
+ .sec{background:#fff;border:1px solid #E3D8C5;color:#9A8F7E;}
+ .out{margin-top:14px;background:#fff;border:1px solid #E3D8C5;border-radius:12px;padding:14px;}
+ .code{display:inline-block;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;letter-spacing:1px;background:#FBF3E7;border:1px solid #EEDFC6;border-radius:7px;padding:5px 10px;margin:4px 5px 4px 0;}
+ .pair{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed #F0E7D6;}
+ .pname{font-size:13px;color:#6E6457;width:120px;flex:none;}
+ .note{font-size:11.5px;color:#B3A793;margin-top:12px;line-height:1.7;}
+ textarea{width:100%;height:120px;margin-top:10px;border:1px solid #E3D8C5;border-radius:9px;padding:10px;font-family:ui-monospace,monospace;font-size:13px;}
+</style>
+</head>
+<body>
+ <h1>🧧 邀请码批量生成器</h1>
+ <div class="sub">生成的码用的是「实习翻译机·锦鲤版」里一模一样的校验算法,生成出来直接能用。给每个学生发一个不同的码即可。</div>
+
+ <div class="row">
+  <label>生成数量</label>
+  <input type="number" id="num" value="20" min="1" max="500">
+  <label>名单(可选,一行一个名字)</label>
+ </div>
+ <textarea id="names" placeholder="张三&#10;李四&#10;王五&#10;(留空就只生成纯码;填了名字会一一对应)"></textarea>
+ <div class="row" style="margin-top:12px">
+  <button class="gen" id="go">生成</button>
+  <button class="sec" id="copy">复制全部</button>
+  <button class="sec" id="dl">下载 .txt</button>
+ </div>
+
+ <div class="out" id="out" style="display:none"></div>
+ <div class="note">提示:这套码是"通用有效码",不是一码一人锁定(锁定需要后端)。够日常发放用;若某个码被乱传,重发一个新的即可。<br>想换更多,改数量再点「生成」。</div>
+
+<script>
+/* ⚠️ 这个 mint / 校验必须和 index.html 里的完全一致,改了那边这里也要同步改 */
+function mint(body){body=(body||"").toString().toUpperCase().slice(0,4);var h=0,map="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";for(var i=0;i<body.length;i++)h=(h*131+body.charCodeAt(i))%1296;return body+map[Math.floor(h/36)]+map[h%36];}
+var L="ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+function body4(){var s="";for(var i=0;i<4;i++)s+=L[Math.floor(Math.random()*L.length)];return s;}
+var lastCodes=[],lastNames=[];
+function gen(){
+ var n=Math.max(1,Math.min(500,parseInt(document.getElementById("num").value)||20));
+ var names=document.getElementById("names").value.split(/\r?\n/).map(function(s){return s.trim();}).filter(Boolean);
+ if(names.length)n=names.length;
+ var set={},codes=[];
+ while(codes.length<n){var c=mint(body4());if(!set[c]){set[c]=1;codes.push(c);}}
+ lastCodes=codes;lastNames=names;
+ var out=document.getElementById("out");out.style.display="block";
+ if(names.length){
+  out.innerHTML='<div style="font-size:13px;font-weight:600;margin-bottom:8px">共 '+n+' 个 · 名字↔邀请码</div>'+
+   codes.map(function(c,i){return '<div class="pair"><span class="pname">'+(names[i]||('学员'+(i+1)))+'</span><span class="code">'+c+'</span></div>';}).join("");
+ }else{
+  out.innerHTML='<div style="font-size:13px;font-weight:600;margin-bottom:8px">共 '+n+' 个邀请码</div>'+
+   codes.map(function(c){return '<span class="code">'+c+'</span>';}).join("");
+ }
+}
+function asText(){
+ if(lastNames.length)return lastCodes.map(function(c,i){return (lastNames[i]||('学员'+(i+1)))+"\t"+c;}).join("\n");
+ return lastCodes.join("\n");
+}
+document.getElementById("go").addEventListener("click",gen);
+document.getElementById("copy").addEventListener("click",function(){
+ if(!lastCodes.length){alert("先点生成");return;}
+ var t=asText();
+ if(navigator.clipboard){navigator.clipboard.writeText(t).then(function(){alert("已复制");},function(){fallback(t);});}else fallback(t);
+});
+function fallback(t){var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");alert("已复制");}catch(e){alert("复制失败,请手动选中");}document.body.removeChild(ta);}
+document.getElementById("dl").addEventListener("click",function(){
+ if(!lastCodes.length){alert("先点生成");return;}
+ var blob=new Blob([asText()],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download="邀请码.txt";a.click();
+});
+gen();
+</script>
+</body>
+</html>
