@@ -773,7 +773,7 @@ function jdTailor(){
   .catch(function(err){state.jdBusy=false;renderExport();toast("定制失败,稍后重试("+(err&&err.message||"网络错误")+")");});
 }
 function jdTailorAI(jd,lim,exp){
- var sys="你是资深简历教练,擅长按岗位 JD 定制简历。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心要求/关键词;\n2. 从候选人经历里挑出与 JD 最相关的内容;\n3. 整合改写成 1 段中文简历经历描述,自然融入 JD 关键词,突出与岗位的匹配度。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(例如:经历里没有化学/教学背景,就绝不能写「化学专业背景」「双语辅导」「教学经验」)。\n- 绝不编造数字、成果、公司名;经历里没有的数字坚决不能出现。\n- 如果候选人经历与 JD 相关性低,就诚实地只用最沾边的真实经历来写,并可用「相关能力可迁移至…」这类表述衔接岗位,可以写得短,但绝不许硬编一个符合 JD 的假人设。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话。\n- 段落正文不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"paragraph\":\"…\"} —— 不要任何多余文字,不要 markdown 代码块。";
+ var sys="你是资深简历教练,按岗位 JD 定制简历经历。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心关键词;\n2. 从候选人经历里挑与 JD 最相关的,改写成 3-6 条【简历 bullet 条目】(不是一整段!),JD 最相关的排在最前面;\n3. 每条都是可直接写进简历的经历:动词开头、具体、含真实结果。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(经历里没有化学背景就绝不能写「化学专业背景」)。\n- 绝不编造数字、成果、公司名;经历里没有的数字坚决不能出现。\n- 不要写「相关能力可迁移至…」「具备…能力可胜任…」这类自我评价或求职信式句子,只输出经历 bullet 本身;若与 JD 相关性低,就只挑最沾边的真实经历,可以少写几条,绝不硬凑。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话。\n- 所有 bullet 正文合计不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"bullets\":[\"…\"]} —— 不要任何多余文字,不要 markdown 代码块。";
  var usr="【目标岗位 JD】\n"+jd+"\n\n【候选人真实经历】\n"+exp;
  return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
   headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
@@ -782,11 +782,14 @@ function jdTailorAI(jd,lim,exp){
   var t=(j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"").trim();
   t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
   var obj;try{obj=JSON.parse(t);}catch(e){obj=null;}
-  if(!obj||typeof obj!=="object")obj={keywords:[],paragraph:t};
-  if(!obj.paragraph)obj.paragraph=t;
-  obj.paragraph=(obj.paragraph||"").replace(/\s+/g," ").trim();
+  if(!obj||typeof obj!=="object")obj={keywords:[],bullets:[]};
   if(!obj.keywords||!obj.keywords.length)obj.keywords=[];
-  if(!obj.paragraph)throw new Error("空结果");
+  if(!obj.bullets||!obj.bullets.length){
+    // 兜底:把纯文本按行/分号拆成 bullet
+    obj.bullets=t.split(/\n+|;|；/).map(function(s){return s.replace(/^[·\-\d\.\s、]+/,"").trim();}).filter(function(s){return s.length>3;});
+  }
+  obj.bullets=(obj.bullets||[]).map(function(b){return (b||"").replace(/\s+/g," ").trim();}).filter(Boolean);
+  if(!obj.bullets.length)throw new Error("空结果");
   return obj;
  });
 }
@@ -1092,14 +1095,14 @@ function renderExport(){
  var lim=state.jdLimit||150,jr=state.jdResult;
  var jdCard='<div class="card jdcard">'+
    '<div class="jdhd">🎯 按目标岗位定制简历段</div>'+
-   '<div class="jdsub">把想投的岗位 JD 粘进来,AI 会从你攒的真东西里挑<b>最匹配</b>的,整合成一段<b>不超过设定字数</b>的简历段落——只用你真填过的,不编。</div>'+
+   '<div class="jdsub">把想投的岗位 JD 粘进来,AI 会从你攒的真东西里挑<b>最匹配</b>的,改写成<b>可直接抄进简历的 bullet 条目</b>(JD 最相关的排最前)——只用你真填过的,不编。</div>'+
    '<textarea id="jdBox" class="jdbox" placeholder="把目标岗位的 JD / 任职要求整段粘到这里…">'+esc(state.jd||"")+'</textarea>'+
    '<div class="jdrow"><label>字数上限</label><input type="number" id="jdLimit" min="40" max="400" value="'+lim+'"><span class="jdunit">字</span>'+
    '<button class="btn" id="jdGo"'+(can?"":" disabled")+'>'+(state.jdBusy?"匹配中…":(jr?"重新定制":"按 JD 定制"))+'</button></div>'+
    (can?"":'<div class="hint" style="margin-top:6px">先去「今日投喂」记几条</div>')+
    (jr?('<div class="jdout"><div class="jdkw">匹配关键词:'+(jr.keywords&&jr.keywords.length?jr.keywords.map(function(k){return '<span class="kw">'+esc(k)+'</span>';}).join(""):'<span style="color:var(--dim)">—</span>')+'</div>'+
-     '<div class="jdpara">'+esc(jr.paragraph)+'</div>'+
-     '<div class="jdcount">共 '+jr.paragraph.length+' 字'+(jr.paragraph.length>lim?' · ⚠️ 略超上限,可点「重新定制」再压':' · 在 '+lim+' 字内 ✓')+'</div>'+
+     '<div class="jdpara">'+jr.bullets.map(function(b){return '<div class="rfbul"><span class="rfdash">·</span><span class="rftext">'+esc(b)+'</span></div>';}).join("")+'</div>'+
+     (function(){var tc=jr.bullets.join("").length;return '<div class="jdcount">共 '+jr.bullets.length+' 条 · '+tc+' 字'+(tc>lim?' · ⚠️ 略超上限,可点「重新定制」再压':' · 在 '+lim+' 字内 ✓')+'</div>';})()+
      '<button class="btn ghost" id="jdCopy" style="width:100%;margin-top:10px">复制这段 📋</button></div>'):"")+
    '</div>';
  var exlim=state.exLimit||200;
@@ -1179,7 +1182,7 @@ function renderExport(){
  panel.innerHTML=jdCard+intro+body;
  var jb=document.getElementById("jdBox");if(jb)jb.addEventListener("input",function(){state.jd=jb.value;});
  var jg=document.getElementById("jdGo");if(jg&&!jg.disabled)jg.addEventListener("click",jdTailor);
- var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.paragraph);});
+ var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.bullets.map(function(b){return "· "+b;}).join("\n"));});
  var el=document.getElementById("exLimit");if(el)el.addEventListener("input",function(){state.exLimit=Math.max(60,Math.min(600,parseInt(el.value,10)||200));});
  var ge=document.getElementById("goExport");
  if(ge&&!ge.disabled)ge.addEventListener("click",exSynth);
