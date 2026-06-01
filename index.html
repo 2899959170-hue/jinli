@@ -137,6 +137,20 @@ textarea::placeholder{color:var(--dim);}
 .reprow{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;}
 .reprow label{font-size:13px;font-weight:700;color:var(--muted);}
 .reprow input[type=date]{flex:1;min-width:120px;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+.jdcard{border:1px solid var(--koi);}
+.jdhd{font-size:15.5px;font-weight:800;color:var(--koi);}
+.jdsub{font-size:12.5px;color:var(--muted);line-height:1.6;margin:6px 0 10px;}
+.jdbox{width:100%;height:96px;border:1px solid var(--border);border-radius:10px;padding:10px;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;resize:vertical;}
+.jdrow{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.jdrow label{font-size:13px;font-weight:700;color:var(--muted);}
+.jdrow input[type=number]{width:72px;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+.jdunit{font-size:12.5px;color:var(--muted);}
+.jdrow .btn{flex:1;min-width:120px;}
+.jdout{margin-top:14px;border-top:1px dashed var(--border);padding-top:12px;}
+.jdkw{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
+.jdkw .kw{display:inline-block;background:var(--surface-2);border:1px solid var(--border);color:var(--ink-2);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 5px 0 0;font-weight:600;}
+.jdpara{background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:13px 14px;font-size:14.5px;line-height:1.85;color:var(--ink);}
+.jdcount{font-size:11.5px;color:var(--dim);margin-top:7px;}
 
 /* ── 锦鲤签 / 结果 ── */
 .luck{position:relative;overflow:hidden;margin-top:16px;border-radius:18px;padding:22px 22px 20px;
@@ -703,7 +717,7 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:150,jdResult:null,jdBusy:false};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -742,6 +756,38 @@ function translateAI(f){
   t=(t||"").trim().replace(/^["「『]+|["」』]+$/g,"").replace(/\s+/g," ");
   if(!t)throw new Error("空结果");
   return t;
+ });
+}
+
+/* 按 JD 定制:从真实经历里挑最匹配的,写成不超过设定字数的简历段落 */
+function jdTailor(){
+ if(!state.entries.length){toast("先去攒几条记录");return;}
+ var jd=(val("jdBox")||"").trim();
+ if(!jd){toast("先把目标岗位 JD 粘进来");return;}
+ var lim=Math.max(40,Math.min(400,parseInt(val("jdLimit"),10)||150));
+ state.jd=jd;state.jdLimit=lim;
+ if(!(state.useAI&&state.apiKey)){toast("AI 未开启,无法按 JD 定制");return;}
+ state.jdBusy=true;renderExport();
+ var exp=state.entries.map(function(e,i){return (i+1)+". "+e.bullet+(e.q4?(" |真实结果:"+e.q4):"");}).join("\n");
+ jdTailorAI(jd,lim,exp).then(function(r){state.jdResult=r;state.jdBusy=false;renderExport();})
+  .catch(function(err){state.jdBusy=false;renderExport();toast("定制失败,稍后重试("+(err&&err.message||"网络错误")+")");});
+}
+function jdTailorAI(jd,lim,exp){
+ var sys="你是资深简历教练,擅长按岗位 JD 定制简历。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心要求/关键词;\n2. 从候选人经历里挑出与 JD 最相关的内容;\n3. 整合改写成 1 段中文简历经历描述,自然融入 JD 关键词,突出与岗位的匹配度。\n\n铁律:只能用候选人经历里真实出现的事实,绝对不许编造数字、成果、公司名、岗位职责;经历里没有的数字坚决不能出现。段落正文不超过 "+lim+" 个汉字(尽量贴近但不超过)。\n只输出 JSON:{\"keywords\":[\"…\"],\"paragraph\":\"…\"} —— 不要任何多余文字,不要 markdown 代码块。";
+ var usr="【目标岗位 JD】\n"+jd+"\n\n【候选人真实经历】\n"+exp;
+ return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
+  headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.3,max_tokens:700,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
+ }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
+  var t=(j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"").trim();
+  t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
+  var obj;try{obj=JSON.parse(t);}catch(e){obj=null;}
+  if(!obj||typeof obj!=="object")obj={keywords:[],paragraph:t};
+  if(!obj.paragraph)obj.paragraph=t;
+  obj.paragraph=(obj.paragraph||"").replace(/\s+/g," ").trim();
+  if(!obj.keywords||!obj.keywords.length)obj.keywords=[];
+  if(!obj.paragraph)throw new Error("空结果");
+  return obj;
  });
 }
 
@@ -828,7 +874,7 @@ function findEntry(id){for(var i=0;i<state.entries.length;i++)if(state.entries[i
 
 function renderToday(){
  var ed=state.editing?findEntry(state.editing):null;
- var v=ed||{q1:"",q2:"",q3:"",q4:""};
+ var v=ed||state.draft||{q1:"",q2:"",q3:"",q4:""};
  var tl="";
  if(state.entries.length===0){tl='<div class="empty">池子还空着。今天那件最不起眼的小事,就是你投喂的第一条锦鲤。</div>';}
  else{tl=buildCalendar();}
@@ -934,6 +980,7 @@ function doTranslate(){
    return;}
   var tip=f.q2.trim()?"想更值钱,下次补个具体数字。":"这条还缺「全局位置」——明天问一句 mentor,它会更扛追问。";
   if(state.editing){var e=findEntry(state.editing);if(e){e.q1=f.q1;e.q2=f.q2;e.q3=f.q3;e.q4=f.q4;e.bullet=bullet;}state.editing=null;state.busy=false;persist();syncStats();renderToday();toast("已更新这条");return;}
+  state.draft=null;
   var prevLv=koiLevel(state.entries.length);
   state.entries.unshift({id:uid(),q1:f.q1,q2:f.q2,q3:f.q3,q4:f.q4,bullet:bullet,ts:Date.now()});
   var newLv=koiLevel(state.entries.length);
@@ -959,16 +1006,26 @@ var DEMO_POOL=[
  {q1:"做竞品 App 的功能体验记录",q2:"为产品迭代提供外部参考",q3:"按核心路径逐一截图标注差异",q4:"输出体验差异清单,进了迭代讨论",bullet:"产出的竞品体验差异清单进入产品迭代讨论——系统走查竞品核心路径并标注关键差异。"},
  {q1:"协助筹备一场线下沙龙",q2:"保障当天流程不出岔子",q3:"列了 checklist 并对接各环节",q4:"活动零事故、嘉宾到场率 100%",bullet:"保障线下沙龙零事故、嘉宾到场率 100%——独立梳理全流程 checklist 并统筹各环节对接。"}
 ];
+/* 演示用现场可讲的样例:填进 4 个输入框,作者手动点「投喂」即可现场跑一遍 AI 翻译 */
+var DEMO_DRAFT={
+ q1:"帮运营核对了一场直播活动的后台数据,把异常的几条挑出来标注",
+ q2:"这场直播是季度大促的一个环节,数据要给复盘会用,不能有错",
+ q3:"先对了一遍埋点口径,发现两个环节数字对不上,逐条回溯找到是统计重复",
+ q4:"挑出 3 条异常数据并修正口径,复盘会用的是我核对后的版本"
+};
 function demoFill(){
  var target=29;
- if(state.entries.length>=target){toast("已经够进阶啦,直接随便写一条就到化龙 🐉");return;}
- var add=target-state.entries.length;var base=Date.now();
- var pool=[];for(var i=0;i<add;i++){var s=DEMO_POOL[i%DEMO_POOL.length];
-  pool.push({id:uid()+"_d"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
- state.entries=pool.concat(state.entries);
+ if(state.entries.length<target){
+  var add=target-state.entries.length;var base=Date.now();
+  var pool=[];for(var i=0;i<add;i++){var s=DEMO_POOL[i%DEMO_POOL.length];
+   pool.push({id:uid()+"_d"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
+  state.entries=pool.concat(state.entries);
+ }
+ // 同时把 4 个输入框填上现场样例:你手动点「投喂锦鲤」就能演示 AI 实时翻译,并刚好进阶到化龙 🐉
+ state.draft={q1:DEMO_DRAFT.q1,q2:DEMO_DRAFT.q2,q3:DEMO_DRAFT.q3,q4:DEMO_DRAFT.q4};
  state.calY=null;state.selKey=null;state.result=null;
  persist();syncStats();renderToday();
- toast("已填到 "+state.entries.length+" 条 · 现在随便写一条就进阶最高档「上岸锦鲤·化龙」🐉");
+ toast("已铺好底("+state.entries.length+" 条)+ 填好样例 · 现在手动点「投喂锦鲤」现场演示 🐉");
 }
 
 function copyText(t){
@@ -997,8 +1054,21 @@ function confetti(){
 
 function renderExport(){
  var can=state.entries.length>0;
- var intro='<div class="card"><div style="font-size:14.5px;line-height:1.7;color:var(--ink-2)">把你攒的 <b>'+state.entries.length+' 条真东西</b>,合成一份简历项目段,再配一份面试深挖回溯——全部来自你真实填的,经得起追问。</div>'+
-   '<div class="btnrow"><button class="btn" id="goExport"'+(can?'':' disabled')+'>'+(state.showExport?"重新生成":"生成简历 + 面试深挖")+'</button>'+(can?'':'<span class="hint">先去「今日投喂」记几条</span>')+'</div></div>';
+ var lim=state.jdLimit||150,jr=state.jdResult;
+ var jdCard='<div class="card jdcard">'+
+   '<div class="jdhd">🎯 按目标岗位定制简历段</div>'+
+   '<div class="jdsub">把想投的岗位 JD 粘进来,AI 会从你攒的真东西里挑<b>最匹配</b>的,整合成一段<b>不超过设定字数</b>的简历段落——只用你真填过的,不编。</div>'+
+   '<textarea id="jdBox" class="jdbox" placeholder="把目标岗位的 JD / 任职要求整段粘到这里…">'+esc(state.jd||"")+'</textarea>'+
+   '<div class="jdrow"><label>字数上限</label><input type="number" id="jdLimit" min="40" max="400" value="'+lim+'"><span class="jdunit">字</span>'+
+   '<button class="btn" id="jdGo"'+(can?"":" disabled")+'>'+(state.jdBusy?"匹配中…":(jr?"重新定制":"按 JD 定制"))+'</button></div>'+
+   (can?"":'<div class="hint" style="margin-top:6px">先去「今日投喂」记几条</div>')+
+   (jr?('<div class="jdout"><div class="jdkw">匹配关键词:'+(jr.keywords&&jr.keywords.length?jr.keywords.map(function(k){return '<span class="kw">'+esc(k)+'</span>';}).join(""):'<span style="color:var(--dim)">—</span>')+'</div>'+
+     '<div class="jdpara">'+esc(jr.paragraph)+'</div>'+
+     '<div class="jdcount">共 '+jr.paragraph.length+' 字'+(jr.paragraph.length>lim?' · ⚠️ 略超上限,可点「重新定制」再压':' · 在 '+lim+' 字内 ✓')+'</div>'+
+     '<button class="btn ghost" id="jdCopy" style="width:100%;margin-top:10px">复制这段 📋</button></div>'):"")+
+   '</div>';
+ var intro='<div class="card"><div style="font-size:14.5px;line-height:1.7;color:var(--ink-2)">不挑岗位的话,也可以把你攒的 <b>'+state.entries.length+' 条真东西</b>,合成一份通用简历项目段 + 面试深挖回溯——全部来自你真实填的,经得起追问。</div>'+
+   '<div class="btnrow"><button class="btn" id="goExport"'+(can?'':' disabled')+'>'+(state.showExport?"重新生成":"生成通用简历 + 面试深挖")+'</button>'+(can?'':'<span class="hint">先去「今日投喂」记几条</span>')+'</div></div>';
  var body="";
  if(state.showExport&&can){
   var groups={},order=[];
@@ -1071,7 +1141,10 @@ function renderExport(){
     '</div></div>';
   body=p1+divr+p2+hook;
  }
- panel.innerHTML=intro+body;
+ panel.innerHTML=jdCard+intro+body;
+ var jb=document.getElementById("jdBox");if(jb)jb.addEventListener("input",function(){state.jd=jb.value;});
+ var jg=document.getElementById("jdGo");if(jg&&!jg.disabled)jg.addEventListener("click",jdTailor);
+ var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.paragraph);});
  var ge=document.getElementById("goExport");
  if(ge&&!ge.disabled)ge.addEventListener("click",function(){state.showExport=true;renderExport();});
  var cr=document.getElementById("copyResume");if(cr)cr.addEventListener("click",function(){copyText(finalText);});
