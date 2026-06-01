@@ -131,6 +131,12 @@ textarea::placeholder{color:var(--dim);}
 .btn.ghost{background:none;color:var(--ink-2);border:1px solid var(--border-strong);box-shadow:none;}
 .btn.ghost:hover{background:var(--surface-2);}
 .hint{font-size:12px;color:var(--dim);}
+.repquick{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.rqb{flex:1;min-width:64px;font-size:12.5px;font-weight:700;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;cursor:pointer;font-family:inherit;}
+.rqb:active{background:var(--koi);color:#fff;border-color:var(--koi);}
+.reprow{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.reprow label{font-size:13px;font-weight:700;color:var(--muted);}
+.reprow input[type=date]{flex:1;min-width:120px;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
 
 /* ── 锦鲤签 / 结果 ── */
 .luck{position:relative;overflow:hidden;margin-top:16px;border-radius:18px;padding:22px 22px 20px;
@@ -546,6 +552,7 @@ textarea::placeholder{color:var(--dim);}
     <div class="tabs" id="tabs">
       <button class="tab on" data-tab="today">今日投喂<small>每天一分钟</small></button>
       <button class="tab" data-tab="card">晒锦鲤<small>战绩卡</small></button>
+      <button class="tab" data-tab="report">周报<small>框时间导出</small></button>
       <button class="tab" data-tab="export">导出锦鲤<small>简历 + 面试</small></button>
     </div>
     <div id="panel"></div>
@@ -696,7 +703,7 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -1067,6 +1074,58 @@ function renderExport(){
  if(hb)hb.addEventListener("click",function(){alert("这里换成你的关注主页 / 进群二维码链接");});
 }
 
+/* ── 周报:框定时间段,把这段时间攒的记录导出成一份实习周报 ── */
+function ymdStr(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function parseYmd(s){var p=(s||"").split("-");return new Date(+p[0],(+p[1]||1)-1,+p[2]||1);}
+function repDefault(){if(!state.repFrom||!state.repTo){var t=new Date();var f=new Date();f.setDate(t.getDate()-6);state.repTo=ymdStr(t);state.repFrom=ymdStr(f);}}
+function repSetRange(kind){var t=new Date(),f=new Date();
+ if(kind==="thisweek"){var dw=(t.getDay()+6)%7;f.setDate(t.getDate()-dw);}
+ else if(kind==="lastweek"){var dw2=(t.getDay()+6)%7;t.setDate(t.getDate()-dw2-1);f=new Date(t);f.setDate(t.getDate()-6);}
+ else if(kind==="d7"){f.setDate(t.getDate()-6);}
+ else if(kind==="d30"){f.setDate(t.getDate()-29);}
+ state.repFrom=ymdStr(f);state.repTo=ymdStr(t);renderReport();}
+function repEntries(){var a=parseYmd(state.repFrom);a.setHours(0,0,0,0);var b=parseYmd(state.repTo);b.setHours(23,59,59,999);
+ var lo=a.getTime(),hi=b.getTime();return state.entries.filter(function(e){return e.ts>=lo&&e.ts<=hi;}).sort(function(x,y){return x.ts-y.ts;});}
+function repText(){
+ var arr=repEntries();var fd=parseYmd(state.repFrom),td=parseYmd(state.repTo);
+ var head=(fd.getMonth()+1)+"月"+fd.getDate()+"日 - "+(td.getMonth()+1)+"月"+td.getDate()+"日";
+ var groups={},order=[];for(var i=0;i<arr.length;i++){var th=themeOf(arr[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(arr[i]);}
+ var t="实习周报("+head+")\n本周共完成 "+arr.length+" 项工作,覆盖 "+order.length+" 个方向。\n";
+ for(var g=0;g<order.length;g++){var arr2=groups[order[g]];t+="\n【"+order[g]+"】\n";for(var m=0;m<arr2.length;m++){t+="· "+arr2[m].bullet+"\n";}}
+ t+="\n—— 由「实习翻译机·锦鲤版」整理";return t;}
+function renderReport(){
+ repDefault();var arr=repEntries();
+ var fd=parseYmd(state.repFrom),td=parseYmd(state.repTo);
+ var head=(fd.getMonth()+1)+" 月 "+fd.getDate()+" 日 — "+(td.getMonth()+1)+" 月 "+td.getDate()+" 日";
+ var ctrl='<div class="card"><div style="font-size:14.5px;line-height:1.7;color:var(--ink-2)">框一段时间,把这期间攒的记录一键整理成<b>实习周报</b>——发给导师 / 写进周会汇报都能直接用。</div>'+
+  '<div class="repquick"><button class="rqb" data-rk="thisweek">本周</button><button class="rqb" data-rk="lastweek">上周</button><button class="rqb" data-rk="d7">近 7 天</button><button class="rqb" data-rk="d30">近 30 天</button></div>'+
+  '<div class="reprow"><label>从</label><input type="date" id="repFrom" value="'+state.repFrom+'"><label>到</label><input type="date" id="repTo" value="'+state.repTo+'"></div></div>';
+ var body="";
+ if(!arr.length){
+  body='<div class="card" style="text-align:center;color:var(--muted);font-size:13.5px;padding:26px 16px">这段时间('+head+')还没有记录~<br>换个时间段,或先去「今日投喂」记几条。</div>';
+ }else{
+  var groups={},order=[];for(var i=0;i<arr.length;i++){var th=themeOf(arr[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(arr[i]);}
+  var gh="";for(var g=0;g<order.length;g++){var th=order[g],a2=groups[th];
+   gh+='<div class="rgroup"><div class="rgrouphead"><span class="rgnum">'+("0"+(g+1)).slice(-2)+'</span><span class="rgtheme">'+esc(th)+'</span><span class="rgcount">'+a2.length+' 条</span></div><div class="rgbody">';
+   for(var m=0;m<a2.length;m++){var d=new Date(a2[m].ts);gh+='<div class="rgitem"><span class="rgday">'+(d.getMonth()+1)+'/'+d.getDate()+'</span><span class="rgtext">'+hl(a2[m].bullet)+'</span></div>';}
+   gh+='</div></div>';}
+  body='<div class="paper"><div class="eyebrow">实习周报</div><div class="ptitle">'+head+'</div><div class="psub">本周共完成 '+arr.length+' 项工作,覆盖 '+order.length+' 个方向——下面整段可直接复制</div>'+
+   '<div class="exsum"><div class="sm"><b>'+arr.length+'</b><span>项工作</span></div><div class="sm"><b>'+order.length+'</b><span>个方向</span></div><div class="sm"><b>'+Math.max(1,Math.round((td-fd)/DAY)+1)+'</b><span>天跨度</span></div></div>'+
+   gh+
+   '<button class="btn" id="copyReport" style="width:100%;margin-top:16px">一键复制整份周报 📋</button>'+
+   '<button class="btn ghost" id="dlReport" style="width:100%;margin-top:10px">下载为 .txt</button>'+
+   '</div>';
+ }
+ panel.innerHTML=ctrl+body;
+ var rqs=document.querySelectorAll(".rqb");for(var q=0;q<rqs.length;q++){rqs[q].addEventListener("click",function(ev){repSetRange(ev.target.getAttribute("data-rk"));});}
+ var rf=document.getElementById("repFrom"),rt=document.getElementById("repTo");
+ if(rf)rf.addEventListener("change",function(){state.repFrom=rf.value;if(rt&&rt.value<rf.value)state.repTo=rf.value;renderReport();});
+ if(rt)rt.addEventListener("change",function(){state.repTo=rt.value;if(rf&&rf.value>rt.value)state.repFrom=rt.value;renderReport();});
+ var cp=document.getElementById("copyReport");if(cp)cp.addEventListener("click",function(){copyText(repText());});
+ var dl=document.getElementById("dlReport");if(dl)dl.addEventListener("click",function(){
+  var blob=new Blob([repText()],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="实习周报.txt";a.click();});
+}
+
 /* 把战绩卡渲染成一张真正可保存的 PNG(离线、无第三方库)。手机可长按图片存相册,也可点下载。 */
 function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 function wrapCenter(ctx,text,cx,y,maxW,lh){var line="",yy=y,out=[];for(var i=0;i<text.length;i++){var t=line+text[i];if(ctx.measureText(t).width>maxW&&line){out.push(line);line=text[i];}else line=t;}out.push(line);for(var j=0;j<out.length;j++){ctx.fillText(out[j],cx,yy+j*lh);}return yy+out.length*lh;}
@@ -1155,7 +1214,7 @@ function renderCard(){
  });
 }
 
-function render(){if(state.tab==="today")renderToday();else if(state.tab==="card")renderCard();else renderExport();}
+function render(){if(state.tab==="today")renderToday();else if(state.tab==="card")renderCard();else if(state.tab==="report")renderReport();else renderExport();}
 
 document.getElementById("tabs").addEventListener("click",function(ev){
  var b=ev.target.closest(".tab");if(!b)return;
