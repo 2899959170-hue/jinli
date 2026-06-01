@@ -717,7 +717,7 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:150,jdResult:null,jdBusy:false,exLimit:200};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:150,jdResult:null,jdBusy:false,exLimit:200,exResult:null,exBusy:false};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -773,7 +773,7 @@ function jdTailor(){
   .catch(function(err){state.jdBusy=false;renderExport();toast("定制失败,稍后重试("+(err&&err.message||"网络错误")+")");});
 }
 function jdTailorAI(jd,lim,exp){
- var sys="你是资深简历教练,擅长按岗位 JD 定制简历。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心要求/关键词;\n2. 从候选人经历里挑出与 JD 最相关的内容;\n3. 整合改写成 1 段中文简历经历描述,自然融入 JD 关键词,突出与岗位的匹配度。\n\n铁律:只能用候选人经历里真实出现的事实,绝对不许编造数字、成果、公司名、岗位职责;经历里没有的数字坚决不能出现。段落正文不超过 "+lim+" 个汉字(尽量贴近但不超过)。\n只输出 JSON:{\"keywords\":[\"…\"],\"paragraph\":\"…\"} —— 不要任何多余文字,不要 markdown 代码块。";
+ var sys="你是资深简历教练,擅长按岗位 JD 定制简历。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心要求/关键词;\n2. 从候选人经历里挑出与 JD 最相关的内容;\n3. 整合改写成 1 段中文简历经历描述,自然融入 JD 关键词,突出与岗位的匹配度。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(例如:经历里没有化学/教学背景,就绝不能写「化学专业背景」「双语辅导」「教学经验」)。\n- 绝不编造数字、成果、公司名;经历里没有的数字坚决不能出现。\n- 如果候选人经历与 JD 相关性低,就诚实地只用最沾边的真实经历来写,并可用「相关能力可迁移至…」这类表述衔接岗位,可以写得短,但绝不许硬编一个符合 JD 的假人设。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话。\n- 段落正文不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"paragraph\":\"…\"} —— 不要任何多余文字,不要 markdown 代码块。";
  var usr="【目标岗位 JD】\n"+jd+"\n\n【候选人真实经历】\n"+exp;
  return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
   headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
@@ -789,6 +789,41 @@ function jdTailorAI(jd,lim,exp){
   if(!obj.paragraph)throw new Error("空结果");
   return obj;
  });
+}
+
+/* 通用简历:把全部真实记录「合成」成一份经历段(合并重复、按方向归类、限定总字数、零虚构) */
+function exSynth(){
+ if(!state.entries.length){toast("先去攒几条记录");return;}
+ var e2=document.getElementById("exLimit");if(e2)state.exLimit=Math.max(60,Math.min(600,parseInt(e2.value,10)||200));
+ state.showExport=true;
+ if(!(state.useAI&&state.apiKey)){state.exResult=localSynth(state.exLimit);renderExport();return;}
+ state.exBusy=true;state.exResult=null;renderExport();
+ var recs=state.entries.map(function(e,i){return (i+1)+". "+e.bullet+(e.q4?(" |真实结果:"+e.q4):"");}).join("\n");
+ exSynthAI(recs,state.exLimit).then(function(r){state.exResult=r;state.exBusy=false;renderExport();})
+  .catch(function(err){state.exBusy=false;state.exResult=localSynth(state.exLimit);renderExport();toast("AI 合成失败,已用本地精选兜底("+(err&&err.message||"网络")+")");});
+}
+function exSynthAI(recs,lim){
+ var sys="你是资深中文简历教练。下面是候选人攒的多条真实工作记录(可能重复、零散、表述不一)。把它们整合成一份简历『实习/项目经历』段落。\n要求:\n1. 合并重复或高度相似的记录,同一件事绝不重复出现;\n2. 按能力方向归类(最多 3 类),每类 2-4 条 bullet;\n3. 有量化结果(数字)的优先靠前;\n4. 绝对不许编造记录里没有的事实、背景、专业、数字、公司名,只能基于给定记录;\n5. 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话,每条要具体写清做了什么、对什么、结果如何;\n6. 所有 bullet 正文合计不超过 "+lim+" 个汉字;\n7. 动词开头,简历书面语。\n只输出 JSON:{\"sections\":[{\"theme\":\"…\",\"bullets\":[\"…\"]}]},不要任何多余文字,不要 markdown 代码块。";
+ return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
+  headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.2,max_tokens:900,messages:[{role:"system",content:sys},{role:"user",content:"候选人真实记录:\n"+recs}]})
+ }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
+  var t=(j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"").trim();
+  t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
+  var obj=JSON.parse(t);
+  if(!obj||!obj.sections||!obj.sections.length)throw new Error("空结果");
+  return obj;
+ });
+}
+/* 无 AI 时的本地兜底:按方向分组 + 去重 + 按字数上限截断 */
+function localSynth(lim){
+ var groups={},order=[];
+ for(var i=0;i<state.entries.length;i++){var th=themeOf(state.entries[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(state.entries[i]);}
+ var sections=[],cum=0,done=false;
+ for(var g=0;g<order.length&&!done;g++){var arr=curateBullets(groups[order[g]],3),bs=[];
+  for(var m=0;m<arr.length;m++){var L=(arr[m].bullet||"").length+1;if(cum>0&&cum+L>lim){done=true;break;}bs.push(arr[m].bullet);cum+=L;}
+  if(bs.length)sections.push({theme:order[g],bullets:bs});}
+ return {sections:sections};
 }
 
 function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -1074,34 +1109,29 @@ function renderExport(){
  var body="";
  if(state.showExport&&can){
   var EXLIM=Math.max(60,Math.min(600,state.exLimit||200));
-  var groups={},order=[];
-  for(var i=0;i<state.entries.length;i++){var th=themeOf(state.entries[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(state.entries[i]);}
-  // 每个方向先去重 + 量化成果优先
-  var curatedAll={};for(var g=0;g<order.length;g++){curatedAll[order[g]]=curateBullets(groups[order[g]],3);}
-  // 按「简历段总字数上限」挑选:按方向顺序累加 bullet 字数,超了就停(保证至少一条)
-  var curated={},neworder=[],totalSel=0,flat=[],cum=0,capped=false;
-  for(var g=0;g<order.length;g++){var th=order[g],arr=curatedAll[th],keep=[];
-   for(var m=0;m<arr.length;m++){var L=(arr[m].bullet||"").length+1;
-    if((totalSel>0)&&(cum+L>EXLIM)){capped=true;break;}
-    keep.push(arr[m]);cum+=L;totalSel++;}
-   if(keep.length){curated[th]=keep;neworder.push(th);flat=flat.concat(keep);}
-   if(capped)break;}
-  order=neworder;
-  // 成品段:可整段直接复制进简历
-  var finalHtml="",finalText="项目经历\n";
-  for(var g=0;g<order.length;g++){var th=order[g],arr=curated[th];
-   finalHtml+='<div class="rfgroup"><div class="rfhead">'+esc(th)+'</div>';
-   finalText+="\n【"+th+"】\n";
-   for(var m=0;m<arr.length;m++){finalHtml+='<div class="rfbul"><span class="rfdash">·</span><span class="rftext">'+hl(arr[m].bullet)+'</span></div>';finalText+="· "+arr[m].bullet+"\n";}
-   finalHtml+='</div>';}
-  var dropped=state.entries.length-totalSel;
-  var p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">已按优先级精选去重、并压到你设的 '+EXLIM+' 字内——有量化成果的优先,真实产出不堆砌</div>'+
-    '<div class="exsum"><div class="sm"><b>'+totalSel+'</b><span>精选 bullet</span></div>'+
-    '<div class="sm"><b>'+order.length+'</b><span>个能力方向</span></div>'+
+  // PART2 深挖用:本地按方向去重挑代表条目(保留 q 字段供追问还原)
+  var pgroups={},porder=[];
+  for(var i=0;i<state.entries.length;i++){var pth=themeOf(state.entries[i]);if(!pgroups[pth]){pgroups[pth]=[];porder.push(pth);}pgroups[pth].push(state.entries[i]);}
+  var flat=[];for(var g=0;g<porder.length;g++){flat=flat.concat(curateBullets(pgroups[porder[g]],3));}
+  // PART1 成品段:来自 AI 合成(合并重复 + 按方向归类 + 限字数)
+  var p1,finalText="项目经历\n";
+  if(state.exBusy){
+   p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">正在把你攒的 '+state.entries.length+' 条记录合并、归类、压到 '+EXLIM+' 字内…</div><div class="rgnote" style="margin-top:10px">AI 合成中,约 5–15 秒…</div></div>';
+  }else{
+   var secs=(state.exResult&&state.exResult.sections)||[];
+   var finalHtml="",nbul=0,cum=0;
+   for(var s=0;s<secs.length;s++){var th=secs[s].theme||("方向"+(s+1)),bs=secs[s].bullets||[];
+    finalHtml+='<div class="rfgroup"><div class="rfhead">'+esc(th)+'</div>';finalText+="\n【"+th+"】\n";
+    for(var m=0;m<bs.length;m++){finalHtml+='<div class="rfbul"><span class="rfdash">·</span><span class="rftext">'+hl(bs[m])+'</span></div>';finalText+="· "+bs[m]+"\n";nbul++;cum+=(bs[m]||"").length;}
+    finalHtml+='</div>';}
+   p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">已把你 '+state.entries.length+' 条记录<b>合并去重、按方向归类</b>,压到 '+EXLIM+' 字内——同一件事不再重复,有数字的优先</div>'+
+    '<div class="exsum"><div class="sm"><b>'+nbul+'</b><span>条 bullet</span></div>'+
+    '<div class="sm"><b>'+secs.length+'</b><span>个能力方向</span></div>'+
     '<div class="sm"><b>'+cum+'</b><span>约 / '+EXLIM+' 字</span></div></div>'+
     '<div class="rfinal">'+finalHtml+'</div>'+
     '<button class="btn" id="copyResume" style="width:100%;margin-top:14px">一键复制整段简历项目段 📋</button>'+
-    '<div class="rgnote" style="margin-top:14px">'+(capped||dropped>0?'已精选最能打的 '+totalSel+' 条、压在 '+EXLIM+' 字内'+(dropped>0?'(筛掉 '+dropped+' 条较弱/重复的)':'')+'。想要更长/更短,改上面「字数上限」再点重新生成。完整记录在「今日投喂」日历里随时可回溯。':'下面 PART 2 把每条拆成面试深挖,面试前对照着练。')+'</div></div>';
+    '<div class="rgnote" style="margin-top:14px">已融合你全部 '+state.entries.length+' 条记录、重复的自动合并。想更长 / 更短,改上面「字数上限」再点「重新生成」。完整原始记录在「今日投喂」日历里随时可回溯。</div></div>';
+  }
   var divr='<div class="exdivider"><span>注水的简历,深挖三层就穿;你的每一条,都能回溯到你真做过的细节。</span></div>';
   var p2='<div class="paper"><div class="eyebrow">PART 2 · 进面试前</div><div class="ptitle">面试深挖回溯</div><div class="psub">面试官会逐条追问,先预演他怎么挖、你怎么用记录接住</div>'+
     '<div class="flowbox"><div class="flowcap">面试官的「深挖逻辑」长这样 ↓ 每条经历都会走一遍</div>'+
@@ -1152,7 +1182,7 @@ function renderExport(){
  var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.paragraph);});
  var el=document.getElementById("exLimit");if(el)el.addEventListener("input",function(){state.exLimit=Math.max(60,Math.min(600,parseInt(el.value,10)||200));});
  var ge=document.getElementById("goExport");
- if(ge&&!ge.disabled)ge.addEventListener("click",function(){var e2=document.getElementById("exLimit");if(e2)state.exLimit=Math.max(60,Math.min(600,parseInt(e2.value,10)||200));state.showExport=true;renderExport();});
+ if(ge&&!ge.disabled)ge.addEventListener("click",exSynth);
  var cr=document.getElementById("copyResume");if(cr)cr.addEventListener("click",function(){copyText(finalText);});
  var hb=document.getElementById("hookBtn");
  if(hb)hb.addEventListener("click",function(){alert("这里换成你的关注主页 / 进群二维码链接");});
