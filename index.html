@@ -404,6 +404,8 @@ textarea::placeholder{color:var(--dim);}
 
 /* ── 锦鲤战绩卡(晒图裂变) ── */
 .shothint{font-size:12.5px;color:var(--muted);text-align:center;margin-bottom:14px;line-height:1.6;}
+.cardimgtip{font-size:12.5px;color:var(--koi-deep);text-align:center;margin:6px 0 8px;font-weight:600;}
+.cardimg{display:block;width:100%;max-width:340px;margin:0 auto 12px;border-radius:14px;box-shadow:0 8px 24px rgba(43,39,34,.16);}
 .achvwrap{display:flex;justify-content:center;}
 .achv{position:relative;width:344px;max-width:100%;border-radius:24px;overflow:hidden;color:var(--ink);
   background:linear-gradient(172deg,#FCEFE6 0%,#F7E2D2 42%,#FBF6EE 100%);border:1px solid var(--koi-line);
@@ -495,7 +497,7 @@ textarea::placeholder{color:var(--dim);}
         <div class="gf gf3"><b>导出</b>简历项目段 + 面试深挖回溯</div>
       </div>
       <span class="gfree">🧧 工具免费 · 凭邀请码解锁</span>
-      <input id="codeInput" maxlength="12" placeholder="输入邀请码" autocomplete="off" />
+      <input id="codeInput" maxlength="12" placeholder="输入邀请码" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text" />
       <button class="btn" id="codeBtn" style="width:100%;margin-top:14px">解锁我的锦鲤池 🧧</button>
       <div id="codeErr" class="gerr"></div>
       <div class="gnote">之所以要个邀请码,是为了防止有人用程序盗刷我的 token~ 给大家添了点小麻烦啦,抱抱 🫶</div>
@@ -695,13 +697,28 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
 var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false};
-var SKEY="shixi-fanyiji-koi-v1";
+/* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
+   (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
+var SKEY_BASE="shixi-fanyiji-koi-v2";
+var CKEY="shixi-koi-code";
+function activeCode(){try{return localStorage.getItem(CKEY)||"";}catch(e){return"";}}
+function curSkey(){var c=activeCode();return SKEY_BASE+(c?"::"+c:"");}
 var AKEY="shixi-fanyiji-ai-v1";
 /* ★ 把你的 DeepSeek key 填到下面这对引号里,所有学生就共用你的 key,打开即用、无需各自申请。
    例:var BUILTIN_KEY="sk-xxxxxxxx";  留空则走「学生填自己的 key / 本地规则」。 */
 var BUILTIN_KEY="sk-585fa93e7b954d25b91b38d0fb80f918";
-function load(){try{var r=localStorage.getItem(SKEY);if(r){state.entries=(JSON.parse(r).entries)||[];}else{state.entries=SEED.slice();persist();}}catch(e){state.entries=SEED.slice();}}
-function persist(){try{localStorage.setItem(SKEY,JSON.stringify({entries:state.entries}));}catch(e){}}
+function load(){try{var r=localStorage.getItem(curSkey());if(r){state.entries=(JSON.parse(r).entries)||[];}else{state.entries=[];}}catch(e){state.entries=[];}}
+function persist(){try{localStorage.setItem(curSkey(),JSON.stringify({entries:state.entries}));}catch(e){}}
+/* 演示模式:只有作者用专属邀请码进去才是「预填满、能演示」的版本;学生用普通码进去是空白的、自己从零做 */
+var DKEY="shixi-koi-demo";
+var DEMO_CODE="AHAN2026";
+function demoMode(){try{return localStorage.getItem(DKEY)==="1";}catch(e){return false;}}
+function loadDemoData(){
+ var base=Date.now(),arr=[],pool=SEED.concat(DEMO_POOL);
+ for(var i=0;i<30;i++){var s=pool[i%pool.length];
+  arr.push({id:"demo"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
+ state.entries=arr;persist();
+}
 function loadAI(){try{var r=JSON.parse(localStorage.getItem(AKEY)||"{}");state.apiKey=r.key||"";state.useAI=!!r.use;}catch(e){state.apiKey="";state.useAI=false;}
  if(!state.apiKey&&BUILTIN_KEY){state.apiKey=BUILTIN_KEY;state.useAI=true;}}
 function persistAI(){try{localStorage.setItem(AKEY,JSON.stringify({key:state.apiKey,use:state.useAI}));}catch(e){}}
@@ -824,7 +841,8 @@ function renderToday(){
  var now=new Date();var wk=["日","一","二","三","四","五","六"][now.getDay()];
  var dateStr=now.getFullYear()+" 年 "+(now.getMonth()+1)+" 月 "+now.getDate()+" 日 · 周"+wk;
  var aiOn=state.useAI&&state.apiKey;
- var setHtml=state.showSet?'<div class="setpanel">'+
+ var demo=demoMode();
+ var setHtml=(demo&&state.showSet)?'<div class="setpanel">'+
    '<div class="sethd">🤖 AI 翻译(DeepSeek)<span class="setpill '+(aiOn?'on':'off')+'">'+(aiOn?'已开启':'未开启 · 用本地规则')+'</span></div>'+
    '<label class="setrow"><input type="checkbox" id="setUse"'+(state.useAI?' checked':'')+'> 用 AI 翻译(更自然;关掉则用内置离线规则,完全不联网)</label>'+
    '<div class="setlbl">你的 DeepSeek API Key</div>'+
@@ -833,7 +851,7 @@ function renderToday(){
    '<div class="setnote">🔒 Key 只存在你自己浏览器的 localStorage,不会写进文件、不上传任何第三方。开源版本不含任何 key,每个人填自己的。去 <b>platform.deepseek.com</b> 免费申请。请求直接发给 DeepSeek 官方接口。</div>'+
   '</div>':'';
  panel.innerHTML=
-  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span><span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a></span></div>'+
+  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a></span>':'')+'</div>'+
   setHtml+
   demoEx+
   '<div class="card">'+editbar+
@@ -1049,6 +1067,52 @@ function renderExport(){
  if(hb)hb.addEventListener("click",function(){alert("这里换成你的关注主页 / 进群二维码链接");});
 }
 
+/* 把战绩卡渲染成一张真正可保存的 PNG(离线、无第三方库)。手机可长按图片存相册,也可点下载。 */
+function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function wrapCenter(ctx,text,cx,y,maxW,lh){var line="",yy=y,out=[];for(var i=0;i<text.length;i++){var t=line+text[i];if(ctx.measureText(t).width>maxW&&line){out.push(line);line=text[i];}else line=t;}out.push(line);for(var j=0;j<out.length;j++){ctx.fillText(out[j],cx,yy+j*lh);}return yy+out.length*lh;}
+function buildCardImage(cb){
+ var n=state.entries.length,lv=koiLevel(n),lvname=KLV[lv].n,isMax=lv===KLV.length-1;
+ var line=MILE[n]||"每一条都是你真做过的事——这,就是你上岸的底气。";
+ var proof=[];for(var i=0;i<Math.min(2,n);i++){var b=state.entries[i].bullet;if(b.length>46)b=b.slice(0,44)+"…";proof.push(b);}
+ var W=600,H=920,S=2;
+ var cv=document.createElement("canvas");cv.width=W*S;cv.height=H*S;var ctx=cv.getContext("2d");ctx.scale(S,S);
+ var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#FBF3E6");g.addColorStop(1,"#F1E2C9");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ rrect(ctx,26,26,W-52,H-52,30);ctx.fillStyle="#FFFDF8";ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#EAD9BC";ctx.stroke();
+ var im=new Image();
+ im.onload=function(){draw(im);};im.onerror=function(){draw(null);};
+ im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(koiSVG(lv,200,100,"cardimg",false));
+ function draw(koiImg){
+  if(koiImg)ctx.drawImage(koiImg,200,70,200,100);
+  ctx.textAlign="center";
+  // 等级 pill
+  ctx.font="600 19px -apple-system,'PingFang SC',sans-serif";var ct="Lv."+(lv+1)+" · "+lvname;var cw=ctx.measureText(ct).width;
+  rrect(ctx,300-cw/2-16,186,cw+32,34,17);ctx.fillStyle=isMax?"#8A3D12":"#C0922F";ctx.fill();
+  ctx.fillStyle="#FFF8E8";ctx.fillText(ct,300,209);
+  // 标题
+  ctx.fillStyle="#C24E32";ctx.font="800 42px -apple-system,'PingFang SC',sans-serif";ctx.fillText("我必上岸",300,272);
+  // 数字
+  ctx.fillStyle="#E0694A";ctx.font="800 66px -apple-system,'PingFang SC',sans-serif";ctx.fillText(String(n),300,360);
+  ctx.fillStyle="#9A8F7E";ctx.font="600 18px -apple-system,'PingFang SC',sans-serif";ctx.fillText("条「真东西」· 已入池",300,392);
+  // 寄语
+  ctx.fillStyle="#6E6457";ctx.font="500 20px -apple-system,'PingFang SC',sans-serif";
+  var yy=wrapCenter(ctx,line,300,438,440,30)+18;
+  // 节选
+  ctx.fillStyle="#B3A793";ctx.font="600 15px -apple-system,'PingFang SC',sans-serif";ctx.fillText("我已经攒下的(节选)",300,yy);yy+=20;
+  ctx.textAlign="left";
+  for(var k=0;k<proof.length;k++){
+   ctx.font="500 16px -apple-system,'PingFang SC',sans-serif";
+   var lines=[],ln="";for(var c=0;c<proof[k].length;c++){var tt=ln+proof[k][c];if(ctx.measureText(tt).width>420&&ln){lines.push(ln);ln=proof[k][c];}else ln=tt;}lines.push(ln);
+   var bh=lines.length*24+20;
+   rrect(ctx,70,yy,460,bh,12);ctx.fillStyle="#FBF3E7";ctx.fill();ctx.strokeStyle="#EEDFC6";ctx.lineWidth=1;ctx.stroke();
+   ctx.fillStyle="#4A4337";for(var m=0;m<lines.length;m++)ctx.fillText(lines[m],86,yy+28+m*24);
+   yy+=bh+14;
+  }
+  // 水印
+  ctx.textAlign="center";ctx.fillStyle="#C3B79F";ctx.font="500 14px -apple-system,'PingFang SC',sans-serif";
+  ctx.fillText("实习翻译机 · 锦鲤版 · 我必上岸",300,H-46);
+  cb(cv.toDataURL("image/png"));
+ }
+}
 function renderCard(){
  var n=state.entries.length;
  if(n===0){panel.innerHTML='<div class="card"><div class="empty">先去「今日投喂」记下第一条,再回来生成你的锦鲤战绩卡 🧧</div></div>';return;}
@@ -1069,14 +1133,26 @@ function renderCard(){
    '<div class="achvproof"><div class="pl">我已经攒下的(节选)</div>'+proof+'</div>'+
    '<div class="achvwm">实习翻译机 · 锦鲤版 · 我必上岸</div>'+
   '</div></div>'+
+  '<div id="cardImgBox"></div>'+
+  '<button class="cbtn" id="saveCard">💾 生成并保存这张卡(图片)</button>'+
   '<div class="achvcta"><div class="gw">'+
    '<div class="gift">晒出这张卡,免费领<em>《秋招投递大礼包》</em><span class="price">¥99</span></div>'+
-   '<div class="steps">① 手机<b>截图保存</b>上面这张战绩卡<br>② 发<b>小红书</b>,配下方一键复制的文案<br>③ 把发布截图发我 → <b>免费领大礼包</b></div>'+
+   '<div class="steps">① 点上方<b>「生成并保存」</b>把卡存成图片(手机可长按图片存相册)<br>② 发<b>小红书</b>,配下方一键复制的文案<br>③ 把发布截图发我 → <b>免费领大礼包</b></div>'+
    '<button class="cbtn" id="copyWen">一键复制晒卡文案 📋</button>'+
    '<a class="cbtn alt" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener">截图发我 · 领大礼包 →</a>'+
   '</div></div>';
  var wen="实习天天打杂、简历空空的姐妹,这个工具有点东西…\n每天花一分钟把今天干的活记一下,它直接帮我翻译成能写进简历的话😭\n已经攒 "+n+" 条了,焦虑都少了点哈哈🧧\n#秋招 #实习 #简历 #求职 #应届生";
  var cw=document.getElementById("copyWen");if(cw)cw.addEventListener("click",function(){copyText(wen);});
+ var sc=document.getElementById("saveCard");if(sc)sc.addEventListener("click",function(){
+  sc.textContent="生成中…";
+  buildCardImage(function(url){
+   var box=document.getElementById("cardImgBox");
+   box.innerHTML='<div class="cardimgtip">↓ 长按图片保存到相册 / 或点下方按钮下载</div><img class="cardimg" src="'+url+'" alt="锦鲤战绩卡">';
+   var a=document.createElement("a");a.href=url;a.download="锦鲤战绩卡.png";document.body.appendChild(a);a.click();document.body.removeChild(a);
+   sc.textContent="✅ 已生成 · 可长按上图保存";
+   toast("卡片已生成,长按图片即可存相册 🧧");
+  });
+ });
 }
 
 function render(){if(state.tab==="today")renderToday();else if(state.tab==="card")renderCard();else renderExport();}
@@ -1110,11 +1186,17 @@ function codeOK(raw){var c=(raw||"").trim().toUpperCase().replace(/\s/g,"");
  if(!/^[A-Z0-9]{6}$/.test(c))return false;
  return c===mint(c.slice(0,4));}
 function unlocked(){try{return localStorage.getItem(UKEY)==="1";}catch(e){return false;}}
-function tryCode(){var c=document.getElementById("codeInput").value;
- if(codeOK(c)){try{localStorage.setItem(UKEY,"1");}catch(e){}
+function tryCode(){var raw=document.getElementById("codeInput").value;
+ var c=(raw||"").trim().toUpperCase().replace(/\s/g,"");
+ var isDemo=(c===DEMO_CODE);
+ if(isDemo||codeOK(c)){
+  try{localStorage.setItem(UKEY,"1");localStorage.setItem(CKEY,c);}catch(e){}
+  if(isDemo){try{localStorage.setItem(DKEY,"1");}catch(e){}load();if(state.entries.length===0)loadDemoData();}
+  else{try{localStorage.removeItem(DKEY);}catch(e){}load();}
+  syncStats();render();
   var g=document.getElementById("gate");g.style.opacity="0";setTimeout(function(){g.style.display="none";},350);
-  toast("解锁成功 · 开始攒锦鲤 🧧");}
- else{document.getElementById("codeErr").textContent="邀请码不对~ 关注 @你的账号 回复「上岸」领一个 →";}}
+  toast(isDemo?"演示版已解锁 🐉":"解锁成功 · 开始攒锦鲤 🧧");}
+ else{document.getElementById("codeErr").textContent="邀请码不对~ 关注作者回复「上岸」领一个 →";}}
 function openGate(){var g=document.getElementById("gate");g.style.display="flex";
  document.getElementById("codeBtn").addEventListener("click",tryCode);
  document.getElementById("codeInput").addEventListener("keydown",function(e){if(e.key==="Enter")tryCode();});}
@@ -1126,7 +1208,9 @@ document.addEventListener("click",function(e){
  if(/^https?:\/\//.test(href)){e.preventDefault();var w=window.open(href,"_blank");if(!w)location.href=href;}
 });
 
-load();loadAI();syncStats();render();
+load();loadAI();
+if(demoMode()&&state.entries.length===0)loadDemoData();
+syncStats();render();
 if(!unlocked())openGate();
 </script>
 </body>
