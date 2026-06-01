@@ -524,7 +524,7 @@ textarea::placeholder{color:var(--dim);}
       </div>
       <span class="gfree">🧧 工具免费 · 凭邀请码解锁</span>
       <input id="codeInput" maxlength="12" placeholder="输入邀请码" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text" />
-      <button class="btn" id="codeBtn" style="width:100%;margin-top:14px">解锁我的锦鲤池 🧧</button>
+      <button class="btn" id="codeBtn" style="width:100%;margin-top:14px">解锁我的简历池 🧧</button>
       <div id="codeErr" class="gerr"></div>
       <div class="gnote">之所以要个邀请码,是为了防止有人用程序盗刷我的 token~ 给大家添了点小麻烦啦,抱抱 🫶<br><br>邀请码 = 你们的账号,数据存在你自己手机本地,不会丢(我没做手机号注册,所以靠它认人)。<br><b>记得一定要用浏览器打开!不要在微信里打开哦!</b>只需要填一次,以后再来就自动进啦~</div>
       <a class="ghook" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener">还没有邀请码?<br><b>点我找作者 · 回复「上岸」免费领 →</b></a>
@@ -1390,8 +1390,12 @@ function unlocked(){try{return localStorage.getItem(UKEY)==="1";}catch(e){return
 var CNT_NS="jinli-koi-live-0601",CNT_KEY="shixi-koi-counted";
 function countUnlock(){try{if(localStorage.getItem(CNT_KEY)==="1")return;localStorage.setItem(CNT_KEY,"1");
   var im=new Image();im.src="https://api.counterapi.dev/v1/"+CNT_NS+"/unlock/up?_="+Date.now();}catch(e){}}
+var HOOK_URL="https://work.weixin.qq.com/ca/cawcdecd5308b30992";
 function tryCode(){var raw=document.getElementById("codeInput").value;
  var c=(raw||"").trim().toUpperCase().replace(/\s/g,"");
+ if(!c){/* 没填码 = 还没领码,直接带去找作者领 */
+  document.getElementById("codeErr").textContent="还没邀请码?这就带你去找作者免费领 →";
+  var w=window.open(HOOK_URL,"_blank");if(!w)location.href=HOOK_URL;return;}
  var isDemo=(c===DEMO_CODE);
  if(isDemo||codeOK(c)){
   try{localStorage.setItem(UKEY,"1");localStorage.setItem(CKEY,c);}catch(e){}
