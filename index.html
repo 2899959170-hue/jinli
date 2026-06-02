@@ -798,7 +798,7 @@ function miniKoi(lv){lv=Math.max(0,Math.min(KPAL.length-1,lv));var p=KPAL[lv];
   '<ellipse cx="72" cy="36" rx="12" ry="8" fill="'+p.patch+'" opacity=".85"/>'+
   '<circle cx="106" cy="40" r="5" fill="#3B2D2B"/><circle cx="108" cy="38" r="1.6" fill="#fff"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[]};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[],forceRare:false};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -1044,7 +1044,7 @@ function renderToday(){
    '<div class="setnote">🔒 Key 只存在你自己浏览器的 localStorage,不会写进文件、不上传任何第三方。开源版本不含任何 key,每个人填自己的。去 <b>platform.deepseek.com</b> 免费申请。请求直接发给 DeepSeek 官方接口。</div>'+
   '</div>':'';
  panel.innerHTML=
-  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
+  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
   setHtml+
   demoEx+
   '<div class="card">'+editbar+
@@ -1062,6 +1062,7 @@ function renderToday(){
  document.getElementById("goTranslate").addEventListener("click",doTranslate);
  var df=document.getElementById("demoFill");if(df)df.addEventListener("click",demoFill);
  var bg=document.getElementById("backGate");if(bg)bg.addEventListener("click",relock);
+ var fr=document.getElementById("forceRare");if(fr)fr.addEventListener("click",function(){state.forceRare=true;toast("已锁定:下一条投喂必出 0.1% 隐藏款 🌟 去点「投喂锦鲤」");});
  var st=document.getElementById("setToggle");if(st)st.addEventListener("click",function(){state.showSet=!state.showSet;renderToday();});
  var ss=document.getElementById("setSave");if(ss)ss.addEventListener("click",function(){state.apiKey=val("setKey").trim();state.useAI=document.getElementById("setUse").checked;persistAI();renderToday();toast(state.useAI&&state.apiKey?"已开启 AI 翻译":(state.useAI?"勾了 AI 但没填 Key,先用本地规则":"已保存,使用本地规则"));});
  var sc=document.getElementById("setClr");if(sc)sc.addEventListener("click",function(){state.apiKey="";state.useAI=false;persistAI();renderToday();toast("已清除 Key");});
@@ -1127,8 +1128,10 @@ function doTranslate(){
   var newLv=koiLevel(state.entries.length);
   var lvUp=newLv>prevLv;
   var mile=MILE[state.entries.length];
-  // 万分之一隐藏签:仅在非升级、非里程碑的普通投喂时,0.2% 触发(两条各 0.1%)
-  var rare=(!lvUp&&!mile&&Math.random()<0.002)?RARE[Math.floor(Math.random()*RARE.length)]:null;
+  // 万分之一隐藏签:演示模式可强制必出;否则仅在非升级、非里程碑普通投喂时 0.2% 触发
+  var rare=null;
+  if(state.forceRare){rare=RARE[Math.floor(Math.random()*RARE.length)];state.forceRare=false;}
+  else if(!lvUp&&!mile&&Math.random()<0.002){rare=RARE[Math.floor(Math.random()*RARE.length)];}
   // 每次投喂都抽一个签并点亮收集册(升级/里程碑也照抽)
   var sg=pick(LUCKNAME);recordSign(sg);
   var nm=sg,msg;
