@@ -70,9 +70,21 @@ svg .kfinA{transform-origin:94px 54px;animation:kfinA 1.7s ease-in-out infinite;
 .eggs{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:540px){.eggs{grid-template-columns:1fr;}}
 .egg{background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:14px 15px;box-shadow:0 8px 22px -20px rgba(180,140,90,.6);}
-.egg .e{font-size:22px;}
-.egg .t{font-family:var(--serif);font-weight:700;font-size:15px;margin:6px 0 4px;}
+.egg .t{font-family:var(--serif);font-weight:700;font-size:15px;margin:8px 0 4px;}
 .egg .d{font-size:12.8px;color:var(--dim);}
+/* 彩蛋实时特效舞台 */
+.eggfx{height:68px;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#FFF7F1,#FBF0E9);}
+.eggfx.gold{background:linear-gradient(160deg,#FFF7DC,#FBE6B6);}
+.eggfx svg{display:block;position:relative;z-index:2;}
+.efpetal{position:absolute;top:-12px;width:8px;height:8px;border-radius:60% 0 60% 0;opacity:0;z-index:1;animation:effall linear infinite;}
+@keyframes effall{0%{transform:translateY(-12px) translateX(0) rotate(0);opacity:0;}12%{opacity:1;}100%{transform:translateY(80px) translateX(var(--dx)) rotate(320deg);opacity:0;}}
+.efhalo{position:absolute;left:50%;top:50%;width:90px;height:90px;transform:translate(-50%,-50%);border-radius:50%;z-index:0;
+  background:radial-gradient(circle,rgba(255,222,130,.7),rgba(255,210,90,.15) 55%,transparent 72%);animation:efpulse 1.6s ease-in-out infinite;}
+@keyframes efpulse{0%,100%{transform:translate(-50%,-50%) scale(.85);opacity:.6;}50%{transform:translate(-50%,-50%) scale(1.15);opacity:1;}}
+.efsign{position:relative;z-index:2;font-family:var(--serif);font-weight:700;font-size:18px;color:#9A6B12;animation:efpop 1.3s ease-in-out infinite;}
+@keyframes efpop{0%,100%{transform:scale(1);}45%{transform:scale(1.12);}}
+.efdemo{font-size:30px;animation:efbob 2.4s ease-in-out infinite;}
+@keyframes efbob{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-5px) rotate(3deg);}}
 /* 功能体系 */
 .feats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:540px){.feats{grid-template-columns:1fr;}}
@@ -228,12 +240,12 @@ var MILE=[
  [3,"已经第 3 条啦!坚持记的人,秋招赢在细节。继续投喂 🧧"],[5,"5 条啦!手感来了,记录这件事你已经上道了。"],[7,"攒满 7 条!这周没白干,简历又厚了一层。"],[10,"两位数啦!10 条真东西,够撑起一段像样的实习经历了。"],[14,"14 条真东西!你已经超过大多数还在迷茫的人了。"],[21,"21 条,稳了。这是一份扛得住任何追问的底气清单。"],[30,"30 条!锦鲤为你转身——这一池,就是你上岸的资本。"],[40,"40 条!你的料多到可以挑着写简历了,凡尔赛的烦恼 🐟"],[50,"50 条!半百里程碑——这已经不是攒料,是在建一座你的私人案例库。"],[66,"66 条,六六大顺!这份厚度,面试官想问倒你都难。"],[100,"100 条!!你把「没东西写」这四个字,彻底从字典里删了。"]
 ];
 var EGGS=[
- ["🐉","仙女化龙","攒满 50 条,锦鲤进化成萌萌龙角 + 珍珠 + 星星的「仙女化龙」终极形态。"],
- ["🌸","花瓣雨","每次成功翻译,结果卡片会飘下锦鲤色花瓣,小小的仪式感。"],
- ["🎬","演示模式","作者专属邀请码进去,是预填满、能现场跑 AI 的演示版本。"],
- ["🌟","万分之一隐藏签","0.1% 概率刷出传说签,触发全屏金色花瓣雨 + 锦鲤化龙高光。"],
- ["🐟","锦鲤会动","图标的尾巴和鱼鳍一直在轻轻摆动,养着养着就有感情了。"],
- ["🎴","抽签玄学","每条鸡汤随机配签名,想集齐 16 种签,纯看缘分。"]
+ {fx:"dragon",t:"仙女化龙",d:"攒满 50 条,锦鲤进化成萌萌龙角 + 珍珠 + 星星的「仙女化龙」终极形态。"},
+ {fx:"petal",t:"花瓣雨",d:"每次成功翻译,结果卡片会飘下锦鲤色花瓣,小小的仪式感。"},
+ {fx:"demo",t:"演示模式",d:"作者专属邀请码进去,是预填满、能现场跑 AI 的演示版本。"},
+ {fx:"rare",t:"万分之一隐藏签",d:"0.1% 概率刷出传说签,触发全屏金色花瓣雨 + 锦鲤化龙高光。"},
+ {fx:"swim",t:"锦鲤会动",d:"图标的尾巴和鱼鳍一直在轻轻摆动,养着养着就有感情了。"},
+ {fx:"draw",t:"抽签玄学",d:"每条鸡汤随机配签名,想集齐 16 种签,纯看缘分。"}
 ];
 var FEATS=[
  ["📝","今日投喂","4 个问题引导你说清一件小事,AI 翻译成能写进简历的 bullet。"],
@@ -276,7 +288,20 @@ document.getElementById("signBox").innerHTML=LUCKNAME.map(function(s){return '<s
 
 document.getElementById("mileBox").innerHTML=MILE.map(function(m){return '<div class="mile"><div class="n">第 '+m[0]+' 条</div><div class="m">'+m[1]+'</div></div>';}).join("");
 
-document.getElementById("eggBox").innerHTML=EGGS.map(function(e){return '<div class="egg"><div class="e">'+e[0]+'</div><div class="t">'+e[1]+'</div><div class="d">'+e[2]+'</div></div>';}).join("");
+document.getElementById("eggBox").innerHTML=EGGS.map(function(e,i){return '<div class="egg"><div class="eggfx'+(e.fx==="rare"?" gold":"")+'" id="egfx'+i+'"></div><div class="t">'+e.t+'</div><div class="d">'+e.d+'</div></div>';}).join("");
+function efPetals(box,cols){for(var k=0;k<8;k++){var p=document.createElement("span");p.className="efpetal";
+ p.style.left=(6+Math.random()*88)+"%";p.style.background=cols[k%cols.length];
+ p.style.animationDuration=(1.8+Math.random()*1.5)+"s";p.style.animationDelay=(Math.random()*2.2)+"s";
+ p.style.setProperty("--dx",(Math.random()*34-17)+"px");var sz=(6+Math.random()*5);p.style.width=p.style.height=sz+"px";
+ box.appendChild(p);}}
+EGGS.forEach(function(e,i){var box=document.getElementById("egfx"+i);if(!box)return;
+ if(e.fx==="dragon"){box.innerHTML=koiSVG(11,108,64,"egg11");}
+ else if(e.fx==="swim"){box.innerHTML=koiSVG(4,102,54,"egg4");}
+ else if(e.fx==="petal"){efPetals(box,["#E0694A","#F3A6C6","#F6D6C7","#E87FAE"]);}
+ else if(e.fx==="rare"){var h=document.createElement("div");h.className="efhalo";box.appendChild(h);efPetals(box,["#F3C24B","#E0A92E","#FFD96B","#FFE9A0"]);}
+ else if(e.fx==="draw"){var s=document.createElement("div");s.className="efsign";s.textContent=LUCKNAME[0];box.appendChild(s);var j=0;setInterval(function(){j=(j+1)%LUCKNAME.length;s.textContent=LUCKNAME[j];},1300);}
+ else{box.innerHTML='<div class="efdemo">🎬</div>';}
+});
 
 document.getElementById("featBox").innerHTML=FEATS.map(function(f){return '<div class="feat"><div class="fi">'+f[0]+'</div><div class="ft">'+f[1]+'</div><div class="fd">'+f[2]+'</div></div>';}).join("");
 </script>
