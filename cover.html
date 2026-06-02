@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>封面</title>
+<style>
+*{margin:0;box-sizing:border-box;}
+body{background:#EFE6D4;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:14px;}
+.cover{position:relative;width:min(94vw,440px);aspect-ratio:3/4;border-radius:24px;overflow:hidden;
+ background:linear-gradient(165deg,#FFE9CC,#FBD9B6);box-shadow:0 18px 44px -20px rgba(150,110,60,.5);
+ display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:38px 30px;}
+.tag{display:inline-block;background:#E0694A;color:#fff;font-weight:700;font-size:13px;border-radius:20px;padding:5px 15px;letter-spacing:.08em;box-shadow:0 8px 16px -8px rgba(224,105,74,.7);}
+.big{font-family:"Noto Serif SC",serif;font-weight:900;color:#2B2722;font-size:40px;line-height:1.32;margin-top:20px;letter-spacing:.01em;}
+.big em{font-style:normal;color:#E0694A;}
+.sub{font-size:16.5px;line-height:1.7;color:#5C5345;margin-top:18px;}
+.fish{margin-top:14px;}
+.wm{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:11.5px;color:#B79A6E;font-family:"Noto Serif SC",serif;letter-spacing:1px;}
+</style>
+</head>
+<body>
+<div class="cover">
+ <span class="tag">实习生必看</span>
+ <div class="big">实习全是<br><em>dirty work</em>?<br>打杂也能攒成简历🧧</div>
+ <div class="sub">每天 1 分钟,AI 把杂活<br>翻译成能写进简历的经历</div>
+ <div class="fish" id="f"></div>
+ <div class="wm">实习翻译机 · 锦鲤版</div>
+</div>
+<script>
+function nailong(w,h){return '<svg viewBox="0 0 152 104" width="'+w+'" height="'+h+'">'+
+ '<defs><radialGradient id="d" cx="0.45" cy="0.38" r="0.78"><stop offset="0" stop-color="#FFF1B2"/><stop offset="1" stop-color="#F4C652"/></radialGradient></defs>'+
+ '<g fill="#FFE89A"><path d="M22,26 l1.8,3.8 3.8,1.8 -3.8,1.8 -1.8,3.8 -1.8,-3.8 -3.8,-1.8 3.8,-1.8 Z"/><circle cx="134" cy="30" r="2.2"/></g>'+
+ '<g fill="#F2B440"><ellipse cx="102" cy="30" rx="4" ry="6"/><ellipse cx="113" cy="41" rx="4" ry="6"/><ellipse cx="121" cy="55" rx="3.5" ry="5"/></g>'+
+ '<g fill="#F2B440"><ellipse cx="60" cy="20" rx="5.5" ry="9" transform="rotate(-12 60 20)"/><ellipse cx="82" cy="18" rx="5.5" ry="9" transform="rotate(8 82 18)"/></g>'+
+ '<ellipse cx="33" cy="66" rx="9" ry="7" fill="url(#d)"/>'+
+ '<path d="M120,80 q18,2 16,-12 q8,12 -4,18 q-8,3 -12,-6 Z" fill="url(#d)"/>'+
+ '<ellipse cx="74" cy="58" rx="46" ry="38" fill="url(#d)" stroke="#E3BB4E" stroke-width="1.5"/>'+
+ '<ellipse cx="74" cy="66" rx="29" ry="23" fill="#FFF8DC" opacity=".7"/>'+
+ '<ellipse cx="52" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/><ellipse cx="96" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+ '<ellipse cx="62" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="63.6" cy="45.4" r="1.6" fill="#fff"/>'+
+ '<ellipse cx="86" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="87.6" cy="45.4" r="1.6" fill="#fff"/>'+
+ '<path d="M68,57 q6,6 12,0" stroke="#C2683E" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+ '<g fill="#FFD75E"><path d="M74,5 l2,4.4 4.4,2 -4.4,2 -2,4.4 -2,-4.4 -4.4,-2 4.4,-2 Z"/></g></svg>';}
+document.getElementById("f").innerHTML=nailong(160,104);
+</script>
+</body>
+</html>
