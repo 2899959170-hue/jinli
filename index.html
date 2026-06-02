@@ -490,6 +490,22 @@ textarea::placeholder{color:var(--dim);}
 .achvqr .qt b{font-size:13.5px;color:var(--ink);font-weight:700;display:block;}
 .achvqr .qt span{font-size:11.5px;color:var(--muted);}
 .achvwm{text-align:center;font-size:11px;color:var(--muted);margin-top:15px;font-family:var(--serif);letter-spacing:1px;}
+.sgcoll{max-width:344px;margin:16px auto 0;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 16px 14px;box-shadow:0 10px 26px -22px rgba(180,140,90,.6);}
+.sgh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:13px;}
+.sgt{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--ink);}
+.sgp{font-size:12px;font-weight:700;color:var(--koi-deep);}
+.sggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.sgcell{border-radius:11px;border:1px solid var(--border);padding:9px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;min-height:58px;}
+.sgcell .ic{font-size:16px;line-height:1;}
+.sgcell .sn{font-family:var(--serif);font-size:11.5px;font-weight:600;line-height:1.15;}
+.sgcell.lit{color:var(--koi-deep);background:linear-gradient(160deg,#FFF3EC,#FBE3D6);border-color:var(--koi-line);box-shadow:0 5px 12px -9px rgba(224,105,74,.7);}
+.sgcell.dark{color:#C7BBA8;background:var(--surface-2);}
+.sgcell.dark .ic{filter:grayscale(1);opacity:.55;}
+.sgrarewrap{margin-top:8px;}
+.sgrarewrap .sgcell{flex-direction:row;gap:8px;min-height:46px;}
+.sgcell.rare.lit{color:#9A6B12;background:linear-gradient(160deg,#FFF7DC,#FBE8B8);border-color:#E9C766;box-shadow:0 6px 14px -9px rgba(201,150,30,.7);}
+.sgcell.rare.lit .sn{font-size:13px;}
+.sgnote{font-size:11px;color:var(--dim);line-height:1.6;margin-top:11px;}
 .achvcta{margin-top:16px;position:relative;overflow:hidden;background:linear-gradient(165deg,#2F2A24,#211D18);
   color:#fff;border-radius:18px;padding:24px 22px;box-shadow:0 22px 50px -28px rgba(43,39,34,.6);}
 .achvcta::after{content:'';position:absolute;right:-50px;top:-70px;width:200px;height:200px;border-radius:50%;
@@ -785,7 +801,7 @@ function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
   '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
   '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[]};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -796,8 +812,10 @@ var AKEY="shixi-fanyiji-ai-v1";
 /* ★ 把你的 DeepSeek key 填到下面这对引号里,所有学生就共用你的 key,打开即用、无需各自申请。
    例:var BUILTIN_KEY="sk-xxxxxxxx";  留空则走「学生填自己的 key / 本地规则」。 */
 var BUILTIN_KEY="sk-585fa93e7b954d25b91b38d0fb80f918";
-function load(){try{var r=localStorage.getItem(curSkey());if(r){state.entries=(JSON.parse(r).entries)||[];}else{state.entries=[];}}catch(e){state.entries=[];}}
-function persist(){try{localStorage.setItem(curSkey(),JSON.stringify({entries:state.entries}));}catch(e){}}
+function load(){try{var r=localStorage.getItem(curSkey());if(r){var d=JSON.parse(r);state.entries=d.entries||[];state.signs=d.signs||[];}else{state.entries=[];state.signs=[];}}catch(e){state.entries=[];state.signs=[];}}
+function persist(){try{localStorage.setItem(curSkey(),JSON.stringify({entries:state.entries,signs:state.signs}));}catch(e){}}
+var RARE_SIGN="万分之一签";
+function recordSign(s){if(!s)return;if(!state.signs)state.signs=[];if(state.signs.indexOf(s)<0)state.signs.push(s);}
 /* 演示模式:只有作者用专属邀请码进去才是「预填满、能演示」的版本;学生用普通码进去是空白的、自己从零做 */
 var DKEY="shixi-koi-demo";
 var DEMO_CODE="AHAN2026";
@@ -1114,8 +1132,8 @@ function doTranslate(){
   // 万分之一隐藏签:仅在非升级、非里程碑的普通投喂时,0.2% 触发(两条各 0.1%)
   var rare=(!lvUp&&!mile&&Math.random()<0.002)?RARE[Math.floor(Math.random()*RARE.length)]:null;
   if(lvUp){state.result={bullet:bullet,tip:tip,msg:"锦鲤进阶啦!你的锦鲤升到「"+KLV[newLv].n+"」(Lv."+(newLv+1)+")——攒得越多,它越神气,你也越扛追问。",name:"进阶 🎉 Lv."+(newLv+1)};}
-  else if(rare){state.result={bullet:bullet,tip:tip,msg:rare,name:"🌟 隐藏 · 万分之一签",rare:true};}
-  else state.result={bullet:bullet,tip:tip,msg:mile||pick(LUCKY),name:mile?"里程碑 🎉":pick(LUCKNAME)};
+  else if(rare){state.result={bullet:bullet,tip:tip,msg:rare,name:"🌟 隐藏 · 万分之一签",rare:true};recordSign(RARE_SIGN);}
+  else{var sg=mile?null:pick(LUCKNAME);state.result={bullet:bullet,tip:tip,msg:mile||pick(LUCKY),name:mile?"里程碑 🎉":sg};if(sg)recordSign(sg);}
   state.busy=false;persist();syncStats();renderToday();
  }
  if(state.useAI&&state.apiKey){
@@ -1463,6 +1481,17 @@ function buildCardImage(cb){
   cb(cv.toDataURL("image/png"));
  }
 }
+function sgCollHtml(){
+ var col=state.signs||[],lit=0;
+ var cells=LUCKNAME.map(function(s){var on=col.indexOf(s)>=0;if(on)lit++;
+  return '<div class="sgcell'+(on?' lit':' dark')+'">'+(on?('<span class="ic">🎴</span><span class="sn">'+s+'</span>'):'<span class="ic">🔒</span><span class="sn">？签</span>')+'</div>';}).join("");
+ var rareOn=col.indexOf(RARE_SIGN)>=0;
+ var rareCell='<div class="sgcell rare'+(rareOn?' lit':' dark')+'">'+(rareOn?'<span class="ic">🌟</span><span class="sn">万分之一签 · 0.1%</span>':'<span class="ic">❓</span><span class="sn">？？？ 隐藏款</span>')+'</div>';
+ return '<div class="sgcoll"><div class="sgh"><span class="sgt">🎴 签名收集册</span><span class="sgp">已点亮 '+lit+'/'+LUCKNAME.length+(rareOn?' ✨':'')+'</span></div>'+
+  '<div class="sggrid">'+cells+'</div>'+
+  '<div class="sgrarewrap">'+rareCell+'</div>'+
+  '<div class="sgnote">每次投喂随机抽一个签,抽到就点亮,暗着的还没遇到~ 集齐 16 签靠缘分,🌟 万分之一签是 0.1% 隐藏款。</div></div>';
+}
 function renderCard(){
  var n=state.entries.length;
  if(n===0){panel.innerHTML='<div class="card"><div class="empty">先去「今日投喂」记下第一条,再回来生成你的锦鲤战绩卡 🧧</div></div>';return;}
@@ -1483,6 +1512,7 @@ function renderCard(){
    '<div class="achvproof"><div class="pl">我已经攒下的(节选)</div>'+proof+'</div>'+
    '<div class="achvwm">实习翻译机 · 锦鲤版 · 我必上岸</div>'+
   '</div></div>'+
+  sgCollHtml()+
   '<div id="cardImgBox"></div>'+
   '<button class="cbtn" id="saveCard">💾 生成并保存这张卡(图片)</button>'+
   '<div class="achvcta"><div class="gw">'+
