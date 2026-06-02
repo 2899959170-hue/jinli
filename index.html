@@ -1063,7 +1063,7 @@ function renderToday(){
    '<div class="setnote">🔒 Key 只存在你自己浏览器的 localStorage,不会写进文件、不上传任何第三方。开源版本不含任何 key,每个人填自己的。去 <b>platform.deepseek.com</b> 免费申请。请求直接发给 DeepSeek 官方接口。</div>'+
   '</div>':'';
  panel.innerHTML=
-  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
+  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="demoNai">🐉 解锁奶龙</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
   setHtml+
   demoEx+
   '<div class="card">'+editbar+
@@ -1082,6 +1082,7 @@ function renderToday(){
  var df=document.getElementById("demoFill");if(df)df.addEventListener("click",demoFill);
  var bg=document.getElementById("backGate");if(bg)bg.addEventListener("click",relock);
  var fr=document.getElementById("forceRare");if(fr)fr.addEventListener("click",function(){state.forceRare=true;toast("已锁定:下一条投喂必出 0.1% 隐藏款 🌟 去点「投喂锦鲤」");});
+ var dn=document.getElementById("demoNai");if(dn)dn.addEventListener("click",demoNailong);
  var st=document.getElementById("setToggle");if(st)st.addEventListener("click",function(){state.showSet=!state.showSet;renderToday();});
  var ss=document.getElementById("setSave");if(ss)ss.addEventListener("click",function(){state.apiKey=val("setKey").trim();state.useAI=document.getElementById("setUse").checked;persistAI();renderToday();toast(state.useAI&&state.apiKey?"已开启 AI 翻译":(state.useAI?"勾了 AI 但没填 Key,先用本地规则":"已保存,使用本地规则"));});
  var sc=document.getElementById("setClr");if(sc)sc.addEventListener("click",function(){state.apiKey="";state.useAI=false;persistAI();renderToday();toast("已清除 Key");});
@@ -1224,6 +1225,17 @@ function demoFill(){
  state.calY=null;state.selKey=null;state.result=null;
  persist();syncStats();renderToday();
  toast("已铺好底("+state.entries.length+" 条)+ 填好样例 · 现在手动点「投喂锦鲤」现场演示 🐉");
+}
+/* 演示:一键铺到 49 条,下一条投喂即解锁满级「锦鲤奶龙」 */
+function demoNailong(){
+ var src=SEED.concat(DEMO_POOL).concat(EXTRA_DEMO),base=Date.now(),list=[];
+ for(var i=0;i<49;i++){var s=src[i%src.length];list.push({id:uid()+"_n"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
+ state.entries=list;
+ state.signs=LUCKNAME.slice();
+ state.draft={q1:DEMO_DRAFT.q1,q2:DEMO_DRAFT.q2,q3:DEMO_DRAFT.q3,q4:DEMO_DRAFT.q4};
+ state.calY=null;state.selKey=null;state.result=null;
+ persist();syncStats();renderToday();
+ toast("已铺到 49 条 · 现在点「投喂锦鲤」解锁满级奶龙 🐉");
 }
 
 function copyText(t){
