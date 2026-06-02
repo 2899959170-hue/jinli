@@ -36,6 +36,42 @@ section{margin-top:34px;}
 .box.now{background:linear-gradient(160deg,#FFF3EC,#FBE6DB);color:var(--ink);border:1px solid var(--koi-line);}
 .box.now .lb{font-size:10.5px;font-weight:700;color:var(--koi-deep);letter-spacing:.06em;margin-bottom:4px;}
 .arr{display:flex;align-items:center;justify-content:center;color:var(--koi);font-weight:700;font-size:16px;}
+.shcard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:18px 16px;margin-top:18px;box-shadow:0 12px 30px -22px rgba(180,140,90,.6);}
+.shba{display:grid;grid-template-columns:1fr 30px 1fr;align-items:center;gap:0;}
+@media(max-width:520px){.shba{grid-template-columns:1fr 22px 1fr;}}
+.shside{text-align:center;}
+.shside .lb{font-size:11px;font-weight:700;letter-spacing:.06em;margin-bottom:8px;}
+.shside.old .lb{color:#B3A793;}.shside.now .lb{color:var(--koi-deep);}
+.shstage{height:78px;display:flex;align-items:center;justify-content:center;border-radius:13px;}
+.shside.old .shstage{background:#F4EEE4;}
+.shside.now .shstage{background:linear-gradient(160deg,#FFF3EC,#FBE6DB);}
+.sharr{display:flex;align-items:center;justify-content:center;color:var(--koi);font-weight:700;font-size:18px;}
+.shtitle{font-family:var(--serif);font-weight:700;font-size:15px;text-align:center;margin-bottom:12px;}
+.parade{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:6px;}
+.pcell{width:74px;text-align:center;}
+.pcell .pst{height:46px;display:flex;align-items:center;justify-content:center;}
+.pcell .pn{font-size:10px;color:var(--dim);margin-top:2px;font-family:var(--serif);}
+.pcell.big{width:90px;}.pcell.big .pst{height:58px;}
+.vis{margin-top:11px;border-radius:12px;overflow:hidden;}
+.visrow{display:flex;align-items:stretch;gap:8px;}
+.visbox{flex:1;border-radius:10px;padding:9px 10px;font-size:12px;line-height:1.55;}
+.visbox.o{background:#F4EEE4;color:#8C8473;border:1px solid #E7DDCB;}
+.visbox.n{background:linear-gradient(160deg,#FFF7F0,#FBE9DD);color:var(--ink);border:1px solid var(--koi-line);}
+.visbox .vl{font-size:10px;font-weight:700;letter-spacing:.05em;margin-bottom:4px;}
+.visbox.o .vl{color:#B3A793;}.visbox.n .vl{color:var(--koi-deep);}
+.minigrid{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;}
+.mcell{aspect-ratio:1;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;}
+.mcell.lit{background:linear-gradient(160deg,#FFF3EC,#FBE3D6);border:1px solid var(--koi-line);color:var(--koi-deep);}
+.mcell.dark{background:#F1EADF;color:#C7BBA8;}
+.goldstage{height:64px;border-radius:11px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(160deg,#FFF7DC,#FBE6B6);}
+.gp{position:absolute;top:-10px;width:8px;height:8px;border-radius:60% 0 60% 0;opacity:0;animation:gfall linear infinite;}
+@keyframes gfall{0%{transform:translateY(-10px) rotate(0);opacity:0;}12%{opacity:1;}100%{transform:translateY(72px) translateX(var(--dx)) rotate(320deg);opacity:0;}}
+.ghalo{position:absolute;left:50%;top:50%;width:80px;height:80px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,222,130,.7),transparent 70%);animation:ghpulse 1.6s ease-in-out infinite;}
+@keyframes ghpulse{0%,100%{transform:translate(-50%,-50%) scale(.85);opacity:.6;}50%{transform:translate(-50%,-50%) scale(1.12);opacity:1;}}
+svg .ktail{transform-origin:44px 44px;animation:ktail 1.4s ease-in-out infinite;}
+svg .kfinA{transform-origin:94px 54px;animation:kfinA 1.7s ease-in-out infinite;}
+@keyframes ktail{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(7deg);}}
+@keyframes kfinA{0%,100%{transform:rotate(0);}50%{transform:rotate(-12deg);}}
 .cta{margin-top:42px;text-align:center;background:linear-gradient(170deg,#FCF1EA,#FBF6EE);border:1px solid var(--koi-line);border-radius:20px;padding:28px 22px;}
 .cta h3{font-family:var(--serif);font-size:19px;margin:0 0 8px;}
 .cta p{color:var(--dim);font-size:13px;margin:0 0 16px;}
@@ -53,6 +89,7 @@ section{margin-top:34px;}
 <div class="wrap">
  <div class="intro">这一版围绕「<b>更可爱、更能用、更不丢</b>」做了一轮大升级——锦鲤从 6 段扩到 12 段萌系进化、满级化身奶龙;简历能力重做得能直接抄进简历;还加了数据迁移、隐藏彩蛋和一整套情绪价值系统。下面是 <b>原来 → 现在</b> 的对照。</div>
 
+ <div id="showcase"></div>
  <section id="sec"></section>
 
  <div class="cta">
@@ -64,6 +101,77 @@ section{margin-top:34px;}
  <div class="foot">实习翻译机 · 锦鲤版 · 本页为更新公告,可截图发小红书 🧧</div>
 </div>
 <script>
+var KPAL=[
+ {b1:"#FFFFFF",b2:"#FFF0F3",patch:"#FBC4D2",accent:"#F7A8BC",light:"#FFE2E9",whisk:"#E9C2CC"},
+ {b1:"#FFFFFF",b2:"#FFF6E4",patch:"#F8D89C",accent:"#F2C879",light:"#FFF1D2",whisk:"#E8D5AC"},
+ {b1:"#FFF7F8",b2:"#FFE6EC",patch:"#F2748F",accent:"#E85470",light:"#FFD2DC",whisk:"#E2A6B2"},
+ {b1:"#FFF8F2",b2:"#FFEAD9",patch:"#F7A678",accent:"#F08A50",light:"#FFDFC9",whisk:"#E8C2A2"},
+ {b1:"#FFF8FB",b2:"#FFECF4",patch:"#F2A6C6",accent:"#E87FAE",light:"#FCD9E8",whisk:"#E6B2C8"},
+ {b1:"#F6FFFB",b2:"#E7F8F1",patch:"#8AD0B8",accent:"#5BBF9C",light:"#D6F2E7",whisk:"#A8D8C6"},
+ {b1:"#FAF8FF",b2:"#F0EAFB",patch:"#B398E0",accent:"#9B79D6",light:"#E6DAF7",whisk:"#C8B2E2"},
+ {b1:"#F8FAFF",b2:"#EAF0FC",patch:"#96B2E8",accent:"#7592DB",light:"#DCE6FA",whisk:"#B2C2E2"},
+ {b1:"#FFFBEE",b2:"#FFF4D6",patch:"#EAC04E",accent:"#D6A02E",light:"#FBEFC2",whisk:"#D8BE78"},
+ {b1:"#FAFBFF",b2:"#EEF0FA",patch:"#C3C8E0",accent:"#9AA0C8",light:"#E8EAF6",whisk:"#C2C6DC"},
+ {b1:"#FFF8FC",b2:"#F3ECFB",patch:"#F49AC2",accent:"#7FB8E8",light:"#FCE0F0",whisk:"#D6B8E0"},
+ {b1:"#FFFBF6",b2:"#FFEFDA",patch:"#F6A8D2",accent:"#C98AE0",light:"#FDE3F0",whisk:"#E0B8D8"}
+];
+function koiSVG(lv,w,h,sfx,anim){
+ lv=Math.max(0,Math.min(KPAL.length-1,lv));var p=KPAL[lv],id="kbg"+sfx;
+ var ac=anim?' class="ktail"':'',fa=anim?' class="kfinA"':'';
+ if(lv>=11){var dg="dg"+sfx;
+  return '<svg viewBox="0 0 152 104" width="'+w+'" height="'+h+'">'+
+   '<defs><radialGradient id="'+dg+'" cx="0.45" cy="0.38" r="0.78"><stop offset="0" stop-color="#FFF1B2"/><stop offset="1" stop-color="#F4C652"/></radialGradient></defs>'+
+   '<g fill="#FFE89A"><path d="M22,26 l1.8,3.8 3.8,1.8 -3.8,1.8 -1.8,3.8 -1.8,-3.8 -3.8,-1.8 3.8,-1.8 Z"/><circle cx="134" cy="30" r="2.2"/><circle cx="120" cy="13" r="1.4"/></g>'+
+   '<g fill="#F2B440"><ellipse cx="102" cy="30" rx="4" ry="6"/><ellipse cx="113" cy="41" rx="4" ry="6"/><ellipse cx="121" cy="55" rx="3.5" ry="5"/></g>'+
+   '<g fill="#F2B440"><ellipse cx="60" cy="20" rx="5.5" ry="9" transform="rotate(-12 60 20)"/><ellipse cx="82" cy="18" rx="5.5" ry="9" transform="rotate(8 82 18)"/></g>'+
+   '<ellipse cx="33" cy="66" rx="9" ry="7" fill="url(#'+dg+')"/>'+
+   '<path d="M120,80 q18,2 16,-12 q8,12 -4,18 q-8,3 -12,-6 Z" fill="url(#'+dg+')"/>'+
+   '<ellipse cx="74" cy="58" rx="46" ry="38" fill="url(#'+dg+')" stroke="#E3BB4E" stroke-width="1.5"/>'+
+   '<ellipse cx="74" cy="66" rx="29" ry="23" fill="#FFF8DC" opacity=".7"/>'+
+   '<ellipse cx="52" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+   '<ellipse cx="96" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+   '<ellipse cx="62" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="63.6" cy="45.4" r="1.6" fill="#fff"/>'+
+   '<ellipse cx="86" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="87.6" cy="45.4" r="1.6" fill="#fff"/>'+
+   '<path d="M68,57 q6,6 12,0" stroke="#C2683E" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+   '<g fill="#FFD75E"><path d="M74,5 l2,4.4 4.4,2 -4.4,2 -2,4.4 -2,-4.4 -4.4,-2 4.4,-2 Z"/></g>'+
+   '</svg>';
+ }
+ var grad='<linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+p.b1+'"/><stop offset="1" stop-color="'+p.b2+'"/></linearGradient>';
+ return '<svg viewBox="0 -2 152 84" width="'+w+'" height="'+h+'"><defs>'+grad+'</defs>'+
+  '<g'+ac+'><path d="M46,44 C30,24 10,22 6,32 C16,38 18,42 18,44 C18,46 16,50 6,56 C10,66 30,64 46,44 Z" fill="'+p.light+'"/>'+
+  '<path d="M40,44 C30,34 18,32 14,38 C20,42 21,43 21,44 C21,45 20,46 14,50 C18,54 30,52 40,44 Z" fill="'+p.patch+'" opacity=".45"/></g>'+
+  '<path d="M60,22 C70,8 86,8 92,20 C84,22 72,24 62,28 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="82" cy="44" rx="46" ry="26" fill="url(#'+id+')" stroke="#E9DDC8" stroke-width="1"/>'+
+  '<ellipse cx="70" cy="34" rx="13" ry="9" fill="'+p.patch+'" opacity=".9" transform="rotate(-12 70 34)"/>'+
+  '<ellipse cx="98" cy="50" rx="8" ry="5.5" fill="'+p.accent+'" opacity=".7"/>'+
+  '<path'+fa+' d="M94,54 C98,66 108,70 110,62 C105,58 99,56 95,54 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="99" cy="48" rx="6.5" ry="4" fill="#FF9DB6" opacity=".5"/>'+
+  '<circle cx="106" cy="39" r="6.8" fill="#3B2D2B"/><circle cx="108.8" cy="36.2" r="2.6" fill="#fff"/>'+
+  '<g stroke="#3B2D2B" stroke-width="1.3" stroke-linecap="round" fill="none"><path d="M111,34.5 l3,-1.8"/><path d="M112,37.5 l3.2,-0.4"/></g>'+
+  '<path d="M118,45 q5,4 10,1.5" stroke="#D98C8C" stroke-width="1.5" fill="none" stroke-linecap="round"/>'+
+  '<g fill="#FFF4C4"><path d="M120,25 l1.1,2.4 2.4,1.1 -2.4,1.1 -1.1,2.4 -1.1,-2.4 -2.4,-1.1 2.4,-1.1 Z"/></g>'+
+  '</svg>';
+}
+/* 旧版锦鲤(对比用):红锦鲤 + 旧版尖角化龙 */
+function oldKoiSVG(w,h,sfx,drg){
+ var id="ob"+sfx;
+ var horns=drg?'<g stroke="#C0922F" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M112,17 C116,2 126,-4 132,0"/><path d="M120,5 C125,-1 132,-2 135,2"/><path d="M112,53 C116,68 126,74 132,70"/><path d="M120,65 C125,71 132,72 135,68"/></g>':'';
+ var mane=drg?'<g fill="#C0922F" opacity=".9"><path d="M40,20 L45,2 L52,21 Z"/><path d="M54,17 L61,-3 L69,18 Z"/><path d="M70,15 L78,-6 L87,16 Z"/></g>':'';
+ var flame=drg?'<g opacity=".9"><path d="M16,28 C3,21 -1,11 6,6 C6,16 12,19 18,23 Z" fill="#E8A53C"/><path d="M15,46 C2,53 -2,63 5,68 C5,58 11,55 17,51 Z" fill="#D9742A"/></g>':'';
+ var b2=drg?"#E9D293":"#F3EAD9",pc=drg?"#B8851E":"#E0694A",wl=drg?22:9;
+ return '<svg viewBox="'+(drg?"-14 -16 184 102":"0 0 152 70")+'" width="'+w+'" height="'+h+'"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="'+b2+'"/></linearGradient></defs>'+flame+mane+
+  '<path d="M34,35 C22,19 7,12 2,17 C12,26 14,31 14,35 C14,39 12,44 2,53 C7,58 22,51 34,35 Z" fill="#F6D6C7" opacity=".9"/>'+
+  '<path d="M84,26 C90,12 101,7 104,13 C100,19 95,24 89,28 Z" fill="#F6D6C7" opacity=".9"/>'+
+  '<path d="M84,44 C90,58 101,63 104,57 C100,51 95,46 89,42 Z" fill="#F6D6C7" opacity=".9"/>'+
+  '<path d="M30,35 C36,17 72,12 102,18 C119,21 129,28 131,35 C129,42 119,49 102,52 C72,58 36,53 30,35 Z" fill="url(#'+id+')" stroke="#E6DAC4" stroke-width="1"/>'+
+  '<path d="M95,20 C108,19 121,24 126,31 C121,35 110,35 99,33 C92,31 90,23 95,20 Z" fill="'+pc+'"/>'+
+  '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+pc+'" opacity=".93"/>'+
+  horns+
+  '<circle cx="119" cy="29" r="3" fill="#2B2722"/><circle cx="119" cy="41" r="3" fill="#2B2722"/>'+
+  '<path d="M131,33 C'+(131+wl)+',29 '+(135+wl)+',30 '+(134+wl)+',32" stroke="#C9A98F" stroke-width="1.4" fill="none"/>'+
+  '<path d="M131,37 C'+(131+wl)+',41 '+(135+wl)+',40 '+(134+wl)+',38" stroke="#C9A98F" stroke-width="1.4" fill="none"/>'+
+  '</svg>';
+}
 var GROUPS=[
  {ic:"🐟",h:"锦鲤养成 · 萌系大改",items:[
   {t:"锦鲤进化段数",new:1,old:"6 段(锦鲤苗 → 化龙),30 条满级,化龙偏「鲇鱼感」",now:"12 段可爱进化(奶团子 → 锦鲤奶龙),50 条满级,款款换色"},
@@ -98,6 +206,27 @@ var GROUPS=[
   {t:"访问统计",old:"counterapi(国内常打不开、微信拦)",now:"换成 VerCount,国内可达更准"}
  ]}
 ];
+/* 顶部图片对比 + 12 段一览 */
+var sc='<div class="shcard"><div class="shtitle">锦鲤大变身 · 普通锦鲤 → 萌系锦鲤</div><div class="shba">'+
+ '<div class="shside old"><div class="lb">原来</div><div class="shstage">'+oldKoiSVG(108,50,"o1",false)+'</div></div>'+
+ '<div class="sharr">→</div>'+
+ '<div class="shside now"><div class="lb">现在</div><div class="shstage">'+koiSVG(4,108,50,"n1",true)+'</div></div></div></div>';
+sc+='<div class="shcard"><div class="shtitle">满级形态 · 化龙 → 奶龙 🐉</div><div class="shba">'+
+ '<div class="shside old"><div class="lb">原来 · 化龙</div><div class="shstage">'+oldKoiSVG(116,58,"o2",true)+'</div></div>'+
+ '<div class="sharr">→</div>'+
+ '<div class="shside now"><div class="lb">现在 · 奶龙</div><div class="shstage">'+koiSVG(11,108,64,"n2",false)+'</div></div></div></div>';
+var parade='';for(var i=0;i<12;i++){parade+='<div class="pcell'+(i===11?' big':'')+'"><div class="pst">'+koiSVG(i,i===11?80:66,i===11?48:38,"pp"+i,false)+'</div><div class="pn">Lv.'+(i+1)+'</div></div>';}
+sc+='<div class="shcard"><div class="shtitle">12 段可爱进化一览</div><div class="parade">'+parade+'</div></div>';
+document.getElementById("showcase").innerHTML=sc;
+
+/* 部分卡片的配图 */
+var mg='';for(var k=0;k<12;k++){var on=[0,1,3,4,6,8,10].indexOf(k)>=0;mg+='<div class="mcell '+(on?'lit':'dark')+'">'+(on?'🎴':'🔒')+'</div>';}
+var VIS={
+ "按 JD 定制":'<div class="vis"><div class="visrow"><div class="visbox o"><div class="vl">原来 · 流水账</div>协助运营核心用户微信群,定期发布活动信息…相关能力可迁移至社群运营岗位。</div><div class="visbox n"><div class="vl">现在 · 可抄 bullet</div>· 主导拉新活动数据复盘,按渠道拆漏斗,定位最薄弱渠道<br>· 搭建指标看板,出表由 2 小时压缩至 10 分钟</div></div></div>',
+ "签名收集册":'<div class="vis"><div class="minigrid">'+mg+'</div></div>',
+ "万分之一隐藏签":'<div class="vis"><div class="goldstage" id="goldStage"></div></div>'
+};
+
 var html="";
 GROUPS.forEach(function(g){
  html+='<div class="shd"><span class="ic">'+g.ic+'</span><h2>'+g.h+'</h2></div>';
@@ -105,10 +234,17 @@ GROUPS.forEach(function(g){
   html+='<div class="chg"><div class="ti">'+it.t+(it.new?'<span class="new">NEW</span>':'')+'</div>'+
    '<div class="ba"><div class="box old"><div class="lb">原来</div>'+it.old+'</div>'+
    '<div class="arr">→</div>'+
-   '<div class="box now"><div class="lb">现在</div>'+it.now+'</div></div></div>';
+   '<div class="box now"><div class="lb">现在</div>'+it.now+'</div></div>'+
+   (VIS[it.t]||'')+'</div>';
  });
 });
 document.getElementById("sec").innerHTML=html;
+
+/* 金色隐藏款舞台:光晕 + 金花瓣 */
+var gs=document.getElementById("goldStage");
+if(gs){gs.innerHTML='<div class="ghalo"></div>'+koiSVG(11,86,52,"gold",false);
+ var gc=["#F3C24B","#E0A92E","#FFD96B","#FFE9A0"];
+ for(var z=0;z<10;z++){var pp=document.createElement("span");pp.className="gp";pp.style.left=(6+Math.random()*88)+"%";pp.style.background=gc[z%gc.length];pp.style.animationDuration=(1.8+Math.random()*1.4)+"s";pp.style.animationDelay=(Math.random()*2)+"s";pp.style.setProperty("--dx",(Math.random()*30-15)+"px");var s2=(6+Math.random()*5);pp.style.width=pp.style.height=s2+"px";gs.appendChild(pp);}}
 </script>
 </body>
 </html>
