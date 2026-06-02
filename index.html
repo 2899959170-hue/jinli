@@ -1135,7 +1135,7 @@ function doTranslate(){
   if(rare){msg=rare;nm="🌟 万分之一签";recordSign(RARE_SIGN);}
   else if(lvUp){msg="锦鲤进阶啦!你的锦鲤升到「"+KLV[newLv].n+"」(Lv."+(newLv+1)+")——攒得越多,它越可爱,你也越扛追问。";nm="🎉 升 Lv."+(newLv+1)+" · "+sg;}
   else if(mile){msg=mile;nm="🎉 里程碑 · "+sg;}
-  else{msg=pick(LUCKY);}
+  else{msg=pick(LUCKY);if(msg===state._lastLucky&&LUCKY.length>1){msg=pick(LUCKY);}state._lastLucky=msg;}
   state.result={bullet:bullet,tip:tip,msg:msg,name:nm,rare:rare?true:false};
   state.busy=false;persist();syncStats();renderToday();
  }
@@ -1186,7 +1186,8 @@ var DEMO_DRAFT={
  q4:"挑出 3 条异常数据并修正口径,复盘会用的是我核对后的版本"
 };
 function demoFill(){
- var target=29;
+ // 随机铺一个「不撞里程碑(30)」的条数,这样提交后多半落在随机鸡汤区,每次演示文案都不同
+ var opts=[24,25,26,27,31,32];var target=opts[Math.floor(Math.random()*opts.length)];
  // 每次点都重铺成「不重复」的干净样例(覆盖旧的、可能含重复的数据)
  var src=SEED.concat(DEMO_POOL).concat(EXTRA_DEMO);var base=Date.now();
  var add=Math.min(target,src.length);var list=[];
