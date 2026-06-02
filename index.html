@@ -761,6 +761,25 @@ function koiSVG(lv,w,h,sfx,anim){
  var p=KPAL[lv],id="kbg"+sfx;
  var ac=anim?' class="tail"':'',fa=anim?' class="finA"':'';
  var dragon=lv>=11;
+ if(dragon){var dg="dg"+sfx;
+  return '<svg viewBox="0 0 152 104" width="'+w+'" height="'+h+'">'+
+   '<defs><radialGradient id="'+dg+'" cx="0.45" cy="0.38" r="0.78"><stop offset="0" stop-color="#FFF1B2"/><stop offset="1" stop-color="#F4C652"/></radialGradient></defs>'+
+   '<g fill="#FFE89A"><path d="M22,26 l1.8,3.8 3.8,1.8 -3.8,1.8 -1.8,3.8 -1.8,-3.8 -3.8,-1.8 3.8,-1.8 Z"/><circle cx="134" cy="30" r="2.2"/><circle cx="120" cy="13" r="1.4"/></g>'+
+   '<g fill="#F2B440"><ellipse cx="102" cy="30" rx="4" ry="6"/><ellipse cx="113" cy="41" rx="4" ry="6"/><ellipse cx="121" cy="55" rx="3.5" ry="5"/></g>'+
+   '<g fill="#F2B440"><ellipse cx="60" cy="20" rx="5.5" ry="9" transform="rotate(-12 60 20)"/><ellipse cx="82" cy="18" rx="5.5" ry="9" transform="rotate(8 82 18)"/></g>'+
+   '<ellipse cx="33" cy="66" rx="9" ry="7" fill="url(#'+dg+')"/>'+
+   '<path d="M120,80 q18,2 16,-12 q8,12 -4,18 q-8,3 -12,-6 Z" fill="url(#'+dg+')"/>'+
+   '<ellipse cx="74" cy="58" rx="46" ry="38" fill="url(#'+dg+')" stroke="#E3BB4E" stroke-width="1.5"/>'+
+   '<ellipse cx="74" cy="66" rx="29" ry="23" fill="#FFF8DC" opacity=".7"/>'+
+   '<ellipse cx="52" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+   '<ellipse cx="96" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+   '<ellipse cx="62" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="63.6" cy="45.4" r="1.6" fill="#fff"/>'+
+   '<ellipse cx="86" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="87.6" cy="45.4" r="1.6" fill="#fff"/>'+
+   '<g stroke="#3B2D2B" stroke-width="1.2" stroke-linecap="round"><path d="M57,42 l-2.6,-1.6"/><path d="M91,42 l2.6,-1.6"/></g>'+
+   '<path d="M68,57 q6,6 12,0" stroke="#C2683E" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+   '<g fill="#FFD75E"><path d="M74,5 l2,4.4 4.4,2 -4.4,2 -2,4.4 -2,-4.4 -4.4,-2 4.4,-2 Z"/></g>'+
+   '</svg>';
+ }
  var grad=dragon
   ? '<linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0" stop-color="#FCD6EA"/><stop offset="0.35" stop-color="#FBE8F2"><animate attributeName="offset" values="0;0.7" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="0.55" stop-color="#E7D6F7"><animate attributeName="offset" values="0.2;0.9" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="1" stop-color="#FFF0D8"/></linearGradient>'
   : '<linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+p.b1+'"/><stop offset="1" stop-color="'+p.b2+'"/></linearGradient>';
@@ -947,7 +966,7 @@ function syncStats(){var a=document.getElementById("cnt");if(a)a.textContent=sta
 var KLV=[
  {n:"锦鲤宝宝",min:0},{n:"奶油锦鲤",min:2},{n:"草莓锦鲤",min:4},{n:"蜜桃锦鲤",min:7},
  {n:"樱花锦鲤",min:10},{n:"薄荷锦鲤",min:14},{n:"葡萄锦鲤",min:18},{n:"星河锦鲤",min:23},
- {n:"黄金锦鲤",min:28},{n:"月光锦鲤",min:34},{n:"彩虹锦鲤",min:40},{n:"仙女化龙",min:50}
+ {n:"黄金锦鲤",min:28},{n:"月光锦鲤",min:34},{n:"彩虹锦鲤",min:40},{n:"锦鲤奶龙",min:50}
 ];
 function koiLevel(n){var i=0;for(var k=0;k<KLV.length;k++)if(n>=KLV[k].min)i=k;return i;}
 function renderKoi(){
@@ -1236,7 +1255,7 @@ function rareFx(){
  var ov=document.createElement("div");ov.className="rarefx";
  // 中央化龙高光
  var dragon=document.createElement("div");dragon.className="rfxdragon";
- dragon.innerHTML=(typeof koiSVG==="function")?koiSVG(5,260,150,"rfx"):"🐉";
+ dragon.innerHTML=(typeof koiSVG==="function")?koiSVG(11,260,178,"rfx"):"🐉";
  ov.appendChild(dragon);
  var halo=document.createElement("div");halo.className="rfxhalo";ov.appendChild(halo);
  var tip=document.createElement("div");tip.className="rfxtip";tip.textContent="✨ 万分之一 · 欧皇时刻 ✨";ov.appendChild(tip);
