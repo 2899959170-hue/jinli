@@ -40,12 +40,10 @@ section{margin-top:40px;}
 .koicard .cond{font-size:12.5px;color:var(--dim);margin-top:3px;}
 .koicard .tag{position:absolute;top:14px;right:14px;font-size:18px;}
 /* 锦鲤游动动效 */
-svg .ktail{transform-origin:34px 35px;animation:ktail 1.4s ease-in-out infinite;}
-svg .kfinA{transform-origin:88px 27px;animation:kfinA 1.7s ease-in-out infinite;}
-svg .kfinB{transform-origin:88px 43px;animation:kfinB 1.7s ease-in-out infinite;}
+svg .ktail{transform-origin:44px 44px;animation:ktail 1.4s ease-in-out infinite;}
+svg .kfinA{transform-origin:94px 54px;animation:kfinA 1.7s ease-in-out infinite;}
 @keyframes ktail{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(7deg);}}
 @keyframes kfinA{0%,100%{transform:rotate(0);}50%{transform:rotate(-12deg);}}
-@keyframes kfinB{0%,100%{transform:rotate(0);}50%{transform:rotate(12deg);}}
 .herofish svg{animation:herobob 3s ease-in-out infinite;}
 @keyframes herobob{0%,100%{transform:translateY(0) rotate(-1.5deg);}50%{transform:translateY(-6px) rotate(1.5deg);}}
 /* 鸡汤图鉴 */
@@ -109,8 +107,8 @@ svg .kfinB{transform-origin:88px 43px;animation:kfinB 1.7s ease-in-out infinite;
 <div class="wrap">
 
  <section>
-  <div class="shd"><span class="no">壹</span><h2>锦鲤图鉴 · 6 段进化</h2></div>
-  <p class="sdesc">每攒下一条真东西,锦鲤就更神气一点。攒满 30 条,它会化龙 🐉。皮肤随等级真实换色。</p>
+  <div class="shd"><span class="no">壹</span><h2>锦鲤图鉴 · 12 段进化</h2></div>
+  <p class="sdesc">每攒下一条真东西,锦鲤就更可爱一点。从奶团子到仙女化龙,12 段换色进化,攒满 50 条化龙 🐉✨。</p>
   <div class="koigrid" id="koiGrid"></div>
  </section>
 
@@ -161,49 +159,66 @@ svg .kfinB{transform-origin:88px 43px;animation:kfinB 1.7s ease-in-out infinite;
 <script>
 /* ===== 与主工具同款锦鲤调色板 & SVG ===== */
 var KPAL=[
- {b1:"#FFFFFF",b2:"#F7F0E5",patch:"#EEC2AC",accent:"#EEC2AC",light:"#F8DECF",whisk:"#D8C3AE"},
- {b1:"#FFFFFF",b2:"#F3EAD9",patch:"#E0694A",accent:"#E0694A",light:"#F6D6C7",whisk:"#C9A98F"},
- {b1:"#FFF6F2",b2:"#F0D6CA",patch:"#D2452B",accent:"#D2452B",light:"#F0C4B4",whisk:"#C9A98F"},
- {b1:"#FFFDF4",b2:"#F1E5C2",patch:"#C0922F",accent:"#C0922F",light:"#EBD9A6",whisk:"#B89A4E"},
- {b1:"#FFFBEF",b2:"#F3E2BB",patch:"#C0922F",accent:"#C24E32",light:"#F0CBA6",whisk:"#B89A4E"},
- {b1:"#FFF7E2",b2:"#E9D293",patch:"#B8851E",accent:"#8A3D12",light:"#E7C98F",whisk:"#8A6B1E"}
+ {b1:"#FFFFFF",b2:"#FFF0F3",patch:"#FBC4D2",accent:"#F7A8BC",light:"#FFE2E9",whisk:"#E9C2CC"},
+ {b1:"#FFFFFF",b2:"#FFF6E4",patch:"#F8D89C",accent:"#F2C879",light:"#FFF1D2",whisk:"#E8D5AC"},
+ {b1:"#FFF7F8",b2:"#FFE6EC",patch:"#F2748F",accent:"#E85470",light:"#FFD2DC",whisk:"#E2A6B2"},
+ {b1:"#FFF8F2",b2:"#FFEAD9",patch:"#F7A678",accent:"#F08A50",light:"#FFDFC9",whisk:"#E8C2A2"},
+ {b1:"#FFF8FB",b2:"#FFECF4",patch:"#F2A6C6",accent:"#E87FAE",light:"#FCD9E8",whisk:"#E6B2C8"},
+ {b1:"#F6FFFB",b2:"#E7F8F1",patch:"#8AD0B8",accent:"#5BBF9C",light:"#D6F2E7",whisk:"#A8D8C6"},
+ {b1:"#FAF8FF",b2:"#F0EAFB",patch:"#B398E0",accent:"#9B79D6",light:"#E6DAF7",whisk:"#C8B2E2"},
+ {b1:"#F8FAFF",b2:"#EAF0FC",patch:"#96B2E8",accent:"#7592DB",light:"#DCE6FA",whisk:"#B2C2E2"},
+ {b1:"#FFFBEE",b2:"#FFF4D6",patch:"#EAC04E",accent:"#D6A02E",light:"#FBEFC2",whisk:"#D8BE78"},
+ {b1:"#FAFBFF",b2:"#EEF0FA",patch:"#C3C8E0",accent:"#9AA0C8",light:"#E8EAF6",whisk:"#C2C6DC"},
+ {b1:"#FFF8FC",b2:"#F3ECFB",patch:"#F49AC2",accent:"#7FB8E8",light:"#FCE0F0",whisk:"#D6B8E0"},
+ {b1:"#FFFBF6",b2:"#FFEFDA",patch:"#F6A8D2",accent:"#C98AE0",light:"#FDE3F0",whisk:"#E0B8D8"}
 ];
 function koiSVG(lv,w,h,sfx){
- var p=KPAL[Math.max(0,Math.min(5,lv))],id="kbg"+sfx;
- var dragon=lv>=5,wl=dragon?22:9;
- var horns=dragon?'<g stroke="'+p.accent+'" stroke-width="2.6" fill="none" stroke-linecap="round"><path d="M112,17 C116,2 126,-4 132,0"/><path d="M120,5 C125,-1 132,-2 135,2"/><path d="M126,8 C130,4 136,5 137,9"/><path d="M112,53 C116,68 126,74 132,70"/><path d="M120,65 C125,71 132,72 135,68"/><path d="M126,62 C130,66 136,65 137,61"/></g>':'';
- var mane=dragon?'<g fill="'+p.accent+'" opacity=".95"><path d="M40,20 L45,2 L52,21 Z"/><path d="M52,17 L59,-3 L67,18 Z"/><path d="M68,15 L76,-6 L85,16 Z"/><path d="M86,16 L94,-2 L101,18 Z"/></g><path d="M40,18 Q72,-6 101,16" stroke="'+p.accent+'" stroke-width="1.5" fill="none" opacity=".5"/>':'';
- var flame=dragon?'<g opacity=".92"><path d="M16,28 C3,21 -1,11 6,6 C6,16 12,19 18,23 Z" fill="#E8A53C"/><path d="M15,46 C2,53 -2,63 5,68 C5,58 11,55 17,51 Z" fill="#D9742A"/><path d="M9,37 C-4,37 -7,30 -2,24 C2,31 8,32 13,35 Z" fill="#F2C24B"/></g>':'';
+ lv=Math.max(0,Math.min(KPAL.length-1,lv));
+ var p=KPAL[lv],id="kbg"+sfx;
+ var dragon=lv>=11;
  var grad=dragon
-  ? '<linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="0.4"><stop offset="0" stop-color="'+p.b2+'"/><stop offset="0.35" stop-color="#FFF4C9"><animate attributeName="offset" values="0;0.7" dur="2.2s" repeatCount="indefinite"/></stop><stop offset="0.5" stop-color="#FFE9A0"><animate attributeName="offset" values="0.15;0.85" dur="2.2s" repeatCount="indefinite"/></stop><stop offset="1" stop-color="'+p.b2+'"/></linearGradient>'
+  ? '<linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0" stop-color="#FCD6EA"/><stop offset="0.35" stop-color="#FBE8F2"><animate attributeName="offset" values="0;0.7" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="0.55" stop-color="#E7D6F7"><animate attributeName="offset" values="0.2;0.9" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="1" stop-color="#FFF0D8"/></linearGradient>'
   : '<linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+p.b1+'"/><stop offset="1" stop-color="'+p.b2+'"/></linearGradient>';
- var vb=dragon?"-14 -16 184 102":"0 0 152 70";
+ var mane=dragon?'<g fill="'+p.accent+'" opacity=".92"><circle cx="60" cy="20" r="6.5"/><circle cx="72" cy="14" r="7.5"/><circle cx="85" cy="12" r="8"/><circle cx="98" cy="15" r="7"/></g>':'';
+ var horns=dragon?'<g fill="'+p.patch+'"><path d="M104,18 C102,7 109,3 113,6 C110,10 110,14 110,19 Z"/><path d="M115,19 C115,9 121,6 124,10 C120,13 119,16 120,20 Z"/></g>':'';
+ var beard=dragon?'<path d="M127,46 c9,-1 13,4 10,9 c-2,3 -6,2 -6,-1" stroke="'+p.whisk+'" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M127,50 c9,2 12,6 8,11" stroke="'+p.whisk+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>':'';
+ var pearl=dragon?'<circle cx="139" cy="33" r="4.2" fill="#FFFDF6"/><circle cx="137.5" cy="31.5" r="1.4" fill="#FFE6A0"/>':'';
+ var stars=dragon?'<g fill="#FFF1C0"><path d="M48,9 l1.6,3.2 3.2,1.6 -3.2,1.6 -1.6,3.2 -1.6,-3.2 -3.2,-1.6 3.2,-1.6 Z"/><circle cx="126" cy="13" r="1.6"/></g>':'';
+ var vb=dragon?"0 -10 154 96":"0 -2 152 84";
  return '<svg viewBox="'+vb+'" width="'+w+'" height="'+h+'">'+
-  '<defs>'+grad+'</defs>'+flame+mane+
-  '<g class="ktail"><path d="M34,35 C22,19 7,12 2,17 C12,26 14,31 14,35 C14,39 12,44 2,53 C7,58 22,51 34,35 Z" fill="'+p.light+'" opacity=".9"/>'+
-  '<path d="M30,35 C22,26 12,22 8,25 C14,30 15,32 15,35 C15,38 14,40 8,45 C12,48 22,44 30,35 Z" fill="'+p.patch+'" opacity=".4"/></g>'+
-  '<path class="kfinA" d="M84,26 C90,12 101,7 104,13 C100,19 95,24 89,28 Z" fill="'+p.light+'" opacity=".9"/>'+
-  '<path class="kfinB" d="M84,44 C90,58 101,63 104,57 C100,51 95,46 89,42 Z" fill="'+p.light+'" opacity=".9"/>'+
-  '<path d="M30,35 C36,17 72,12 102,18 C119,21 129,28 131,35 C129,42 119,49 102,52 C72,58 36,53 30,35 Z" fill="url(#'+id+')" stroke="#E6DAC4" stroke-width="1"/>'+
-  '<path d="M95,20 C108,19 121,24 126,31 C121,35 110,35 99,33 C92,31 90,23 95,20 Z" fill="'+p.patch+'"/>'+
-  '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".93"/>'+
-  '<path d="M46,41 C57,39 70,41 75,45 C68,49 55,49 46,46 Z" fill="'+p.patch+'" opacity=".8"/>'+
-  horns+
-  '<circle cx="119" cy="29" r="3" fill="#2B2722"/><circle cx="120" cy="28" r="1" fill="#fff"/>'+
-  '<circle cx="119" cy="41" r="3" fill="#2B2722"/><circle cx="120" cy="40" r="1" fill="#fff"/>'+
-  '<path d="M131,33 C'+(131+wl)+',29 '+(135+wl)+',30 '+(134+wl)+',32" stroke="'+p.whisk+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'+
-  '<path d="M131,37 C'+(131+wl)+',41 '+(135+wl)+',40 '+(134+wl)+',38" stroke="'+p.whisk+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'+
+  '<defs>'+grad+'</defs>'+mane+horns+stars+
+  '<g class="ktail"><path d="M46,44 C30,24 10,22 6,32 C16,38 18,42 18,44 C18,46 16,50 6,56 C10,66 30,64 46,44 Z" fill="'+p.light+'"/>'+
+  '<path d="M40,44 C30,34 18,32 14,38 C20,42 21,43 21,44 C21,45 20,46 14,50 C18,54 30,52 40,44 Z" fill="'+p.patch+'" opacity=".45"/></g>'+
+  '<path d="M60,22 C70,8 86,8 92,20 C84,22 72,24 62,28 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="82" cy="44" rx="46" ry="26" fill="url(#'+id+')" stroke="#E9DDC8" stroke-width="1"/>'+
+  '<ellipse cx="70" cy="34" rx="13" ry="9" fill="'+p.patch+'" opacity=".9" transform="rotate(-12 70 34)"/>'+
+  '<ellipse cx="98" cy="50" rx="8" ry="5.5" fill="'+p.accent+'" opacity=".7"/>'+
+  '<ellipse cx="56" cy="50" rx="6" ry="4" fill="'+p.accent+'" opacity=".45"/>'+
+  '<path class="kfinA" d="M94,54 C98,66 108,70 110,62 C105,58 99,56 95,54 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="99" cy="48" rx="6.5" ry="4" fill="#FF9DB6" opacity=".5"/>'+
+  '<circle cx="106" cy="39" r="6.6" fill="#3B2D2B"/>'+
+  '<circle cx="108.6" cy="36.4" r="2.4" fill="#fff"/>'+
+  '<circle cx="103.6" cy="41" r="1.1" fill="#fff" opacity=".85"/>'+
+  '<path d="M118,45 q5,4 10,1.5" stroke="#D98C8C" stroke-width="1.5" fill="none" stroke-linecap="round"/>'+
+  beard+pearl+
+  '<g fill="#fff" opacity=".8"><circle cx="64" cy="32" r="1.3"/></g>'+
   '</svg>';
 }
 
 /* ===== 数据(与主工具保持一致) ===== */
 var KLV=[
- {n:"锦鲤苗",min:0,d:"刚下水,一切的开始"},
- {n:"小锦鲤",min:3,d:"有点样子了"},
- {n:"红锦鲤",min:7,d:"红了,稳了"},
- {n:"金鳞锦鲤",min:14,d:"金鳞加身"},
- {n:"招福锦鲤",min:21,d:"自带福气"},
- {n:"上岸锦鲤·化龙",min:30,d:"喷火长角,鲤跃龙门 🐉"}
+ {n:"锦鲤宝宝",min:0,d:"刚下水的奶团子,一切的开始"},
+ {n:"奶油锦鲤",min:2,d:"软软奶油色,有点样子了"},
+ {n:"草莓锦鲤",min:4,d:"草莓色,甜甜的"},
+ {n:"蜜桃锦鲤",min:7,d:"蜜桃水光感"},
+ {n:"樱花锦鲤",min:10,d:"樱花粉,温柔一刀"},
+ {n:"薄荷锦鲤",min:14,d:"薄荷绿,清清爽爽"},
+ {n:"葡萄锦鲤",min:18,d:"葡萄紫,高级感"},
+ {n:"星河锦鲤",min:23,d:"星河蓝,藏着小宇宙"},
+ {n:"黄金锦鲤",min:28,d:"金光闪闪,招财进offer"},
+ {n:"月光锦鲤",min:34,d:"月光银,温柔发光"},
+ {n:"彩虹锦鲤",min:40,d:"七彩流光,稀有度拉满"},
+ {n:"仙女化龙",min:50,d:"萌萌龙角+珍珠,鲤跃龙门 🐉✨"}
 ];
 var LUCKY=[
  "这条稳稳入池了。攒够它们,offer 会自己游过来。","今天的小事,三个月后会变成你简历里的底气。","你不是在打杂,是在攒证据。慢慢来,池子在涨。","面试官追问到这条时,你会感谢今天认真记下的自己。","一件不起眼的事,被你翻译成了能说出口的东西。","秋招的运气,是这样一条条攒出来的。今天又厚了一点。","别急着证明什么。先把真东西留下,锦鲤都记着呢。","今天这口投喂很扎实。继续游,不用回头。","你以为的杂活,在简历里其实是「主动梳理 + 推动落地」。","稳住。能被你写下来的事,就已经是你的了。","焦虑的时候就来记一条。记着记着,你就有底气了。","锦鲤说:你值得一个好 offer,而且就在路上。","今天也没有白过——你又比昨天的自己更经得起追问。","慢慢来不丢人,空着手进面试才丢人。你在攒料,很好。","把它收好。这是只属于你的、谁也抄不走的真东西。","上岸不是运气,是你今天这一条一条堆出来的确定性。","你今天没有原地踏步,你往池子里又添了一块上岸的砖。","别人刷手机的时候,你在攒能写进简历的真东西。","这条记下来,面试时它就是你张口就来的底气。","实习不白干的标志,是你能把它说清楚——你刚做到了。","攒着攒着,你会发现自己比想象中做了更多事。","简历空不空,看的不是运气,是你愿不愿意每天记一条。","焦虑不会帮你上岸,但这一条会。","你正在把「好像也没干啥」,变成「我具体做了这些」。","锦鲤游得慢,但从不回头。今天这条,记得真好。","这一条,三个月后的你会偷偷感谢现在的你。","把杂活写成成果,是一种被低估的能力。你在练它。","不是所有努力都看得见,但被你写下来的,都算数。","你不需要很厉害才开始,你开始记了,就已经在变厉害。","今天又攒了一块拼图,离那份完整的简历更近了。","真东西不怕追问。你今天又多了一条不怕被问的。","慢一点没关系,方向对的人迟早上岸。","你以为只是记个流水账,其实是在给未来的自己存粮。","这条收好了。秋招那天,它会替你说话。","别小看今天这一句,它可能就是面试官眼睛一亮的那句。","攒真东西的人,运气都不会太差。","你正在做一件很多人想不到要做的事——把经历变成资产。","锦鲤记着你每一次认真。今天这条,它收下了。","写下来的那一刻,焦虑就少了一点,底气就多了一点。","你不是没东西写,只是还没开始记。现在记了,就有了。","每天一条,秋招的时候你就是有备而来的那个。","这条又给你的简历加了一道「防追问」的护甲。","别和别人比进度,和昨天的自己比就够了。你赢了。","把今天这件小事翻译好,它就不再是小事了。","你正在悄悄拉开和「裸面」那批人的差距。","上岸的人,往往只是比别人多记了几条而已。","这口投喂很有营养,锦鲤又胖了一圈 🐟","今天的认真,会在某场面试里突然回报你。","你存的不是记录,是未来从容的底气。","又一条经得起追问的真东西,稳稳落袋。"
@@ -213,7 +228,7 @@ var MILE=[
  [3,"已经第 3 条啦!坚持记的人,秋招赢在细节。继续投喂 🧧"],[5,"5 条啦!手感来了,记录这件事你已经上道了。"],[7,"攒满 7 条!这周没白干,简历又厚了一层。"],[10,"两位数啦!10 条真东西,够撑起一段像样的实习经历了。"],[14,"14 条真东西!你已经超过大多数还在迷茫的人了。"],[21,"21 条,稳了。这是一份扛得住任何追问的底气清单。"],[30,"30 条!锦鲤为你转身——这一池,就是你上岸的资本。"],[40,"40 条!你的料多到可以挑着写简历了,凡尔赛的烦恼 🐟"],[50,"50 条!半百里程碑——这已经不是攒料,是在建一座你的私人案例库。"],[66,"66 条,六六大顺!这份厚度,面试官想问倒你都难。"],[100,"100 条!!你把「没东西写」这四个字,彻底从字典里删了。"]
 ];
 var EGGS=[
- ["🐉","锦鲤化龙","攒满 30 条,锦鲤进化成会喷火、长龙角金鬃的「化龙」终极形态。"],
+ ["🐉","仙女化龙","攒满 50 条,锦鲤进化成萌萌龙角 + 珍珠 + 星星的「仙女化龙」终极形态。"],
  ["🌸","花瓣雨","每次成功翻译,结果卡片会飘下锦鲤色花瓣,小小的仪式感。"],
  ["🎬","演示模式","作者专属邀请码进去,是预填满、能现场跑 AI 的演示版本。"],
  ["🌟","万分之一隐藏签","0.1% 概率刷出传说签,触发全屏金色花瓣雨 + 锦鲤化龙高光。"],
@@ -223,7 +238,7 @@ var EGGS=[
 var FEATS=[
  ["📝","今日投喂","4 个问题引导你说清一件小事,AI 翻译成能写进简历的 bullet。"],
  ["🛡️","防杜撰铁律","只用你真填的内容,绝不瞎编数字成果——经得起面试追问。"],
- ["🐟","锦鲤养成","攒得越多,锦鲤越进阶,直到化龙。把坚持变成看得见的成长。"],
+ ["🐟","锦鲤养成","12 段进化、款款可爱,攒得越多锦鲤越进阶,直到仙女化龙。把坚持变成看得见的成长。"],
  ["🎯","按 JD 定制","粘贴目标岗位 JD,自动从你的经历里挑最匹配的,改写成简历 bullet 条目。"],
  ["📄","通用简历合成","把所有记录合并去重、按方向归类,一键生成简历项目段。"],
  ["🔍","面试深挖回溯","预演面试官的 6 层追问,教你用真实记录一句句接住。"],
@@ -234,9 +249,9 @@ var FEATS=[
 ];
 
 /* ===== 渲染 ===== */
-document.getElementById("heroFish").innerHTML=koiSVG(5,170,92,"hero");
+document.getElementById("heroFish").innerHTML=koiSVG(11,170,108,"hero");
 var kg="";
-for(var i=0;i<KLV.length;i++){var L=KLV[i],drag=i===5;
+for(var i=0;i<KLV.length;i++){var L=KLV[i],drag=i===KLV.length-1;
  kg+='<div class="koicard'+(drag?' drag':'')+'">'+(drag?'<span class="tag">🐉</span>':'')+
   '<span class="lv">Lv.'+(i+1)+'</span>'+
   '<div class="fishbox">'+koiSVG(i,drag?150:120,drag?80:62,"g"+i)+'</div>'+

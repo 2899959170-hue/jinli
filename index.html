@@ -51,10 +51,10 @@
   76%{transform:translateX(110px) translateY(8px) rotate(2deg);}
   100%{transform:translateX(0) translateY(0) rotate(-2deg);}
 }
-.koi .tail{transform-origin:34px 35px;animation:tail 1.4s ease-in-out infinite;}
+.koi .tail{transform-origin:44px 44px;animation:tail 1.4s ease-in-out infinite;}
 @keyframes tail{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(7deg);}}
-.koi .finA{transform-origin:88px 27px;animation:finA 1.7s ease-in-out infinite;}
-.koi .finB{transform-origin:88px 43px;animation:finB 1.7s ease-in-out infinite;}
+.koi .finA{transform-origin:94px 54px;animation:finA 1.7s ease-in-out infinite;}
+.koi .finB{transform-origin:94px 54px;animation:finB 1.7s ease-in-out infinite;}
 @keyframes finA{0%,100%{transform:rotate(0);}50%{transform:rotate(-12deg);}}
 @keyframes finB{0%,100%{transform:rotate(0);}50%{transform:rotate(12deg);}}
 /* 锦鲤养成 / 进阶 */
@@ -742,64 +742,59 @@ var MILE={3:"已经第 3 条啦!坚持记的人,秋招赢在细节。继续投�
 
 /* 锦鲤皮肤:每个等级换色,真正“看得出变化” */
 var KPAL=[
- {b1:"#FFFFFF",b2:"#F7F0E5",patch:"#EEC2AC",accent:"#EEC2AC",light:"#F8DECF",whisk:"#D8C3AE"},
- {b1:"#FFFFFF",b2:"#F3EAD9",patch:"#E0694A",accent:"#E0694A",light:"#F6D6C7",whisk:"#C9A98F"},
- {b1:"#FFF6F2",b2:"#F0D6CA",patch:"#D2452B",accent:"#D2452B",light:"#F0C4B4",whisk:"#C9A98F"},
- {b1:"#FFFDF4",b2:"#F1E5C2",patch:"#C0922F",accent:"#C0922F",light:"#EBD9A6",whisk:"#B89A4E"},
- {b1:"#FFFBEF",b2:"#F3E2BB",patch:"#C0922F",accent:"#C24E32",light:"#F0CBA6",whisk:"#B89A4E"},
- {b1:"#FFF7E2",b2:"#E9D293",patch:"#B8851E",accent:"#8A3D12",light:"#E7C98F",whisk:"#8A6B1E"}
+ {b1:"#FFFFFF",b2:"#FFF0F3",patch:"#FBC4D2",accent:"#F7A8BC",light:"#FFE2E9",whisk:"#E9C2CC"},
+ {b1:"#FFFFFF",b2:"#FFF6E4",patch:"#F8D89C",accent:"#F2C879",light:"#FFF1D2",whisk:"#E8D5AC"},
+ {b1:"#FFF7F8",b2:"#FFE6EC",patch:"#F2748F",accent:"#E85470",light:"#FFD2DC",whisk:"#E2A6B2"},
+ {b1:"#FFF8F2",b2:"#FFEAD9",patch:"#F7A678",accent:"#F08A50",light:"#FFDFC9",whisk:"#E8C2A2"},
+ {b1:"#FFF8FB",b2:"#FFECF4",patch:"#F2A6C6",accent:"#E87FAE",light:"#FCD9E8",whisk:"#E6B2C8"},
+ {b1:"#F6FFFB",b2:"#E7F8F1",patch:"#8AD0B8",accent:"#5BBF9C",light:"#D6F2E7",whisk:"#A8D8C6"},
+ {b1:"#FAF8FF",b2:"#F0EAFB",patch:"#B398E0",accent:"#9B79D6",light:"#E6DAF7",whisk:"#C8B2E2"},
+ {b1:"#F8FAFF",b2:"#EAF0FC",patch:"#96B2E8",accent:"#7592DB",light:"#DCE6FA",whisk:"#B2C2E2"},
+ {b1:"#FFFBEE",b2:"#FFF4D6",patch:"#EAC04E",accent:"#D6A02E",light:"#FBEFC2",whisk:"#D8BE78"},
+ {b1:"#FAFBFF",b2:"#EEF0FA",patch:"#C3C8E0",accent:"#9AA0C8",light:"#E8EAF6",whisk:"#C2C6DC"},
+ {b1:"#FFF8FC",b2:"#F3ECFB",patch:"#F49AC2",accent:"#7FB8E8",light:"#FCE0F0",whisk:"#D6B8E0"},
+ {b1:"#FFFBF6",b2:"#FFEFDA",patch:"#F6A8D2",accent:"#C98AE0",light:"#FDE3F0",whisk:"#E0B8D8"}
 ];
+/* 可爱版锦鲤:圆胖身体 + 大眼睛 + 腮红 + 小嘴;最高级=仙女化龙(萌龙角+云朵鬃+卷胡须+珍珠+星星) */
 function koiSVG(lv,w,h,sfx,anim){
- var p=KPAL[Math.max(0,Math.min(5,lv))],id="kbg"+sfx;
- var ac=anim?' class="tail"':'',fa=anim?' class="fin finA"':'',fb=anim?' class="fin finB"':'';
- var dragon=lv>=5;
- var wl=dragon?22:9;
- // 鹿角(大、分叉)
- var horns=dragon?
-   '<g stroke="'+p.accent+'" stroke-width="2.6" fill="none" stroke-linecap="round">'+
-   '<path d="M112,17 C116,2 126,-4 132,0"/><path d="M120,5 C125,-1 132,-2 135,2"/><path d="M126,8 C130,4 136,5 137,9"/>'+
-   '<path d="M112,53 C116,68 126,74 132,70"/><path d="M120,65 C125,71 132,72 135,68"/><path d="M126,62 C130,66 136,65 137,61"/></g>':'';
- // 背脊金鬃(龙鬃,高而连贯)
- var mane=dragon?
-   '<g fill="'+p.accent+'" opacity=".95">'+
-   '<path d="M40,20 L45,2 L52,21 Z"/><path d="M52,17 L59,-3 L67,18 Z"/>'+
-   '<path d="M68,15 L76,-6 L85,16 Z"/><path d="M86,16 L94,-2 L101,18 Z"/></g>'+
-   '<path d="M40,18 Q72,-6 101,16" stroke="'+p.accent+'" stroke-width="1.5" fill="none" opacity=".5"/>':'';
- // 尾部火焰(更大、三簇)
- var flame=dragon?
-   '<g opacity=".92"><path d="M16,28 C3,21 -1,11 6,6 C6,16 12,19 18,23 Z" fill="#E8A53C"/>'+
-   '<path d="M15,46 C2,53 -2,63 5,68 C5,58 11,55 17,51 Z" fill="#D9742A"/>'+
-   '<path d="M9,37 C-4,37 -7,30 -2,24 C2,31 8,32 13,35 Z" fill="#F2C24B"/></g>':'';
+ lv=Math.max(0,Math.min(KPAL.length-1,lv));
+ var p=KPAL[lv],id="kbg"+sfx;
+ var ac=anim?' class="tail"':'',fa=anim?' class="finA"':'';
+ var dragon=lv>=11;
  var grad=dragon
-  ? '<linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="0.4"><stop offset="0" stop-color="'+p.b2+'"/>'+
-    '<stop offset="0.35" stop-color="#FFF4C9"><animate attributeName="offset" values="0;0.7" dur="2.2s" repeatCount="indefinite"/></stop>'+
-    '<stop offset="0.5" stop-color="#FFE9A0"><animate attributeName="offset" values="0.15;0.85" dur="2.2s" repeatCount="indefinite"/></stop>'+
-    '<stop offset="1" stop-color="'+p.b2+'"/></linearGradient>'
+  ? '<linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0" stop-color="#FCD6EA"/><stop offset="0.35" stop-color="#FBE8F2"><animate attributeName="offset" values="0;0.7" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="0.55" stop-color="#E7D6F7"><animate attributeName="offset" values="0.2;0.9" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="1" stop-color="#FFF0D8"/></linearGradient>'
   : '<linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+p.b1+'"/><stop offset="1" stop-color="'+p.b2+'"/></linearGradient>';
- var vb=dragon?"-14 -16 184 102":"0 0 152 70";
+ var mane=dragon?'<g fill="'+p.accent+'" opacity=".92"><circle cx="60" cy="20" r="6.5"/><circle cx="72" cy="14" r="7.5"/><circle cx="85" cy="12" r="8"/><circle cx="98" cy="15" r="7"/></g>':'';
+ var horns=dragon?'<g fill="'+p.patch+'"><path d="M104,18 C102,7 109,3 113,6 C110,10 110,14 110,19 Z"/><path d="M115,19 C115,9 121,6 124,10 C120,13 119,16 120,20 Z"/></g>':'';
+ var beard=dragon?'<path d="M127,46 c9,-1 13,4 10,9 c-2,3 -6,2 -6,-1" stroke="'+p.whisk+'" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M127,50 c9,2 12,6 8,11" stroke="'+p.whisk+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>':'';
+ var pearl=dragon?'<circle cx="139" cy="33" r="4.2" fill="#FFFDF6"/><circle cx="137.5" cy="31.5" r="1.4" fill="#FFE6A0"/>':'';
+ var stars=dragon?'<g fill="#FFF1C0"><path d="M48,9 l1.6,3.2 3.2,1.6 -3.2,1.6 -1.6,3.2 -1.6,-3.2 -3.2,-1.6 3.2,-1.6 Z"/><circle cx="126" cy="13" r="1.6"/></g>':'';
+ var vb=dragon?"0 -10 154 96":"0 -2 152 84";
  return '<svg viewBox="'+vb+'" width="'+w+'" height="'+h+'">'+
-  '<defs>'+grad+'</defs>'+flame+mane+
-  '<g'+ac+'><path d="M34,35 C22,19 7,12 2,17 C12,26 14,31 14,35 C14,39 12,44 2,53 C7,58 22,51 34,35 Z" fill="'+p.light+'" opacity=".9"/>'+
-  '<path d="M30,35 C22,26 12,22 8,25 C14,30 15,32 15,35 C15,38 14,40 8,45 C12,48 22,44 30,35 Z" fill="'+p.patch+'" opacity=".4"/></g>'+
-  '<path'+fa+' d="M84,26 C90,12 101,7 104,13 C100,19 95,24 89,28 Z" fill="'+p.light+'" opacity=".9"/>'+
-  '<path'+fb+' d="M84,44 C90,58 101,63 104,57 C100,51 95,46 89,42 Z" fill="'+p.light+'" opacity=".9"/>'+
-  '<path d="M30,35 C36,17 72,12 102,18 C119,21 129,28 131,35 C129,42 119,49 102,52 C72,58 36,53 30,35 Z" fill="url(#'+id+')" stroke="#E6DAC4" stroke-width="1"/>'+
-  '<path d="M95,20 C108,19 121,24 126,31 C121,35 110,35 99,33 C92,31 90,23 95,20 Z" fill="'+p.patch+'"/>'+
-  '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".93"/>'+
-  '<path d="M46,41 C57,39 70,41 75,45 C68,49 55,49 46,46 Z" fill="'+p.patch+'" opacity=".8"/>'+
-  horns+
-  '<circle cx="119" cy="29" r="3" fill="#2B2722"/><circle cx="120" cy="28" r="1" fill="#fff"/>'+
-  '<circle cx="119" cy="41" r="3" fill="#2B2722"/><circle cx="120" cy="40" r="1" fill="#fff"/>'+
-  '<path d="M131,33 C'+(131+wl)+',29 '+(135+wl)+',30 '+(134+wl)+',32" stroke="'+p.whisk+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'+
-  '<path d="M131,37 C'+(131+wl)+',41 '+(135+wl)+',40 '+(134+wl)+',38" stroke="'+p.whisk+'" stroke-width="1.4" fill="none" stroke-linecap="round"/>'+
+  '<defs>'+grad+'</defs>'+mane+horns+stars+
+  '<g'+ac+'><path d="M46,44 C30,24 10,22 6,32 C16,38 18,42 18,44 C18,46 16,50 6,56 C10,66 30,64 46,44 Z" fill="'+p.light+'"/>'+
+  '<path d="M40,44 C30,34 18,32 14,38 C20,42 21,43 21,44 C21,45 20,46 14,50 C18,54 30,52 40,44 Z" fill="'+p.patch+'" opacity=".45"/></g>'+
+  '<path d="M60,22 C70,8 86,8 92,20 C84,22 72,24 62,28 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="82" cy="44" rx="46" ry="26" fill="url(#'+id+')" stroke="#E9DDC8" stroke-width="1"/>'+
+  '<ellipse cx="70" cy="34" rx="13" ry="9" fill="'+p.patch+'" opacity=".9" transform="rotate(-12 70 34)"/>'+
+  '<ellipse cx="98" cy="50" rx="8" ry="5.5" fill="'+p.accent+'" opacity=".7"/>'+
+  '<ellipse cx="56" cy="50" rx="6" ry="4" fill="'+p.accent+'" opacity=".45"/>'+
+  '<path'+fa+' d="M94,54 C98,66 108,70 110,62 C105,58 99,56 95,54 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="99" cy="48" rx="6.5" ry="4" fill="#FF9DB6" opacity=".5"/>'+
+  '<circle cx="106" cy="39" r="6.6" fill="#3B2D2B"/>'+
+  '<circle cx="108.6" cy="36.4" r="2.4" fill="#fff"/>'+
+  '<circle cx="103.6" cy="41" r="1.1" fill="#fff" opacity=".85"/>'+
+  '<path d="M118,45 q5,4 10,1.5" stroke="#D98C8C" stroke-width="1.5" fill="none" stroke-linecap="round"/>'+
+  beard+pearl+
+  '<g fill="#fff" opacity=".8"><circle cx="64" cy="32" r="1.3"/></g>'+
   '</svg>';
 }
-function miniKoi(lv){var p=KPAL[Math.max(0,Math.min(5,lv))];
- return '<svg viewBox="0 0 140 70" width="26" height="13" style="display:block"><g><path d="M34,35 C22,19 7,12 2,17 C12,26 14,31 14,35 C14,39 12,44 2,53 C7,58 22,51 34,35 Z" fill="'+p.light+'"/></g>'+
-  '<path d="M30,35 C36,17 72,12 102,18 C119,21 129,28 131,35 C129,42 119,49 102,52 C72,58 36,53 30,35 Z" fill="'+p.b2+'" stroke="'+p.patch+'" stroke-width="2"/>'+
-  '<path d="M95,20 C108,19 121,24 126,31 C121,35 110,35 99,33 C92,31 90,23 95,20 Z" fill="'+p.patch+'"/>'+
-  '<path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="'+p.accent+'" opacity=".9"/>'+
-  '<circle cx="119" cy="30" r="3.4" fill="#2B2722"/></svg>';}
+function miniKoi(lv){lv=Math.max(0,Math.min(KPAL.length-1,lv));var p=KPAL[lv];
+ return '<svg viewBox="0 0 152 84" width="26" height="15" style="display:block">'+
+  '<path d="M46,44 C30,24 10,22 6,32 C16,38 18,42 18,44 C18,46 16,50 6,56 C10,66 30,64 46,44 Z" fill="'+p.light+'"/>'+
+  '<ellipse cx="82" cy="44" rx="46" ry="26" fill="'+p.b2+'" stroke="'+p.patch+'" stroke-width="2.5"/>'+
+  '<ellipse cx="72" cy="36" rx="12" ry="8" fill="'+p.patch+'" opacity=".85"/>'+
+  '<circle cx="106" cy="40" r="5" fill="#3B2D2B"/><circle cx="108" cy="38" r="1.6" fill="#fff"/></svg>';}
 
 var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[]};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
@@ -948,8 +943,9 @@ function daysSpan(){if(!state.entries.length)return 0;var min=state.entries[0].t
 function syncStats(){var a=document.getElementById("cnt");if(a)a.textContent=state.entries.length;var d=document.getElementById("days");if(d)d.textContent=daysSpan();renderKoi();}
 
 var KLV=[
- {n:"锦鲤苗",min:0},{n:"小锦鲤",min:3},{n:"红锦鲤",min:7},
- {n:"金鳞锦鲤",min:14},{n:"招福锦鲤",min:21},{n:"上岸锦鲤·化龙",min:30}
+ {n:"锦鲤宝宝",min:0},{n:"奶油锦鲤",min:2},{n:"草莓锦鲤",min:4},{n:"蜜桃锦鲤",min:7},
+ {n:"樱花锦鲤",min:10},{n:"薄荷锦鲤",min:14},{n:"葡萄锦鲤",min:18},{n:"星河锦鲤",min:23},
+ {n:"黄金锦鲤",min:28},{n:"月光锦鲤",min:34},{n:"彩虹锦鲤",min:40},{n:"仙女化龙",min:50}
 ];
 function koiLevel(n){var i=0;for(var k=0;k<KLV.length;k++)if(n>=KLV[k].min)i=k;return i;}
 function renderKoi(){
