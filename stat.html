@@ -20,29 +20,17 @@
 </head>
 <body>
  <h1>🧧 锦鲤 · 用户统计</h1>
- <div class="sub">已解锁使用的学员数(按设备去重)</div>
+ <div class="sub">来访学员数据(VerCount · 国内可达)</div>
  <div class="card">
-  <div class="label">累计解锁人数</div>
-  <div class="num load" id="num">读取中…</div>
-  <div class="since" id="since"></div>
+  <div class="label">累计访问人数 (UV)</div>
+  <div class="num" id="uvWrap"><span id="busuanzi_value_site_uv">读取中…</span></div>
+  <div class="since">总访问次数 (PV):<span id="busuanzi_value_site_pv">…</span></div>
   <button id="refresh">🔄 刷新</button>
  </div>
- <div class="note">说明:同一台手机第一次解锁才算 1 个人,刷新/再次打开不会重复计。这是轻量统计,看不到具体是哪个邀请码;想看每个码的明细需要做后端。</div>
+ <div class="note">说明:UV=去重后的访问人数(同一台设备多次访问只算 1),PV=总打开次数。统计的是「打开过工具的人」,不是「成功解锁的人」——纯前端无后端,这已是最接近真实使用量、且国内打得开的口径。换设备/清缓存可能让同一人被重复计 1 次。</div>
+<script defer src="https://cn.vercount.one/js"></script>
 <script>
-var NS="jinli-koi-live-0601";
-function load(){
- var el=document.getElementById("num");el.textContent="读取中…";el.className="num load";
- fetch("https://api.counterapi.dev/v1/"+NS+"/unlock/?_="+Date.now())
-  .then(function(r){return r.json();})
-  .then(function(d){
-    var c=(d&&typeof d.count==="number")?d.count:0;
-    el.textContent=c;el.className="num";
-    if(d&&d.created_at){document.getElementById("since").textContent="自 "+d.created_at.slice(0,10)+" 起统计";}
-  })
-  .catch(function(){el.textContent="读取失败,点刷新重试";el.className="num load";});
-}
-document.getElementById("refresh").addEventListener("click",load);
-load();
+document.getElementById("refresh").addEventListener("click",function(){location.reload();});
 </script>
 </body>
 </html>
