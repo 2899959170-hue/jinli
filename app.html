@@ -1657,7 +1657,11 @@ document.addEventListener("click",function(e){
 load();loadAI();
 /* 纯使用版:免邀请码门 + 预填示例数据,方便录屏演示 */
 if(state.entries.length===0)loadDemoData();
-if(!state.signs||!state.signs.length){var _sp=LUCKNAME.slice();state.signs=[];for(var _i=0;_i<9&&_sp.length;_i++)state.signs.push(_sp.splice(Math.floor(Math.random()*_sp.length),1)[0]);persist();}
+if(!state.signs||!state.signs.length){var _sp=LUCKNAME.slice();state.signs=[];for(var _i=0;_i<9&&_sp.length;_i++)state.signs.push(_sp.splice(Math.floor(Math.random()*_sp.length),1)[0]);}
+/* 把演示记录的日期铺满当月,让日历好看 */
+(function(){var now=new Date(),n=state.entries.length;for(var i=0;i<n;i++){var day=2+(i%25);var d=new Date(now.getFullYear(),now.getMonth(),day,9+(i%9),(i*7)%60,0);state.entries[i].ts=d.getTime();}state.entries.sort(function(a,b){return b.ts-a.ts;});persist();})();
+/* 预生成简历段 + 面试段,点「导出锦鲤」直接是成品 */
+try{state.showExport=true;state.exResult=localSynth(Math.max(60,Math.min(600,state.exLimit||300)));}catch(e){}
 syncStats();render();
 </script>
 <!-- 访问统计:VerCount(不蒜子兼容,国内可达),后台 stat.html 读取 -->
