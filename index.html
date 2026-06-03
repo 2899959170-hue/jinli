@@ -668,7 +668,7 @@ textarea::placeholder{color:var(--dim);}
 
   <div class="foot">
     <span>作品化求职 · 诚实是壁垒</span>
-    <span><a id="reset">清空重开</a></span>
+    <span><a id="switchCode">切换邀请码</a> · <a id="reset">清空重开</a></span>
   </div>
 </div>
 
@@ -1601,6 +1601,9 @@ document.getElementById("tabs").addEventListener("click",function(ev){
 });
 document.getElementById("reset").addEventListener("click",function(){
  if(confirm("清空所有记录?不可恢复。")){state.entries=[];state.result=null;state.showExport=false;state.editing=null;persist();syncStats();render();}
+});
+var swc=document.getElementById("switchCode");if(swc)swc.addEventListener("click",function(){
+ if(confirm("回到邀请码页?(你的记录按邀请码各自保存,换回原来的码就能看到)")){relock();}
 });
 
 /* petal keyframes injected */
