@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>实习翻译机 · 锦鲤版</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@500;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F4F2EC;--surface:#FFFFFF;--surface-2:#F6F4EF;--border:#E7E3DA;--border-strong:#D8D3C7;
+  --ink:#2B2722;--ink-2:#574F45;--muted:#8B847A;--dim:#ABA499;
+  --koi:#E0694A;--koi-deep:#C24E32;--koi-bg:#FBEDE6;--koi-line:#F3D2C4;
+  --gold:#C0922F;--gold-bg:#FAF3E2;
+  --sage:#5F8270;--sage-bg:#EAF0EC;--sage-line:#CADCD0;
+  --sans:"Noto Sans SC","PingFang SC",-apple-system,sans-serif;
+  --serif:"Noto Serif SC","Songti SC",serif;
+}
+.tx{
+  font-family:var(--sans);color:var(--ink);background:var(--bg);min-height:100vh;padding:0 0 70px;
+  background-image:radial-gradient(circle,rgba(43,39,34,.025) 1px,transparent 1px);background-size:32px 32px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:640px;margin:0 auto;padding:0 18px;}
+
+/* ── Hero / 锦鲤池 ── */
+.hero{position:relative;overflow:hidden;background:linear-gradient(165deg,#FBF6EE 0%,#F3ECE0 55%,#EFE7D8 100%);
+  border-radius:0 0 30px 30px;padding:30px 24px 24px;margin-bottom:22px;box-shadow:0 16px 40px -26px rgba(43,39,34,.45);}
+.hero::before{content:'';position:absolute;right:-60px;top:-70px;width:230px;height:230px;border-radius:50%;
+  background:radial-gradient(circle,rgba(224,105,74,.14),transparent 70%);}
+.hwrap{max-width:640px;margin:0 auto;position:relative;z-index:2;}
+.kicker{font-family:var(--serif);font-size:12px;font-weight:600;letter-spacing:.34em;color:var(--koi-deep);}
+.hname{font-size:34px;font-weight:900;letter-spacing:.01em;line-height:1.06;margin-top:9px;color:var(--ink);}
+.hname em{font-style:normal;color:var(--koi);}
+.htag{font-family:var(--serif);font-size:15.5px;color:var(--ink-2);margin-top:13px;font-weight:500;line-height:1.65;}
+
+/* 锦鲤动画 */
+.pond{position:relative;height:78px;margin-top:18px;}
+.ripple{position:absolute;border:1.5px solid var(--koi-line);border-radius:50%;opacity:.6;}
+.r1{width:60px;height:18px;left:8px;top:42px;animation:bob 4.2s ease-in-out infinite;}
+.r2{width:34px;height:11px;left:120px;top:54px;border-color:var(--sage-line);animation:bob 3.4s ease-in-out infinite .6s;}
+.r3{width:22px;height:8px;right:30px;top:30px;animation:bob 3.8s ease-in-out infinite .3s;}
+@keyframes bob{0%,100%{transform:scale(1);opacity:.5;}50%{transform:scale(1.18);opacity:.2;}}
+.koi{position:absolute;left:0;top:4px;width:130px;height:64px;animation:swim 11s ease-in-out infinite;transform-origin:center;filter:drop-shadow(0 6px 8px rgba(43,39,34,.12));}
+@keyframes swim{
+  0%{transform:translateX(0) translateY(0) rotate(-2deg);}
+  24%{transform:translateX(120px) translateY(7px) rotate(2deg);}
+  48%{transform:translateX(215px) translateY(-2px) rotate(-3deg) scaleX(-1);}
+  50%{transform:translateX(215px) translateY(-2px) rotate(3deg) scaleX(-1);}
+  74%{transform:translateX(110px) translateY(8px) rotate(-2deg) scaleX(-1);}
+  76%{transform:translateX(110px) translateY(8px) rotate(2deg);}
+  100%{transform:translateX(0) translateY(0) rotate(-2deg);}
+}
+.koi .tail{transform-origin:44px 44px;animation:tail 1.4s ease-in-out infinite;}
+@keyframes tail{0%,100%{transform:rotate(-7deg);}50%{transform:rotate(7deg);}}
+.koi .finA{transform-origin:94px 54px;animation:finA 1.7s ease-in-out infinite;}
+.koi .finB{transform-origin:94px 54px;animation:finB 1.7s ease-in-out infinite;}
+@keyframes finA{0%,100%{transform:rotate(0);}50%{transform:rotate(-12deg);}}
+@keyframes finB{0%,100%{transform:rotate(0);}50%{transform:rotate(12deg);}}
+/* 锦鲤养成 / 进阶 */
+.koi svg{transform-origin:center;transition:transform .7s cubic-bezier(.34,1.4,.5,1);}
+.pond.lv1 .koi svg{transform:scale(.78);}
+.pond.lv2 .koi svg{transform:scale(.9);}
+.pond.lv3 .koi svg{transform:scale(1.02);}
+.pond.lv4 .koi svg{transform:scale(1.1);}
+.pond.lv5 .koi svg{transform:scale(1.16);}
+.pond.lv6 .koi svg{transform:scale(1.42);}
+.pond.lv4 .koi{filter:drop-shadow(0 6px 10px rgba(192,78,50,.24));}
+.pond.lv5 .koi{filter:drop-shadow(0 0 9px rgba(192,146,47,.5)) drop-shadow(0 6px 8px rgba(43,39,34,.12));}
+.pond.lv6 .koi{animation-duration:9s;}
+.pond.lv6 .koi svg{animation:dragonGlow 2.2s ease-in-out infinite;}
+@keyframes dragonGlow{0%,100%{filter:drop-shadow(0 0 9px rgba(192,146,47,.55)) drop-shadow(0 5px 8px rgba(43,39,34,.14));}
+  50%{filter:drop-shadow(0 0 20px rgba(255,210,90,.95)) drop-shadow(0 5px 8px rgba(43,39,34,.14));}}
+.pond.lv5 .ripple,.pond.lv6 .ripple{border-color:var(--gold-bg);}
+.koilv{margin-top:14px;background:rgba(255,255,255,.62);border:1px solid var(--koi-line);border-radius:14px;
+  padding:11px 14px;position:relative;z-index:2;}
+.klvtop{display:flex;align-items:center;gap:9px;margin-bottom:9px;}
+.klvbadge{font-family:var(--serif);font-weight:700;font-size:12.5px;color:#fff;letter-spacing:1px;
+  background:linear-gradient(135deg,var(--koi),var(--koi-deep));padding:3px 12px;border-radius:20px;flex:none;}
+.klvbadge.max{background:linear-gradient(135deg,var(--gold),#9C7723);box-shadow:0 4px 12px -4px rgba(192,146,47,.7);}
+.klvnext{margin-left:auto;font-size:11.5px;color:var(--muted);font-weight:600;}
+.klvtrack{height:8px;background:var(--koi-bg);border:1px solid var(--koi-line);border-radius:6px;overflow:hidden;}
+.klvfill{height:100%;background:linear-gradient(90deg,var(--koi),var(--gold));border-radius:6px;
+  transition:width .8s cubic-bezier(.3,1,.4,1);}
+/* 花字 + 印章 */
+.seal{position:absolute;right:22px;top:22px;width:58px;height:64px;border:2.5px solid var(--koi);border-radius:11px;
+  color:var(--koi);font-family:var(--serif);font-weight:700;font-size:17px;line-height:1;letter-spacing:2px;
+  writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;padding:7px 0;
+  transform:rotate(5deg);background:rgba(224,105,74,.07);z-index:3;}
+.huazi{position:absolute;right:12px;bottom:6px;z-index:3;font-family:var(--serif);font-weight:900;font-size:30px;
+  letter-spacing:3px;color:#fff;transform:rotate(-4deg);line-height:1;
+  text-shadow:-2px -2px 0 #C24E32,2px -2px 0 #C24E32,-2px 2px 0 #C24E32,2px 2px 0 #C24E32,
+    0 -2px 0 #C24E32,0 2px 0 #C24E32,-2px 0 0 #C24E32,2px 0 0 #C24E32,3px 5px 0 rgba(192,78,50,.3);}
+.huazi small{display:block;font-size:10px;letter-spacing:3px;text-align:center;margin-top:6px;color:var(--koi-deep);
+  font-weight:700;text-shadow:none;}
+
+.stats{display:flex;gap:26px;margin-top:8px;align-items:flex-end;position:relative;z-index:2;}
+.stat b{font-size:42px;font-weight:900;line-height:.85;color:var(--koi);display:block;letter-spacing:-.01em;}
+.stat.ink b{color:var(--ink);}
+.stat span{font-size:11.5px;color:var(--muted);margin-top:9px;display:block;font-weight:500;}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:10px;margin-bottom:20px;}
+.tab{flex:1;font-size:14.5px;font-weight:700;color:var(--muted);background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:13px 8px;cursor:pointer;transition:.16s;text-align:center;}
+.tab small{display:block;font-size:10.5px;color:var(--dim);margin-top:3px;font-weight:500;}
+.tab.on{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:0 8px 18px -10px rgba(43,39,34,.5);}
+.tab.on small{color:#C9C2B6;}
+
+/* ── Cards / form ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;margin-bottom:14px;
+  box-shadow:0 1px 3px rgba(43,39,34,.04),0 16px 34px -26px rgba(43,39,34,.22);}
+.editbar{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gold);background:var(--gold-bg);
+  border:1px solid #ECDFBD;border-radius:11px;padding:9px 13px;margin-bottom:16px;font-weight:600;}
+.editbar a{margin-left:auto;color:var(--muted);cursor:pointer;text-decoration:underline;font-weight:500;}
+.q{margin-bottom:17px;}.q:last-of-type{margin-bottom:0;}
+.qlabel{font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.5;display:flex;gap:9px;}
+.qnum{font-family:var(--serif);color:var(--koi);font-weight:700;flex:none;}
+textarea,input{width:100%;font-family:var(--sans);font-size:14.5px;color:var(--ink);background:var(--surface-2);
+  border:1px solid var(--border);border-radius:12px;padding:12px 13px;resize:vertical;line-height:1.6;outline:none;transition:.15s;}
+textarea:focus,input:focus{border-color:var(--koi);background:#fff;box-shadow:0 0 0 3px var(--koi-bg);}
+textarea::placeholder{color:var(--dim);}
+.askflag{display:flex;gap:8px;margin-top:9px;font-size:12.5px;color:var(--gold);background:var(--gold-bg);
+  border:1px solid #ECDFBD;border-radius:11px;padding:10px 12px;line-height:1.55;}
+.askflag b{flex:none;font-family:var(--serif);}
+.btnrow{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap;}
+.btn{font-size:14.5px;font-weight:700;color:#fff;background:var(--koi);border:none;border-radius:12px;
+  padding:13px 24px;cursor:pointer;transition:.15s;box-shadow:0 8px 18px -9px rgba(224,105,74,.65);}
+.btn:hover{background:var(--koi-deep);}.btn:active{transform:translateY(1px);}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.btn.ghost{background:none;color:var(--ink-2);border:1px solid var(--border-strong);box-shadow:none;}
+.btn.ghost:hover{background:var(--surface-2);}
+.hint{font-size:12px;color:var(--dim);}
+.repquick{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.rqb{flex:1;min-width:64px;font-size:12.5px;font-weight:700;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;cursor:pointer;font-family:inherit;}
+.rqb:active{background:var(--koi);color:#fff;border-color:var(--koi);}
+.reprow{display:flex;align-items:center;gap:8px;margin-top:12px;flex-wrap:wrap;}
+.reprow label{font-size:13px;font-weight:700;color:var(--muted);}
+.reprow input[type=date]{flex:1;min-width:120px;border:1px solid var(--border);border-radius:9px;padding:8px 10px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+.jdcard{border:1px solid var(--koi);}
+.jdhd{font-size:15.5px;font-weight:800;color:var(--koi);}
+.jdsub{font-size:12.5px;color:var(--muted);line-height:1.6;margin:6px 0 10px;}
+.jdbox{width:100%;height:96px;border:1px solid var(--border);border-radius:10px;padding:10px;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;resize:vertical;}
+.jdrow{display:flex;align-items:center;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.jdrow label{font-size:13px;font-weight:700;color:var(--muted);}
+.jdrow input[type=number]{width:72px;border:1px solid var(--border);border-radius:9px;padding:8px;font-size:14px;font-family:inherit;background:#fff;color:var(--ink);}
+.jdunit{font-size:12.5px;color:var(--muted);}
+.jdrow .btn{flex:1;min-width:120px;}
+.jdout{margin-top:14px;border-top:1px dashed var(--border);padding-top:12px;}
+.jdkw{font-size:12.5px;color:var(--muted);margin-bottom:8px;}
+.jdkw .kw{display:inline-block;background:var(--surface-2);border:1px solid var(--border);color:var(--ink-2);border-radius:20px;padding:3px 10px;font-size:12px;margin:3px 5px 0 0;font-weight:600;}
+.jdpara{background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:13px 14px;font-size:14.5px;line-height:1.85;color:var(--ink);}
+.jdcount{font-size:11.5px;color:var(--dim);margin-top:7px;}
+
+/* ── 锦鲤签 / 结果 ── */
+.luck{position:relative;overflow:hidden;margin-top:16px;border-radius:18px;padding:22px 22px 20px;
+  background:linear-gradient(170deg,#FCF1EA 0%,#FBF6EE 70%);border:1px solid var(--koi-line);
+  box-shadow:0 14px 32px -22px rgba(224,105,74,.5);animation:pop .45s cubic-bezier(.2,.9,.3,1.2);}
+@keyframes pop{0%{transform:scale(.94) translateY(8px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
+.lucktop{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.luckstamp{font-family:var(--serif);font-size:13px;font-weight:700;color:#fff;background:var(--koi);
+  border-radius:9px;padding:4px 11px;letter-spacing:.04em;}
+.luckname{font-family:var(--serif);font-size:14px;color:var(--koi-deep);font-weight:600;}
+.luck.rare{background:linear-gradient(160deg,#FFF7DC 0%,#FBE8B8 45%,#FCF3D6 100%);border-color:#E9C766;box-shadow:0 16px 40px -20px rgba(201,150,30,.65);}
+.luck.rare .luckstamp{background:linear-gradient(135deg,#E0A92E,#C9881E);box-shadow:0 6px 14px -6px rgba(201,150,30,.8);}
+.luck.rare .luckname{color:#9A6B12;}
+.luck.rare .luckmsg{color:#5C3D0A;}
+.luck.rare:after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:18px;box-shadow:inset 0 0 24px -6px rgba(255,215,90,.6);animation:rareglow 1.8s ease-in-out infinite;}
+@keyframes rareglow{0%,100%{opacity:.5;}50%{opacity:1;}}
+.rarefx{position:fixed;inset:0;z-index:300;pointer-events:none;overflow:hidden;transition:opacity .6s;}
+.rarefx.out{opacity:0;}
+.rarefx .rfxhalo{position:absolute;left:50%;top:38%;width:340px;height:340px;transform:translate(-50%,-50%);border-radius:50%;
+  background:radial-gradient(circle,rgba(255,225,130,.55) 0%,rgba(255,210,90,.18) 45%,transparent 70%);animation:rfxpulse 1.6s ease-in-out infinite;}
+@keyframes rfxpulse{0%,100%{transform:translate(-50%,-50%) scale(.9);opacity:.7;}50%{transform:translate(-50%,-50%) scale(1.15);opacity:1;}}
+.rarefx .rfxdragon{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.4);opacity:0;
+  filter:drop-shadow(0 6px 22px rgba(201,150,30,.6));animation:rfxdragon 2.6s cubic-bezier(.2,.9,.3,1.1) forwards;}
+@keyframes rfxdragon{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0;}
+  22%{transform:translate(-50%,-50%) scale(1.12) rotate(3deg);opacity:1;}
+  40%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1;}
+  80%{opacity:1;}100%{transform:translate(-50%,-54%) scale(1.04);opacity:0;}}
+.rarefx .rfxtip{position:absolute;left:0;right:0;top:58%;text-align:center;font-family:var(--serif);font-weight:700;
+  font-size:19px;color:#9A6B12;text-shadow:0 2px 10px rgba(255,225,130,.9);animation:rfxtip 2.6s ease forwards;}
+@keyframes rfxtip{0%{opacity:0;transform:translateY(10px) scale(.9);}25%{opacity:1;transform:translateY(0) scale(1);}80%{opacity:1;}100%{opacity:0;}}
+.rfxpetal{position:absolute;top:-16px;border-radius:60% 0 60% 0;opacity:.95;box-shadow:0 0 6px rgba(255,210,90,.7);}
+@keyframes rfxfall{0%{opacity:0;transform:translateY(-20px) translateX(0) rotate(0);}
+  8%{opacity:1;}100%{opacity:0;transform:translateY(105vh) translateX(var(--dx)) rotate(360deg);}}
+.luckmsg{font-family:var(--serif);font-size:16.5px;line-height:1.75;color:var(--ink);font-weight:500;}
+.luckbullet{margin-top:15px;background:#fff;border:1px solid var(--border);border-radius:13px;padding:15px 16px;}
+.bltag{font-size:11px;font-weight:700;color:var(--sage);letter-spacing:.06em;margin-bottom:8px;}
+.blbody{font-size:15px;line-height:1.7;color:var(--ink);font-weight:500;}
+.luckcopy{margin-top:13px;font-size:12.5px;color:var(--muted);}
+.luckcopy a{color:var(--koi-deep);cursor:pointer;text-decoration:underline;font-weight:600;}
+.petal{position:absolute;top:-12px;width:9px;height:9px;border-radius:60% 0 60% 0;pointer-events:none;opacity:0;}
+
+/* ── timeline ── */
+.sec{margin-top:26px;}
+.sechead{font-family:var(--serif);font-size:14px;font-weight:600;color:var(--ink-2);margin-bottom:13px;
+  display:flex;justify-content:space-between;align-items:baseline;}
+.sechead span.cnt{font-size:12px;color:var(--dim);font-weight:500;}
+.entry{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px 16px;margin-bottom:11px;
+  box-shadow:0 1px 2px rgba(43,39,34,.03);}
+.entry.edny{border-color:var(--koi-line);box-shadow:0 0 0 3px var(--koi-bg);}
+.emeta{font-size:11px;color:var(--dim);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.emeta .acts{display:flex;gap:12px;}
+.emeta .acts a{color:var(--muted);cursor:pointer;text-decoration:none;font-weight:600;}
+.emeta .acts a:hover{color:var(--koi-deep);}
+.etask{font-size:12px;color:var(--dim);margin-bottom:8px;line-height:1.5;}
+.etask b{color:var(--muted);font-weight:600;}
+.earrow{color:var(--koi);}
+.ebullet{font-size:14px;line-height:1.65;color:var(--ink);}
+.empty{color:var(--muted);font-size:14px;line-height:1.85;padding:26px 20px;text-align:center;
+  border:1px dashed var(--border-strong);border-radius:16px;background:var(--surface);}
+
+/* ── export ── */
+.paper{background:linear-gradient(180deg,#FFFFFF,#FCFAF6);border:1px solid var(--border);border-radius:20px;
+  padding:26px 24px;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,39,34,.04),0 18px 40px -26px rgba(43,39,34,.2);}
+.eyebrow{font-family:var(--serif);font-size:12px;font-weight:600;letter-spacing:.18em;color:var(--koi);}
+.ptitle{font-size:23px;font-weight:900;margin:8px 0 6px;}
+.psub{font-size:12px;color:var(--dim);}
+.projblock{margin-top:18px;}
+.projitem{display:flex;gap:12px;align-items:flex-start;margin-bottom:11px;}
+.pdot{flex:none;width:7px;height:7px;border-radius:50%;background:#fff;border:1.5px solid var(--koi);margin-top:8px;}
+.pitext{font-size:14px;color:var(--ink-2);line-height:1.68;}
+.mtr{font-family:var(--serif);font-weight:700;color:var(--koi-deep);}
+.paperfoot{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);font-size:11px;color:var(--dim);text-align:right;}
+/* 投喂示范 */
+.demoex{background:var(--sage-bg);border:1px solid var(--sage-line);border-radius:14px;padding:14px 15px;margin-bottom:14px;}
+.demoex .dl{font-family:var(--serif);font-size:12px;font-weight:600;color:var(--sage);margin-bottom:8px;}
+.demoex .drow{font-size:13px;line-height:1.6;color:var(--ink-2);}
+.demoex .draw{color:var(--muted);}.demoex .dgt{color:var(--koi);font-weight:700;}
+.demoex .dout{margin-top:7px;font-size:13.5px;color:var(--ink);font-weight:500;line-height:1.65;
+  background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+.datestrip{display:flex;align-items:center;gap:10px;margin-bottom:13px;padding:0 2px;}
+.dsdate{font-size:12.5px;color:var(--ink-2);font-weight:600;}
+.dsright{margin-left:auto;display:flex;gap:7px;align-items:center;}
+.dsset{font-size:11px;color:var(--dim);cursor:pointer;border:1px solid var(--border-strong);
+  border-radius:20px;padding:3px 10px;text-decoration:none;}
+.dsset:active{color:var(--koi);border-color:var(--koi-line);}
+.dsdemo{font-size:11px;color:var(--dim);cursor:pointer;border:1px dashed var(--border-strong);
+  border-radius:20px;padding:3px 10px;text-decoration:none;}
+.dsdemo:active{color:var(--koi);border-color:var(--koi-line);}
+.setpanel{background:#FFF;border:1px solid var(--border-strong);border-radius:14px;padding:13px 14px;margin-bottom:13px;}
+.sethd{font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.setpill{font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.setpill.on{background:rgba(192,146,47,.14);color:var(--gold);}
+.setpill.off{background:var(--surf-2,#F2EDE6);color:var(--dim);}
+.setrow{display:flex;gap:7px;align-items:flex-start;font-size:12px;color:var(--ink-2);line-height:1.5;cursor:pointer;margin-bottom:9px;}
+.setrow input{margin-top:2px;flex:none;}
+.setlbl{font-size:11.5px;color:var(--ink-2);font-weight:600;margin-bottom:5px;}
+.setkey{width:100%;box-sizing:border-box;border:1px solid var(--border-strong);border-radius:9px;padding:8px 10px;font-size:13px;font-family:inherit;background:var(--surf-1,#FBF8F3);}
+.setkey:focus{outline:none;border-color:var(--koi-line);}
+.setbtns{display:flex;gap:8px;margin-top:9px;}
+.setsave{flex:1;border:none;background:var(--koi);color:#fff;font-weight:700;font-size:13px;border-radius:9px;padding:8px;cursor:pointer;}
+.setsave:active{background:var(--koi-deep);}
+.setclr{border:1px solid var(--border-strong);background:#fff;color:var(--dim);font-size:13px;border-radius:9px;padding:8px 14px;cursor:pointer;}
+.setnote{font-size:10.5px;color:var(--dim);line-height:1.6;margin-top:10px;}
+.setnote b{color:var(--ink-2);}
+/* 简历分组小标题 */
+.exsum{display:flex;gap:10px;margin:16px 0 4px;}
+.exsum .sm{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:12px 8px;text-align:center;}
+.exsum .sm b{display:block;font-family:var(--serif);font-size:24px;color:var(--koi);font-weight:900;line-height:1;}
+.exsum .sm span{font-size:10.5px;color:var(--muted);margin-top:5px;display:block;}
+/* 简历成品段 */
+.rfinal{margin-top:16px;background:#fff;border:1.5px solid var(--border-strong);border-radius:14px;padding:18px 17px;
+  box-shadow:inset 0 1px 0 #fff,0 2px 6px rgba(43,39,34,.04);}
+.rfgroup{margin-bottom:15px;}.rfgroup:last-child{margin-bottom:0;}
+.rfhead{font-family:var(--serif);font-weight:700;font-size:14px;color:var(--ink);padding-bottom:6px;margin-bottom:8px;
+  border-bottom:1.5px solid var(--koi-line);}
+.rfbul{font-size:13.5px;line-height:1.7;color:var(--ink-2);display:flex;gap:7px;margin-bottom:7px;}
+.rfbul:last-child{margin-bottom:0;}
+.rfdash{color:var(--koi);font-weight:700;flex:none;}
+.rftext{flex:1;}
+.rgroup{margin-top:14px;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.rgrouphead{display:flex;align-items:center;gap:10px;background:linear-gradient(90deg,var(--koi-bg),#fff);padding:11px 14px;border-bottom:1px solid var(--koi-line);}
+.rgnum{font-family:var(--serif);font-weight:900;color:var(--koi);font-size:15px;flex:none;}
+.rgtheme{font-size:14px;font-weight:700;color:var(--ink);}
+.rgcount{margin-left:auto;font-size:11px;color:var(--muted);flex:none;}
+.rgbody{padding:13px 15px;}
+.rgitem{display:flex;gap:11px;align-items:flex-start;margin-bottom:11px;}
+.rgitem:last-child{margin-bottom:0;}
+.rgdot{flex:none;width:7px;height:7px;border-radius:50%;background:#fff;border:1.5px solid var(--koi);margin-top:7px;}
+.rgtext{font-size:13.5px;color:var(--ink-2);line-height:1.65;}
+/* 面试追问流程图 */
+.flowbox{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:16px 15px;margin:14px 0 6px;}
+.flowcap{font-family:var(--serif);font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:12px;text-align:center;}
+.flownode{position:relative;border-radius:11px;padding:10px 13px;font-size:12.5px;line-height:1.5;color:var(--ink-2);background:#fff;border:1px solid var(--border);}
+.flownode b{color:var(--koi-deep);font-weight:700;}
+.flownode.start{background:var(--ink);color:#fff;border-color:var(--ink);font-weight:700;text-align:center;}
+.flownode.endn{background:var(--sage-bg);color:var(--sage);border-color:var(--sage-line);font-weight:700;text-align:center;}
+.flowar{display:flex;justify-content:center;align-items:center;color:var(--koi);font-size:13px;height:18px;font-weight:700;}
+.rgday{flex:none;font-size:10px;font-weight:700;color:var(--koi-deep);background:var(--koi-bg);border:1px solid var(--koi-line);border-radius:6px;padding:2px 7px;margin-top:4px;}
+.rgnote{font-size:11.5px;color:var(--muted);line-height:1.6;margin-top:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;}
+/* 打卡日历 */
+.cal{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:15px 14px;box-shadow:0 1px 2px rgba(43,39,34,.03);}
+.calhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.calhd .mn{font-family:var(--serif);font-weight:700;font-size:15px;color:var(--ink);}
+.calnav{display:flex;gap:8px;}
+.calnav button{width:30px;height:30px;border-radius:9px;border:1px solid var(--border);background:var(--surface-2);color:var(--ink-2);font-size:16px;line-height:1;cursor:pointer;}
+.calnav button:active{transform:translateY(1px);}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.calwk{text-align:center;font-size:11px;color:var(--dim);padding:3px 0;font-weight:600;}
+.calcell{aspect-ratio:1;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:12.5px;color:var(--dim);position:relative;border:1px solid transparent;}
+.calcell.empty{visibility:hidden;}
+.calcell.has{background:var(--koi-bg);border-color:var(--koi-line);color:var(--koi-deep);font-weight:700;cursor:pointer;}
+.calcell.sel{background:var(--koi);color:#fff;border-color:var(--koi);box-shadow:0 6px 14px -7px rgba(224,105,74,.7);}
+.calcell.today{outline:2px solid var(--gold);outline-offset:-2px;}
+.calcell .cd{font-size:10.5px;line-height:1;font-weight:700;}
+.calcell.has svg{margin:2px 0 1px;}
+.calcell .cnt{font-size:8px;font-weight:700;line-height:1;}
+.calcell.has .cnt{color:var(--koi);}.calcell.sel .cnt{color:#fff;}
+.calcell.sel svg path[stroke="#E6DAC4"]{filter:brightness(1.15);}
+.selday{margin-top:14px;}
+.seldayhd{font-family:var(--serif);font-size:12.5px;font-weight:600;color:var(--ink-2);margin-bottom:10px;}
+.exdivider{display:flex;align-items:center;gap:16px;margin:22px 6px;}
+.exdivider::before,.exdivider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border-strong),transparent);}
+.exdivider span{font-family:var(--serif);font-size:14.5px;color:var(--ink);font-weight:600;text-align:center;line-height:1.55;max-width:70%;}
+.ivcard{border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:13px;background:#fff;
+  box-shadow:0 1px 2px rgba(43,39,34,.03),0 12px 26px -22px rgba(43,39,34,.18);}
+.ivchip{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.06em;color:var(--muted);
+  background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:3px 9px;margin-bottom:10px;}
+.ivline{font-size:14.5px;font-weight:700;color:var(--ink);line-height:1.55;padding-left:13px;border-left:3px solid var(--ink);}
+.diglab{font-family:var(--serif);font-size:12px;font-weight:600;color:var(--gold);margin:15px 0 2px;}
+.layers{position:relative;margin:9px 0 4px;}
+.layers::before{content:'';position:absolute;left:11px;top:18px;bottom:18px;width:2px;background:#ECDFBD;}
+.layer{position:relative;display:flex;gap:14px;align-items:flex-start;padding:7px 0;}
+.lnode{flex:none;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #ECDFBD;color:var(--gold);
+  font-family:var(--serif);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;z-index:1;}
+.lq{font-size:13px;color:var(--ink-2);line-height:1.55;padding-top:3px;}
+.ivans{margin-top:15px;background:var(--sage-bg);border:1px solid var(--sage-line);border-left:3px solid var(--sage);
+  border-radius:13px;padding:14px 16px;}
+.anslab{font-family:var(--serif);font-size:11.5px;font-weight:600;color:var(--sage);margin-bottom:7px;}
+.ivans p{font-size:12.5px;color:var(--ink-2);line-height:1.72;margin-bottom:9px;}
+.ivans p:last-child{margin-bottom:0;}
+.ivans b{color:var(--sage);font-family:var(--serif);}
+.ivans .miss{color:var(--koi-deep);}
+.ivtip{margin-top:11px;font-size:12px;color:var(--gold);background:var(--gold-bg);border:1px solid #ECDFBD;
+  border-radius:11px;padding:10px 12px;line-height:1.6;}
+.ivtip b{font-family:var(--serif);color:var(--gold);}
+.hook{background:linear-gradient(165deg,#2F2A24,#211D18);color:#fff;border-radius:20px;padding:30px 26px;margin-top:20px;
+  text-align:center;position:relative;overflow:hidden;box-shadow:0 22px 50px -28px rgba(43,39,34,.6);}
+.hook::after{content:'';position:absolute;left:-50px;bottom:-90px;width:230px;height:230px;border-radius:50%;
+  background:radial-gradient(circle,rgba(224,105,74,.35),transparent 70%);}
+.hookwrap{position:relative;z-index:1;}
+.hooktitle{font-family:var(--serif);font-size:19px;font-weight:700;line-height:1.5;}
+.hooktitle em{font-style:normal;color:var(--koi);}
+.hooksub{font-size:13px;color:#C6BEB2;margin-top:12px;line-height:1.7;}
+.hookbtn{font-size:15px;font-weight:700;color:#fff;background:var(--koi);border:none;border-radius:12px;
+  padding:13px 30px;margin-top:18px;cursor:pointer;box-shadow:0 8px 20px -10px rgba(224,105,74,.7);}
+.hooknote{font-size:10.5px;color:#7A7164;margin-top:14px;}
+
+.foot{max-width:640px;margin:30px auto 0;padding:0 20px;font-size:11px;color:var(--dim);
+  display:flex;justify-content:space-between;}
+.foot a{color:var(--dim);cursor:pointer;text-decoration:underline;}
+.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:var(--ink);color:#fff;
+  font-size:13px;font-weight:600;padding:11px 20px;border-radius:12px;box-shadow:0 12px 30px -12px rgba(0,0,0,.5);
+  z-index:50;animation:tin .3s ease;}
+@keyframes tin{from{opacity:0;transform:translateX(-50%) translateY(8px);}to{opacity:1;}}
+
+/* ── 邀请码解锁门 ── */
+.gate{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;padding:24px;
+  background:linear-gradient(165deg,#FBF6EE 0%,#F1E8DA 60%,#ECE2D2 100%);transition:opacity .35s;}
+.gatecard{position:relative;width:100%;max-width:362px;background:var(--surface);border:1px solid var(--border);
+  border-radius:26px;overflow:hidden;box-shadow:0 28px 64px -28px rgba(43,39,34,.55);}
+.gtop{position:relative;height:104px;overflow:hidden;
+  background:linear-gradient(160deg,#FCEFE6 0%,#F7E0CF 55%,#F3D8C2 100%);}
+.gtop .gr{position:absolute;border:1.5px solid rgba(224,105,74,.3);border-radius:50%;}
+.gtop .gr1{width:70px;height:20px;left:30px;top:64px;}
+.gtop .gr2{width:40px;height:12px;right:46px;top:40px;}
+.gkoi{position:absolute;left:50%;top:18px;transform:translateX(-50%);animation:gfloat 3.6s ease-in-out infinite;
+  filter:drop-shadow(0 6px 7px rgba(43,39,34,.14));}
+@keyframes gfloat{0%,100%{transform:translateX(-50%) translateY(0) rotate(-2deg);}50%{transform:translateX(-50%) translateY(-7px) rotate(2deg);}}
+.gkoi .tail{transform-origin:34px 35px;animation:tail 1.5s ease-in-out infinite;}
+.gseal{position:absolute;right:16px;top:14px;width:44px;height:50px;border:2.5px solid var(--koi);border-radius:9px;
+  color:var(--koi);font-family:var(--serif);font-weight:700;font-size:14px;letter-spacing:2px;writing-mode:vertical-rl;
+  display:flex;align-items:center;justify-content:center;padding:5px 0;transform:rotate(6deg);background:rgba(251,237,230,.7);z-index:2;}
+.gbody{padding:18px 26px 26px;text-align:center;}
+.ghuazi{font-family:var(--serif);font-weight:900;font-size:44px;letter-spacing:4px;color:#fff;transform:rotate(-3deg);
+  line-height:1;margin:2px 0 4px;
+  text-shadow:-2px -2px 0 #C24E32,2px -2px 0 #C24E32,-2px 2px 0 #C24E32,2px 2px 0 #C24E32,
+    0 -3px 0 #C24E32,0 3px 0 #C24E32,-3px 0 0 #C24E32,3px 0 0 #C24E32,4px 7px 0 rgba(192,78,50,.28);}
+.gtitle{font-size:18px;font-weight:900;color:var(--ink);margin-top:13px;}
+.gsub{font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:9px;}
+.gfeat{display:flex;flex-direction:column;gap:8px;margin:17px 0 6px;text-align:left;}
+.gf{font-size:13px;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
+  padding:10px 12px;display:flex;align-items:center;gap:10px;line-height:1.4;}
+.gf b{font-size:11.5px;font-weight:700;color:#fff;border-radius:7px;padding:3px 9px;flex:none;}
+.gf1 b{background:var(--koi);}.gf2 b{background:var(--gold);}.gf3 b{background:var(--sage);}
+.gate input{margin-top:16px;text-align:center;font-size:16px;letter-spacing:3px;font-weight:700;text-transform:uppercase;padding:14px;}
+.gerr{font-size:12.5px;color:var(--koi-deep);min-height:18px;margin-top:10px;line-height:1.5;font-weight:500;}
+.ghook{display:block;margin-top:16px;padding-top:16px;border-top:1px dashed var(--border-strong);font-size:13px;
+  color:var(--ink-2);line-height:1.7;text-decoration:none;}
+.ghook b{color:var(--koi-deep);}
+.gfree{display:inline-block;font-size:11px;font-weight:700;color:var(--sage);background:var(--sage-bg);
+  border:1px solid var(--sage-line);border-radius:20px;padding:4px 12px;margin-top:12px;}
+.gnote{font-size:11.5px;color:var(--dim);line-height:1.65;margin-top:12px;}
+#codeBtn{font-size:17px;padding:17px 24px;border-radius:14px;letter-spacing:1px;
+  background:linear-gradient(135deg,#F2845C 0%,var(--koi) 55%,var(--koi-deep) 100%);
+  box-shadow:0 12px 26px -8px rgba(224,105,74,.75);animation:codepulse 1.9s ease-in-out infinite;}
+#codeBtn:hover{filter:brightness(1.04);}
+@keyframes codepulse{0%,100%{transform:scale(1);box-shadow:0 12px 26px -8px rgba(224,105,74,.6);}
+  50%{transform:scale(1.025);box-shadow:0 16px 32px -8px rgba(224,105,74,.9);}}
+
+/* ── 底部插播广告(陪跑获客) ── */
+/* ── 团队介绍 ── */
+.teamband{max-width:640px;margin:30px auto 0;padding:0 18px;}
+.teamhead{text-align:center;margin-bottom:16px;}
+.thtag{display:inline-block;font-family:var(--serif);font-size:11px;font-weight:600;letter-spacing:.28em;
+  color:var(--koi-deep);background:var(--koi-bg);border:1px solid var(--koi-line);border-radius:20px;padding:4px 14px;}
+.teamhead h3{font-family:var(--serif);font-size:18px;font-weight:700;color:var(--ink);margin-top:11px;line-height:1.5;}
+.devcard{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;
+  box-shadow:0 1px 3px rgba(43,39,34,.04),0 16px 34px -26px rgba(43,39,34,.22);}
+.devtop{display:flex;gap:14px;align-items:center;}
+.devav{width:54px;height:54px;flex:none;border-radius:15px;background:linear-gradient(135deg,var(--koi),var(--koi-deep));
+  color:#fff;font-family:var(--serif);font-weight:700;font-size:24px;display:flex;align-items:center;justify-content:center;}
+.devname{font-size:17px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.devbadge{font-size:10.5px;font-weight:700;color:var(--koi-deep);background:var(--koi-bg);border:1px solid var(--koi-line);
+  border-radius:7px;padding:2px 8px;}
+.devtitle{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:4px;}
+.devdesc{font-size:13.5px;line-height:1.75;color:var(--ink-2);margin-top:14px;}
+.devbtn{display:block;text-align:center;text-decoration:none;font-size:15px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--koi),var(--koi-deep));border-radius:13px;padding:13px;margin-top:16px;
+  box-shadow:0 10px 22px -12px rgba(224,105,74,.8);}
+.devbtn:active{transform:translateY(1px);}
+.teamstat{display:flex;gap:10px;margin-top:14px;}
+.teamstat .ts{flex:1;background:var(--surface-2);border:1px solid var(--border);border-radius:13px;padding:13px 6px;text-align:center;}
+.teamstat .ts b{display:block;font-family:'Playfair Display',var(--serif);font-size:23px;font-weight:900;color:var(--koi);line-height:1;}
+.teamstat .ts span{display:block;font-size:10.5px;color:var(--muted);margin-top:6px;}
+.teamsub{font-family:var(--serif);font-size:13px;font-weight:600;color:var(--ink-2);text-align:center;margin:18px 0 12px;}
+.memlist{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.mem{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);
+  border-radius:13px;padding:12px 11px;}
+.memav{width:34px;height:34px;flex:none;border-radius:10px;background:var(--gold-bg);border:1px solid #ECDFBD;
+  color:var(--gold);font-family:var(--serif);font-weight:700;font-size:15px;display:flex;align-items:center;justify-content:center;}
+.mem.lead .memav{background:var(--koi-bg);border-color:var(--koi-line);color:var(--koi-deep);}
+.memn{font-size:13px;font-weight:700;color:var(--ink);}
+.memt{font-size:11px;color:var(--muted);line-height:1.5;margin-top:3px;}
+.teamnote{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.7;margin-top:14px;}
+.adband{max-width:640px;margin:30px auto 0;padding:0 18px;}
+.adcard{position:relative;overflow:hidden;background:linear-gradient(165deg,#2F2A24,#211D18);color:#fff;
+  border-radius:20px;padding:26px 24px;box-shadow:0 22px 50px -28px rgba(43,39,34,.6);}
+.adcard::after{content:'';position:absolute;right:-50px;top:-70px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(224,105,74,.32),transparent 70%);}
+.adwrap{position:relative;z-index:1;}
+.adkicker{font-family:var(--serif);font-size:17px;font-weight:700;line-height:1.5;}
+.adkicker em{font-style:normal;color:var(--koi);}
+.adlist{margin:16px 0 4px;}
+.aditem{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;color:#D8D0C4;line-height:1.6;margin-bottom:11px;}
+.aditem b{flex:none;font-size:11px;font-weight:700;color:#fff;background:var(--koi);border-radius:7px;padding:3px 9px;margin-top:1px;}
+.adbtn{display:block;text-align:center;text-decoration:none;font-size:15px;font-weight:700;color:#fff;
+  background:var(--koi);border-radius:13px;padding:14px;margin-top:18px;box-shadow:0 10px 22px -10px rgba(224,105,74,.7);}
+.adbtn:active{transform:translateY(1px);}
+.adnote{text-align:center;font-size:11px;color:#7A7164;margin-top:12px;}
+
+/* ── 锦鲤战绩卡(晒图裂变) ── */
+.shothint{font-size:12.5px;color:var(--muted);text-align:center;margin-bottom:14px;line-height:1.6;}
+.cardimgtip{font-size:12.5px;color:var(--koi-deep);text-align:center;margin:6px 0 8px;font-weight:600;}
+.cardimg{display:block;width:100%;max-width:340px;margin:0 auto 12px;border-radius:14px;box-shadow:0 8px 24px rgba(43,39,34,.16);}
+.achvwrap{display:flex;justify-content:center;}
+.achv{position:relative;width:344px;max-width:100%;border-radius:24px;overflow:hidden;color:var(--ink);
+  background:linear-gradient(172deg,#FCEFE6 0%,#F7E2D2 42%,#FBF6EE 100%);border:1px solid var(--koi-line);
+  box-shadow:0 22px 50px -28px rgba(43,39,34,.5);padding-bottom:20px;}
+.achvtop{position:relative;height:116px;overflow:hidden;}
+.achvtop .rp{position:absolute;border:1.5px solid rgba(224,105,74,.28);border-radius:50%;}
+.achvtop .gseal{top:12px;right:14px;}
+.achvtop .gkoi{top:16px;}
+.achv.lv4 .gkoi svg{filter:drop-shadow(0 4px 8px rgba(192,78,50,.3));}
+.achv.lv5 .gkoi svg{filter:drop-shadow(0 0 8px rgba(192,146,47,.55));}
+.achv.lv6 .gkoi svg{filter:drop-shadow(0 0 13px rgba(192,146,47,.85));}
+.achvlv{width:max-content;margin:2px auto 0;font-family:var(--serif);font-weight:700;font-size:13px;color:#fff;
+  letter-spacing:1px;background:linear-gradient(135deg,var(--koi),var(--koi-deep));padding:4px 15px;border-radius:20px;
+  box-shadow:0 6px 14px -6px rgba(192,78,50,.6);}
+.achvlv.max{background:linear-gradient(135deg,var(--gold),#9C7723);box-shadow:0 6px 14px -5px rgba(192,146,47,.7);}
+.achvhz{text-align:center;font-family:var(--serif);font-weight:900;font-size:40px;letter-spacing:4px;color:#fff;
+  margin-top:-6px;transform:rotate(-3deg);
+  text-shadow:-2px -2px 0 #C24E32,2px -2px 0 #C24E32,-2px 2px 0 #C24E32,2px 2px 0 #C24E32,
+    0 -3px 0 #C24E32,0 3px 0 #C24E32,-3px 0 0 #C24E32,3px 0 0 #C24E32,4px 7px 0 rgba(192,78,50,.26);}
+.achvstat{text-align:center;margin-top:14px;}
+.achvstat b{display:block;font-family:var(--serif);font-size:56px;font-weight:900;color:var(--koi);line-height:1;}
+.achvstat span{font-size:13px;color:var(--ink-2);font-weight:600;}
+.achvmile{font-family:var(--serif);font-size:14.5px;color:var(--ink);text-align:center;margin:13px 22px 0;line-height:1.65;}
+.achvproof{margin:16px 18px 0;background:rgba(255,255,255,.72);border:1px solid var(--koi-line);border-radius:14px;padding:14px 15px;}
+.achvproof .pl{font-size:11px;color:var(--koi-deep);font-weight:700;margin-bottom:9px;}
+.achvproof .pb{font-size:12.5px;color:var(--ink-2);line-height:1.55;margin-bottom:8px;padding-left:13px;position:relative;}
+.achvproof .pb:last-child{margin-bottom:0;}
+.achvproof .pb::before{content:'';position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--koi);}
+.achvqr{display:flex;align-items:center;gap:13px;margin:16px 18px 0;background:#fff;border:1px solid var(--border);border-radius:14px;padding:12px 13px;}
+.achvqr img{width:66px;height:66px;border-radius:9px;object-fit:cover;flex:none;}
+.achvqr .qph{width:66px;height:66px;border-radius:9px;flex:none;background:var(--surface-2);border:1px dashed var(--border-strong);
+  font-size:9.5px;color:var(--dim);display:flex;align-items:center;justify-content:center;text-align:center;padding:5px;line-height:1.3;}
+.achvqr .qt b{font-size:13.5px;color:var(--ink);font-weight:700;display:block;}
+.achvqr .qt span{font-size:11.5px;color:var(--muted);}
+.achvwm{text-align:center;font-size:11px;color:var(--muted);margin-top:15px;font-family:var(--serif);letter-spacing:1px;}
+.sgcoll{max-width:344px;margin:16px auto 0;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px 16px 14px;box-shadow:0 10px 26px -22px rgba(180,140,90,.6);}
+.sgh{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:13px;}
+.sgt{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--ink);}
+.sgp{font-size:12px;font-weight:700;color:var(--koi-deep);}
+.sggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.sgcell{border-radius:11px;border:1px solid var(--border);padding:9px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;min-height:58px;}
+.sgcell .ic{font-size:16px;line-height:1;}
+.sgcell .sn{font-family:var(--serif);font-size:11.5px;font-weight:600;line-height:1.15;}
+.sgcell.lit{color:var(--koi-deep);background:linear-gradient(160deg,#FFF3EC,#FBE3D6);border-color:var(--koi-line);box-shadow:0 5px 12px -9px rgba(224,105,74,.7);}
+.sgcell.dark{color:#C7BBA8;background:var(--surface-2);}
+.sgcell.dark .ic{filter:grayscale(1);opacity:.55;}
+.sgrarewrap{margin-top:8px;}
+.sgrarewrap .sgcell{flex-direction:row;gap:8px;min-height:46px;}
+.sgcell.rare.lit{color:#9A6B12;background:linear-gradient(160deg,#FFF7DC,#FBE8B8);border-color:#E9C766;box-shadow:0 6px 14px -9px rgba(201,150,30,.7);}
+.sgcell.rare.lit .sn{font-size:13px;}
+.sgnote{font-size:11px;color:var(--dim);line-height:1.6;margin-top:11px;}
+.achvcta{margin-top:16px;position:relative;overflow:hidden;background:linear-gradient(165deg,#2F2A24,#211D18);
+  color:#fff;border-radius:18px;padding:24px 22px;box-shadow:0 22px 50px -28px rgba(43,39,34,.6);}
+.achvcta::after{content:'';position:absolute;right:-50px;top:-70px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(224,105,74,.32),transparent 70%);}
+.achvcta .gw{position:relative;z-index:1;}
+.achvcta .gift{font-family:var(--serif);font-size:17px;font-weight:700;line-height:1.6;}
+.achvcta .gift em{font-style:normal;color:var(--koi);}
+.achvcta .price{font-size:12px;color:#A89E90;text-decoration:line-through;margin-left:4px;}
+.achvcta .steps{margin-top:15px;font-size:13px;color:#D8D0C4;line-height:2;}
+.achvcta .steps b{color:var(--koi);font-family:var(--serif);}
+.cbtn{display:block;text-align:center;text-decoration:none;font-size:15px;font-weight:700;color:#fff;background:var(--koi);
+  border:none;width:100%;border-radius:13px;padding:14px;margin-top:16px;cursor:pointer;box-shadow:0 10px 22px -10px rgba(224,105,74,.7);}
+.cbtn.alt{background:#3A342C;box-shadow:none;margin-top:10px;}
+.cbtn:active{transform:translateY(1px);}
+
+@media(max-width:380px){
+  .hname{font-size:29px;}.seal{width:50px;height:56px;font-size:15px;right:16px;}
+  .huazi{font-size:25px;}.stat b{font-size:36px;}.ghuazi{font-size:38px;}
+}
+</style>
+<style>
+/* 纯使用版:隐藏所有引流/广告/团队介绍块 */
+.teamband,.adband,.achvcta,.hook,.ghook{display:none !important;}
+</style>
+</head>
+<body>
+<div id="gate" class="gate">
+  <div class="gatecard">
+    <div class="gtop">
+      <span class="gr gr1"></span><span class="gr gr2"></span>
+      <div class="gseal">必上岸</div>
+      <div class="gkoi">
+        <svg viewBox="0 0 140 70" width="116" height="58">
+          <defs><linearGradient id="gbodyG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F3EAD9"/></linearGradient></defs>
+          <g class="tail">
+            <path d="M34,35 C22,19 7,12 2,17 C12,26 14,31 14,35 C14,39 12,44 2,53 C7,58 22,51 34,35 Z" fill="#F2C9B6" opacity=".85"/>
+            <path d="M30,35 C22,26 12,22 8,25 C14,30 15,32 15,35 C15,38 14,40 8,45 C12,48 22,44 30,35 Z" fill="#E0694A" opacity=".4"/>
+          </g>
+          <path d="M84,26 C90,12 101,7 104,13 C100,19 95,24 89,28 Z" fill="#F6D6C7" opacity=".85"/>
+          <path d="M84,44 C90,58 101,63 104,57 C100,51 95,46 89,42 Z" fill="#F6D6C7" opacity=".85"/>
+          <path d="M30,35 C36,17 72,12 102,18 C119,21 129,28 131,35 C129,42 119,49 102,52 C72,58 36,53 30,35 Z" fill="url(#gbodyG)" stroke="#E6DAC4" stroke-width="1"/>
+          <path d="M95,20 C108,19 121,24 126,31 C121,35 110,35 99,33 C92,31 90,23 95,20 Z" fill="#E0694A"/>
+          <path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="#E0694A" opacity=".93"/>
+          <path d="M46,41 C57,39 70,41 75,45 C68,49 55,49 46,46 Z" fill="#E0694A" opacity=".8"/>
+          <circle cx="119" cy="29" r="3" fill="#2B2722"/><circle cx="120" cy="28" r="1" fill="#fff"/>
+          <circle cx="119" cy="41" r="3" fill="#2B2722"/><circle cx="120" cy="40" r="1" fill="#fff"/>
+        </svg>
+      </div>
+    </div>
+    <div class="gbody">
+      <div class="ghuazi">我必上岸</div>
+      <div class="gtitle">实习翻译机 · 锦鲤版</div>
+      <div class="gsub">实习天天打杂、简历没东西写?<br>每天一分钟,把杂活翻译成扛得住追问的简历 bullet。</div>
+      <div class="gfeat">
+        <div class="gf gf1"><b>1分钟</b>记下今天做的那件小事</div>
+        <div class="gf gf2"><b>翻译</b>成能直接写进简历的 bullet</div>
+        <div class="gf gf3"><b>导出</b>简历项目段 + 面试深挖回溯</div>
+      </div>
+      <span class="gfree">🧧 工具免费 · 凭邀请码解锁</span>
+      <input id="codeInput" maxlength="12" placeholder="输入邀请码" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" inputmode="text" />
+      <button class="btn" id="codeBtn" style="width:100%;margin-top:14px">解锁我的简历池 🧧</button>
+      <div id="codeErr" class="gerr"></div>
+      <div class="gnote">之所以要个邀请码,是为了防止有人用程序盗刷我的 token~ 给大家添了点小麻烦啦,抱抱 🫶<br><br>邀请码 = 你们的账号,数据存在你自己手机本地,不会丢(我没做手机号注册,所以靠它认人)。<br><b>记得一定要用浏览器打开!不要在微信里打开哦!</b>只需要填一次,以后再来就自动进啦~</div>
+      <a class="ghook" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener">还没有邀请码?<br><b>点我找作者 · 回复「上岸」免费领 →</b></a>
+    </div>
+  </div>
+</div>
+<div class="tx">
+  <div class="hero"><div class="hwrap">
+    <div class="kicker">实习翻译机 · 锦鲤版</div>
+    <div class="hname">把打杂,翻译成<em>底气</em></div>
+    <div class="htag">每天一分钟,把不起眼的小事,变成能写进简历、扛得住追问的真东西。</div>
+    <div class="seal">必上岸</div>
+    <div class="pond" id="pond">
+      <div class="ripple r1"></div><div class="ripple r2"></div><div class="ripple r3"></div>
+      <div class="koi">
+        <svg viewBox="0 0 140 70" width="130" height="64">
+          <defs><linearGradient id="bodyG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#F3EAD9"/></linearGradient></defs>
+          <g class="tail">
+            <path d="M34,35 C22,19 7,12 2,17 C12,26 14,31 14,35 C14,39 12,44 2,53 C7,58 22,51 34,35 Z" fill="#F2C9B6" opacity=".85"/>
+            <path d="M30,35 C22,26 12,22 8,25 C14,30 15,32 15,35 C15,38 14,40 8,45 C12,48 22,44 30,35 Z" fill="#E0694A" opacity=".4"/>
+          </g>
+          <path class="fin finA" d="M84,26 C90,12 101,7 104,13 C100,19 95,24 89,28 Z" fill="#F6D6C7" opacity=".85"/>
+          <path class="fin finB" d="M84,44 C90,58 101,63 104,57 C100,51 95,46 89,42 Z" fill="#F6D6C7" opacity=".85"/>
+          <path d="M30,35 C36,17 72,12 102,18 C119,21 129,28 131,35 C129,42 119,49 102,52 C72,58 36,53 30,35 Z" fill="url(#bodyG)" stroke="#E6DAC4" stroke-width="1"/>
+          <path d="M95,20 C108,19 121,24 126,31 C121,35 110,35 99,33 C92,31 90,23 95,20 Z" fill="#E0694A"/>
+          <path d="M56,21 C71,18 84,21 87,28 C81,34 67,35 56,31 C49,29 49,24 56,21 Z" fill="#E0694A" opacity=".93"/>
+          <path d="M46,41 C57,39 70,41 75,45 C68,49 55,49 46,46 Z" fill="#E0694A" opacity=".8"/>
+          <circle cx="119" cy="29" r="3" fill="#2B2722"/><circle cx="120" cy="28" r="1" fill="#fff"/>
+          <circle cx="119" cy="41" r="3" fill="#2B2722"/><circle cx="120" cy="40" r="1" fill="#fff"/>
+          <path d="M131,33 C137,29 141,30 140,32" stroke="#C9A98F" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+          <path d="M131,37 C137,41 141,40 140,38" stroke="#C9A98F" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="huazi">我必上岸<small>JINLI · 2026</small></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="cnt">0</b><span>条真东西已入池</span></div>
+      <div class="stat ink"><b id="days">0</b><span>天 · 在悄悄变厚</span></div>
+    </div>
+    <div class="koilv" id="koilv"></div>
+  </div></div>
+
+  <div class="wrap">
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-tab="today">今日投喂<small>每天一分钟</small></button>
+      <button class="tab" data-tab="card">晒锦鲤<small>战绩卡</small></button>
+      <button class="tab" data-tab="report">周报<small>框时间导出</small></button>
+      <button class="tab" data-tab="export">导出锦鲤<small>简历 + 面试</small></button>
+    </div>
+    <div id="panel"></div>
+  </div>
+
+  <div class="teamband">
+    <div class="teamhead"><span class="thtag">关于团队</span>
+      <h3>做这个工具的人,和带你上岸的团队</h3></div>
+    <div class="devcard">
+      <div class="devtop"><div class="devav">涵</div>
+        <div><div class="devname">阿涵 <span class="devbadge">主创 · 开发者</span></div>
+          <div class="devtitle">伦敦大学学院(UCL)本硕</div></div></div>
+      <div class="devdesc">接 <b>求职陪跑 / 作品化求职 / 简历 / 面试辅导</b>。这个「实习翻译机」就是我做的,想让每个认真干活的人,都能把经历讲清楚、讲到位。<br>没事也可以来找我<b>闲聊陪聊</b>,不止聊求职——焦虑、迷茫、要不要换方向,都能唠。</div>
+      <a class="devbtn" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener">点这里联系阿涵 →</a>
+    </div>
+    <div class="teamstat">
+      <div class="ts"><b>1000+</b><span>同期服务学员</span></div>
+      <div class="ts"><b>60+</b><span>全职导师</span></div>
+      <div class="ts"><b>100+</b><span>团队规模</span></div>
+    </div>
+    <div class="teamsub">阿涵团队 · 大厂实战导师 + 资深 HR 教练</div>
+    <div class="memlist">
+      <div class="mem lead"><div class="memav">包</div><div><div class="memn">包子</div><div class="memt">十年资深猎头 · 太懂招聘官在简历里看什么</div></div></div>
+      <div class="mem"><div class="memav">L</div><div><div class="memn">Leo</div><div class="memt">产品经理 · 互联网大厂 · 6年</div></div></div>
+      <div class="mem"><div class="memav">M</div><div><div class="memn">Mina</div><div class="memt">用户 / 增长运营 · 内容平台 · 5年</div></div></div>
+      <div class="mem"><div class="memav">R</div><div><div class="memn">Ray</div><div class="memt">数据分析 / BI · 电商 · 7年</div></div></div>
+      <div class="mem"><div class="memav">E</div><div><div class="memn">Evan</div><div class="memt">算法 / ML · AI大厂 · 5年</div></div></div>
+      <div class="mem"><div class="memav">C</div><div><div class="memn">Cathy</div><div class="memt">投行 / 行研 · 券商 · 7年</div></div></div>
+      <div class="mem"><div class="memav">J</div><div><div class="memn">Jasper</div><div class="memt">管理咨询 · 咨询公司 · 5年</div></div></div>
+      <div class="mem"><div class="memav">A</div><div><div class="memn">Allen</div><div class="memt">审计 / 税务 · 四大会计师事务所 · 6年</div></div></div>
+      <div class="mem"><div class="memav">N</div><div><div class="memn">Nina</div><div class="memt">市场 / 品牌 · 快消 · 5年</div></div></div>
+      <div class="mem"><div class="memav">D</div><div><div class="memn">Dylan</div><div class="memt">电商运营 · 平台 · 6年</div></div></div>
+      <div class="mem"><div class="memav">K</div><div><div class="memn">Ken</div><div class="memt">供应链 / 物流 · 制造业 · 7年</div></div></div>
+      <div class="mem"><div class="memav">B</div><div><div class="memn">Bella</div><div class="memt">医药 / 医疗 · 药企 · 6年</div></div></div>
+      <div class="mem"><div class="memav">J</div><div><div class="memn">Jason</div><div class="memt">法务 / 合规 · 律所 + 企业 · 8年</div></div></div>
+      <div class="mem"><div class="memav">S</div><div><div class="memn">Shawn</div><div class="memt">新能源 / 智能制造 · 行业龙头 · 5年</div></div></div>
+    </div>
+    <div class="teamnote">还有 60+ 全职导师,覆盖财会 / 四大 / 法务 / 市场品牌 / 供应链 / 医药 等方向——按你的目标岗位匹配带教,不是兼职大学生。</div>
+  </div>
+
+  <div class="adband"><div class="adcard"><div class="adwrap">
+    <div class="adkicker">还在一个人<em>硬扛秋招</em>?这些我可以帮你 ↓</div>
+    <div class="adlist">
+      <div class="aditem"><b>简历 / 面试</b><span>卡壳、不会写、面前发慌?可以咨询 1v1 陪跑,陪你练到上岸。</span></div>
+      <div class="aditem"><b>免费诊断</b><span>把简历发我,免费帮你诊断,直接点出最该改的 3 处。</span></div>
+      <div class="aditem"><b>职业规划</b><span>方向乱、不知道投什么?一起把路径理清,不再盲投。</span></div>
+    </div>
+    <a class="adbtn" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener">免费诊断简历 / 找我聊聊 →</a>
+    <div class="adnote">点击跳转作者主页 · 备注「锦鲤」优先回</div>
+  </div></div></div>
+
+  <div class="foot">
+    <span>作品化求职 · 诚实是壁垒</span>
+    <span><a id="reset">清空重开</a></span>
+  </div>
+</div>
+
+<script>
+var DAY=86400000;
+var SEED=[
+ {q1:"把后台几百条用户反馈整理成一张表",q2:"给产品下季度决定砍哪些功能提供依据",q3:"反馈太杂,自己定了套标签归成 5 类",q4:"产品评审会用了这表,砍掉 2 个低使用功能",bullet:"推动产品季度评审下线 2 项低使用率功能——独立设计反馈分类框架,将 600+ 条零散用户反馈结构化为 5 类需求池,为功能取舍提供量化依据。"},
+ {q1:"把用户访谈录音转成文字、提炼要点",q2:"给需求评审提供一手用户痛点依据",q3:"边转写边按场景聚类,归出几个高频痛点",q4:"产出痛点摘要,被 3 次需求评审直接引用",bullet:"输出的用户痛点摘要被 3 次需求评审直接引用——独立完成 8 场用户深访的转写与洞察提炼,按使用场景聚类沉淀高频痛点。"},
+ {q1:"做一张每周的数据报表",q2:"替团队每周盯日活、留存等核心指标",q3:"把原来手工拼表固化成模板、统一口径",q4:"出表从约 2 小时缩到 10 分钟,口径不再打架",bullet:"将周度核心指标出表耗时由约 2 小时压缩至 10 分钟——搭建日活、留存等指标看板,统一数据口径并模板化,替代原手工统计流程。"},
+ {q1:"给运营写几条 App push 文案并做测试",q2:"提升当日活动 push 的打开与点击",q3:"写了 4 个版本做小流量 A/B 测试",q4:"优选版点击率较基线提升约 18%",bullet:"推动活动 push 点击率较基线提升约 18%——主导文案撰写与 4 个版本的小流量 A/B 测试,基于数据择优全量投放。"},
+ {q1:"帮 mentor 整理竞品的价格页截图",q2:"为团队定价方案调整提供外部参考",q3:"把 6 家竞品按档位、权益拆成对比矩阵",q4:"输出对比矩阵,被采纳进定价讨论",bullet:"产出的竞品对比矩阵被采纳进团队定价决策——系统梳理 6 家竞品定价策略,按档位与权益维度拆解为结构化对比。"},
+ {q1:"整理一次拉新活动结束后的数据",q2:"复盘这次活动各渠道的真实效果",q3:"按渠道拆转化漏斗,定位最弱的一环",q4:"找出转化最低渠道并提了优化建议",bullet:"定位转化最薄弱渠道、所提优化建议被纳入下一轮投放——独立主导一次拉新活动数据复盘,按渠道拆解转化漏斗。"}
+].map(function(e,i){e.ts=Date.now()-Math.round((i*2.4+1)*DAY);e.id="seed"+i;return e;});
+
+var LUCKY=[
+ "这条稳稳入池了。攒够它们,offer 会自己游过来。",
+ "今天的小事,三个月后会变成你简历里的底气。",
+ "你不是在打杂,是在攒证据。慢慢来,池子在涨。",
+ "面试官追问到这条时,你会感谢今天认真记下的自己。",
+ "一件不起眼的事,被你翻译成了能说出口的东西。",
+ "秋招的运气,是这样一条条攒出来的。今天又厚了一点。",
+ "别急着证明什么。先把真东西留下,锦鲤都记着呢。",
+ "今天这口投喂很扎实。继续游,不用回头。",
+ "你以为的杂活,在简历里其实是「主动梳理 + 推动落地」。",
+ "稳住。能被你写下来的事,就已经是你的了。",
+ "焦虑的时候就来记一条。记着记着,你就有底气了。",
+ "锦鲤说:你值得一个好 offer,而且就在路上。",
+ "今天也没有白过——你又比昨天的自己更经得起追问。",
+ "慢慢来不丢人,空着手进面试才丢人。你在攒料,很好。",
+ "把它收好。这是只属于你的、谁也抄不走的真东西。",
+ "上岸不是运气,是你今天这一条一条堆出来的确定性。",
+ "你今天没有原地踏步,你往池子里又添了一块上岸的砖。",
+ "别人刷手机的时候,你在攒能写进简历的真东西。",
+ "这条记下来,面试时它就是你张口就来的底气。",
+ "实习不白干的标志,是你能把它说清楚——你刚做到了。",
+ "攒着攒着,你会发现自己比想象中做了更多事。",
+ "简历空不空,看的不是运气,是你愿不愿意每天记一条。",
+ "焦虑不会帮你上岸,但这一条会。",
+ "你正在把「好像也没干啥」,变成「我具体做了这些」。",
+ "锦鲤游得慢,但从不回头。今天这条,记得真好。",
+ "这一条,三个月后的你会偷偷感谢现在的你。",
+ "把杂活写成成果,是一种被低估的能力。你在练它。",
+ "不是所有努力都看得见,但被你写下来的,都算数。",
+ "你不需要很厉害才开始,你开始记了,就已经在变厉害。",
+ "今天又攒了一块拼图,离那份完整的简历更近了。",
+ "真东西不怕追问。你今天又多了一条不怕被问的。",
+ "慢一点没关系,方向对的人迟早上岸。",
+ "你以为只是记个流水账,其实是在给未来的自己存粮。",
+ "这条收好了。秋招那天,它会替你说话。",
+ "别小看今天这一句,它可能就是面试官眼睛一亮的那句。",
+ "攒真东西的人,运气都不会太差。",
+ "你正在做一件很多人想不到要做的事——把经历变成资产。",
+ "锦鲤记着你每一次认真。今天这条,它收下了。",
+ "写下来的那一刻,焦虑就少了一点,底气就多了一点。",
+ "你不是没东西写,只是还没开始记。现在记了,就有了。",
+ "每天一条,秋招的时候你就是有备而来的那个。",
+ "这条又给你的简历加了一道「防追问」的护甲。",
+ "别和别人比进度,和昨天的自己比就够了。你赢了。",
+ "把今天这件小事翻译好,它就不再是小事了。",
+ "你正在悄悄拉开和「裸面」那批人的差距。",
+ "上岸的人,往往只是比别人多记了几条而已。",
+ "这口投喂很有营养,锦鲤又胖了一圈 🐟",
+ "今天的认真,会在某场面试里突然回报你。",
+ "你存的不是记录,是未来从容的底气。",
+ "又一条经得起追问的真东西,稳稳落袋。"
+];
+var LUCKNAME=["上上签","锦鲤签","大吉签","顺遂签","稳签","攒福签","好运签","上岸签","福星签","锦囊签","扶摇签","心安签","必胜签","添福签","鲤跃签","定心签"];
+/* 万分之一隐藏签:普通投喂时各 0.1% 概率(共 0.2%)随机砸中,金色特效 */
+var RARE=[
+ "万里挑一的锦鲤本鲤,刚刚游过来看了你一眼 ✨ 这条被盖了枚隐藏金印——传说刷到它的人,那年秋招都上岸了。截图存好,这是只属于你的欧皇时刻。",
+ "0.1% 隐藏彩蛋 · 鲤跃龙门 🐉 锦鲤抬头对你说了句:「就你了。」别问玄学准不准,问就是稳。把这一刻收好,offer 已经在路上了。"
+];
+var MILE={3:"已经第 3 条啦!坚持记的人,秋招赢在细节。继续投喂 🧧",5:"5 条啦!手感来了,记录这件事你已经上道了。",7:"攒满 7 条!这周没白干,简历又厚了一层。",10:"两位数啦!10 条真东西,够撑起一段像样的实习经历了。",14:"14 条真东西!你已经超过大多数还在迷茫的人了。",21:"21 条,稳了。这是一份扛得住任何追问的底气清单。",30:"30 条!锦鲤为你转身——这一池,就是你上岸的资本。",40:"40 条!你的料多到可以挑着写简历了,凡尔赛的烦恼 🐟",50:"50 条!半百里程碑——这已经不是攒料,是在建一座你的私人案例库。",66:"66 条,六六大顺!这份厚度,面试官想问倒你都难。",100:"100 条!!你把「没东西写」这四个字,彻底从字典里删了。"};
+
+/* 锦鲤皮肤:每个等级换色,真正“看得出变化” */
+var KPAL=[
+ {b1:"#FFFFFF",b2:"#FFF0F3",patch:"#FBC4D2",accent:"#F7A8BC",light:"#FFE2E9",whisk:"#E9C2CC"},
+ {b1:"#FFFFFF",b2:"#FFF6E4",patch:"#F8D89C",accent:"#F2C879",light:"#FFF1D2",whisk:"#E8D5AC"},
+ {b1:"#FFF7F8",b2:"#FFE6EC",patch:"#F2748F",accent:"#E85470",light:"#FFD2DC",whisk:"#E2A6B2"},
+ {b1:"#FFF8F2",b2:"#FFEAD9",patch:"#F7A678",accent:"#F08A50",light:"#FFDFC9",whisk:"#E8C2A2"},
+ {b1:"#FFF8FB",b2:"#FFECF4",patch:"#F2A6C6",accent:"#E87FAE",light:"#FCD9E8",whisk:"#E6B2C8"},
+ {b1:"#F6FFFB",b2:"#E7F8F1",patch:"#8AD0B8",accent:"#5BBF9C",light:"#D6F2E7",whisk:"#A8D8C6"},
+ {b1:"#FAF8FF",b2:"#F0EAFB",patch:"#B398E0",accent:"#9B79D6",light:"#E6DAF7",whisk:"#C8B2E2"},
+ {b1:"#F8FAFF",b2:"#EAF0FC",patch:"#96B2E8",accent:"#7592DB",light:"#DCE6FA",whisk:"#B2C2E2"},
+ {b1:"#FFFBEE",b2:"#FFF4D6",patch:"#EAC04E",accent:"#D6A02E",light:"#FBEFC2",whisk:"#D8BE78"},
+ {b1:"#FAFBFF",b2:"#EEF0FA",patch:"#C3C8E0",accent:"#9AA0C8",light:"#E8EAF6",whisk:"#C2C6DC"},
+ {b1:"#FFF8FC",b2:"#F3ECFB",patch:"#F49AC2",accent:"#7FB8E8",light:"#FCE0F0",whisk:"#D6B8E0"},
+ {b1:"#FFFBF6",b2:"#FFEFDA",patch:"#F6A8D2",accent:"#C98AE0",light:"#FDE3F0",whisk:"#E0B8D8"}
+];
+/* 可爱版锦鲤:圆胖身体 + 大眼睛 + 腮红 + 小嘴;最高级=仙女化龙(萌龙角+云朵鬃+卷胡须+珍珠+星星) */
+function koiSVG(lv,w,h,sfx,anim){
+ lv=Math.max(0,Math.min(KPAL.length-1,lv));
+ var p=KPAL[lv],id="kbg"+sfx;
+ var ac=anim?' class="tail"':'',fa=anim?' class="finA"':'';
+ var dragon=lv>=11;
+ if(dragon){var dg="dg"+sfx;
+  return '<svg viewBox="0 0 152 104" width="'+w+'" height="'+h+'">'+
+   '<defs><radialGradient id="'+dg+'" cx="0.45" cy="0.38" r="0.78"><stop offset="0" stop-color="#FFF1B2"/><stop offset="1" stop-color="#F4C652"/></radialGradient></defs>'+
+   '<g fill="#FFE89A"><path d="M22,26 l1.8,3.8 3.8,1.8 -3.8,1.8 -1.8,3.8 -1.8,-3.8 -3.8,-1.8 3.8,-1.8 Z"/><circle cx="134" cy="30" r="2.2"/><circle cx="120" cy="13" r="1.4"/></g>'+
+   '<g fill="#F2B440"><ellipse cx="102" cy="30" rx="4" ry="6"/><ellipse cx="113" cy="41" rx="4" ry="6"/><ellipse cx="121" cy="55" rx="3.5" ry="5"/></g>'+
+   '<g fill="#F2B440"><ellipse cx="60" cy="20" rx="5.5" ry="9" transform="rotate(-12 60 20)"/><ellipse cx="82" cy="18" rx="5.5" ry="9" transform="rotate(8 82 18)"/></g>'+
+   '<ellipse cx="33" cy="66" rx="9" ry="7" fill="url(#'+dg+')"/>'+
+   '<path d="M120,80 q18,2 16,-12 q8,12 -4,18 q-8,3 -12,-6 Z" fill="url(#'+dg+')"/>'+
+   '<ellipse cx="74" cy="58" rx="46" ry="38" fill="url(#'+dg+')" stroke="#E3BB4E" stroke-width="1.5"/>'+
+   '<ellipse cx="74" cy="66" rx="29" ry="23" fill="#FFF8DC" opacity=".7"/>'+
+   '<ellipse cx="52" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+   '<ellipse cx="96" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+   '<ellipse cx="62" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="63.6" cy="45.4" r="1.6" fill="#fff"/>'+
+   '<ellipse cx="86" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="87.6" cy="45.4" r="1.6" fill="#fff"/>'+
+   '<g stroke="#3B2D2B" stroke-width="1.2" stroke-linecap="round"><path d="M57,42 l-2.6,-1.6"/><path d="M91,42 l2.6,-1.6"/></g>'+
+   '<path d="M68,57 q6,6 12,0" stroke="#C2683E" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+   '<g fill="#FFD75E"><path d="M74,5 l2,4.4 4.4,2 -4.4,2 -2,4.4 -2,-4.4 -4.4,-2 4.4,-2 Z"/></g>'+
+   '</svg>';
+ }
+ var grad=dragon
+  ? '<linearGradient id="'+id+'" x1="0" y1="0" x2="1" y2="0.5"><stop offset="0" stop-color="#FCD6EA"/><stop offset="0.35" stop-color="#FBE8F2"><animate attributeName="offset" values="0;0.7" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="0.55" stop-color="#E7D6F7"><animate attributeName="offset" values="0.2;0.9" dur="2.6s" repeatCount="indefinite"/></stop><stop offset="1" stop-color="#FFF0D8"/></linearGradient>'
+  : '<linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+p.b1+'"/><stop offset="1" stop-color="'+p.b2+'"/></linearGradient>';
+ var mane=dragon?'<g fill="'+p.accent+'" opacity=".92"><circle cx="60" cy="20" r="6.5"/><circle cx="72" cy="14" r="7.5"/><circle cx="85" cy="12" r="8"/><circle cx="98" cy="15" r="7"/></g>':'';
+ var horns=dragon?'<g fill="'+p.patch+'"><path d="M104,18 C102,7 109,3 113,6 C110,10 110,14 110,19 Z"/><path d="M115,19 C115,9 121,6 124,10 C120,13 119,16 120,20 Z"/></g>':'';
+ var beard=dragon?'<path d="M127,46 c9,-1 13,4 10,9 c-2,3 -6,2 -6,-1" stroke="'+p.whisk+'" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M127,50 c9,2 12,6 8,11" stroke="'+p.whisk+'" stroke-width="1.5" fill="none" stroke-linecap="round"/>':'';
+ var pearl=dragon?'<circle cx="139" cy="33" r="4.2" fill="#FFFDF6"/><circle cx="137.5" cy="31.5" r="1.4" fill="#FFE6A0"/>':'';
+ var stars=dragon?'<g fill="#FFF1C0"><path d="M48,9 l1.6,3.2 3.2,1.6 -3.2,1.6 -1.6,3.2 -1.6,-3.2 -3.2,-1.6 3.2,-1.6 Z"/><circle cx="126" cy="13" r="1.6"/></g>':'';
+ var vb=dragon?"0 -10 154 96":"0 -2 152 84";
+ return '<svg viewBox="'+vb+'" width="'+w+'" height="'+h+'">'+
+  '<defs>'+grad+'</defs>'+mane+horns+stars+
+  '<g'+ac+'><path d="M46,44 C30,24 10,22 6,32 C16,38 18,42 18,44 C18,46 16,50 6,56 C10,66 30,64 46,44 Z" fill="'+p.light+'"/>'+
+  '<path d="M40,44 C30,34 18,32 14,38 C20,42 21,43 21,44 C21,45 20,46 14,50 C18,54 30,52 40,44 Z" fill="'+p.patch+'" opacity=".45"/></g>'+
+  '<path d="M60,22 C70,8 86,8 92,20 C84,22 72,24 62,28 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="82" cy="44" rx="46" ry="26" fill="url(#'+id+')" stroke="#E9DDC8" stroke-width="1"/>'+
+  '<ellipse cx="70" cy="34" rx="13" ry="9" fill="'+p.patch+'" opacity=".9" transform="rotate(-12 70 34)"/>'+
+  '<ellipse cx="98" cy="50" rx="8" ry="5.5" fill="'+p.accent+'" opacity=".7"/>'+
+  '<ellipse cx="56" cy="50" rx="6" ry="4" fill="'+p.accent+'" opacity=".45"/>'+
+  '<path'+fa+' d="M94,54 C98,66 108,70 110,62 C105,58 99,56 95,54 Z" fill="'+p.light+'" opacity=".92"/>'+
+  '<ellipse cx="99" cy="48" rx="6.5" ry="4" fill="#FF9DB6" opacity=".5"/>'+
+  '<circle cx="106" cy="39" r="6.8" fill="#3B2D2B"/>'+
+  '<circle cx="108.8" cy="36.2" r="2.6" fill="#fff"/>'+
+  '<circle cx="103.4" cy="41.4" r="1.2" fill="#fff" opacity=".85"/>'+
+  '<g stroke="#3B2D2B" stroke-width="1.3" stroke-linecap="round" fill="none"><path d="M111,34.5 l3,-1.8"/><path d="M112,37.5 l3.2,-0.4"/><path d="M109.5,32.5 l1.8,-2.4"/></g>'+
+  '<path d="M118,45 q5,4 10,1.5" stroke="#D98C8C" stroke-width="1.5" fill="none" stroke-linecap="round"/>'+
+  beard+pearl+
+  '<g fill="#FFF4C4" opacity=".95"><path d="M120,25 l1.1,2.4 2.4,1.1 -2.4,1.1 -1.1,2.4 -1.1,-2.4 -2.4,-1.1 2.4,-1.1 Z"/></g>'+
+  '<g fill="#fff" opacity=".8"><circle cx="62" cy="31" r="1.4"/></g>'+
+  '</svg>';
+}
+function miniKoi(lv){lv=Math.max(0,Math.min(KPAL.length-1,lv));var p=KPAL[lv];
+ return '<svg viewBox="0 0 152 84" width="26" height="15" style="display:block">'+
+  '<path d="M46,44 C30,24 10,22 6,32 C16,38 18,42 18,44 C18,46 16,50 6,56 C10,66 30,64 46,44 Z" fill="'+p.light+'"/>'+
+  '<ellipse cx="82" cy="44" rx="46" ry="26" fill="'+p.b2+'" stroke="'+p.patch+'" stroke-width="2.5"/>'+
+  '<ellipse cx="72" cy="36" rx="12" ry="8" fill="'+p.patch+'" opacity=".85"/>'+
+  '<circle cx="106" cy="40" r="5" fill="#3B2D2B"/><circle cx="108" cy="38" r="1.6" fill="#fff"/></svg>';}
+
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[],forceRare:false};
+/* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
+   (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
+var SKEY_BASE="shixi-fanyiji-koi-v2";
+var CKEY="shixi-koi-code";
+function activeCode(){try{return localStorage.getItem(CKEY)||"";}catch(e){return"";}}
+function curSkey(){var c=activeCode();return SKEY_BASE+(c?"::"+c:"");}
+var AKEY="shixi-fanyiji-ai-v1";
+/* ★ 把你的 DeepSeek key 填到下面这对引号里,所有学生就共用你的 key,打开即用、无需各自申请。
+   例:var BUILTIN_KEY="sk-xxxxxxxx";  留空则走「学生填自己的 key / 本地规则」。 */
+var BUILTIN_KEY="sk-585fa93e7b954d25b91b38d0fb80f918";
+function load(){try{var r=localStorage.getItem(curSkey());if(r){var d=JSON.parse(r);state.entries=d.entries||[];state.signs=d.signs||[];}else{state.entries=[];state.signs=[];}}catch(e){state.entries=[];state.signs=[];}}
+function persist(){try{localStorage.setItem(curSkey(),JSON.stringify({entries:state.entries,signs:state.signs}));}catch(e){}}
+var RARE_SIGN="万分之一签";
+function recordSign(s){if(!s)return;if(!state.signs)state.signs=[];if(state.signs.indexOf(s)<0)state.signs.push(s);}
+/* 演示模式:只有作者用专属邀请码进去才是「预填满、能演示」的版本;学生用普通码进去是空白的、自己从零做 */
+var DKEY="shixi-koi-demo";
+var DEMO_CODE="AHAN2026";
+function demoMode(){try{return localStorage.getItem(DKEY)==="1";}catch(e){return false;}}
+function loadDemoData(){
+ var base=Date.now(),arr=[],pool=SEED.concat(DEMO_POOL).concat(EXTRA_DEMO);
+ var n=Math.min(30,pool.length);
+ for(var i=0;i<n;i++){var s=pool[i];
+  arr.push({id:"demo"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
+ state.entries=arr;persist();
+}
+function loadAI(){try{var r=JSON.parse(localStorage.getItem(AKEY)||"{}");state.apiKey=r.key||"";state.useAI=!!r.use;}catch(e){state.apiKey="";state.useAI=false;}
+ if(!state.apiKey&&BUILTIN_KEY){state.apiKey=BUILTIN_KEY;state.useAI=true;}}
+function persistAI(){try{localStorage.setItem(AKEY,JSON.stringify({key:state.apiKey,use:state.useAI}));}catch(e){}}
+/* 调用 DeepSeek(OpenAI 兼容)把四段回答翻译成一条结果导向的简历 bullet。key 仅存在本机 localStorage,不写进文件。 */
+function translateAI(f){
+ var sys="你是资深中文简历教练。把实习生填写的真实记录,改写成 1 条能直接写进简历的中文 bullet。\n\n【铁律·最重要】\n1. 绝对不许编造输入里没有的任何事实——尤其是数字、百分比、金额、倍数、公司/产品名、人数、时间、排名、奖项。输入没给数字,成品里就绝对不能出现任何数字或百分比。\n2. 只能使用①②③④中真实出现的信息,不许添加输入中不存在的成果、影响或动机。\n3. 如果输入信息太少或无意义(例如只填了「1」「无」「123」、单字、乱填、看不出具体做了什么),不要硬编成绩,只输出一个词:NEED_MORE(全大写,别的什么都不要输出)。\n\n【写法】\n- 动词开头,按真实程度选词:信息足才用「主导/独立负责/推动」,一般情况用「负责/参与/完成/整理/协助/搭建/对接/跟进」,别一律拔高成「主导」。\n- 必须具体:写清做的对象和内容(做了什么事、对什么东西)。禁止「优化流程」「提升效率」「赋能」「实现…提升」这类空洞套话。\n- 有真实结果/数字才写结果;没有结果就只客观陈述做了什么,不要凑一个虚的成效。\n- 充分利用①②③④里的真实信息:他填得多,就把关键细节(做法、对象、结果)都收进来,别压缩得太干瘪。\n- 简历书面语,克制、不浮夸、不堆形容词。\n- 40-75 字一句话(信息少则短、信息多可到 75 字),只输出这一句,不要引号、解释、换行。";
+ var usr="① 做了什么:"+(f.q1||"无")+"\n② 在项目里的位置/解决什么:"+(f.q2||"无")+"\n③ 怎么想的/试了什么:"+(f.q3||"无")+"\n④ 交付结果/变化或数字:"+(f.q4||"无");
+ return fetch("https://api.deepseek.com/chat/completions",{
+  method:"POST",
+  headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.2,max_tokens:300,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
+ }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
+  var t=j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;
+  t=(t||"").trim().replace(/^["「『]+|["」』]+$/g,"").replace(/\s+/g," ");
+  if(!t)throw new Error("空结果");
+  return t;
+ });
+}
+
+/* 按 JD 定制:从真实经历里挑最匹配的,写成不超过设定字数的简历段落 */
+function jdTailor(){
+ if(!state.entries.length){toast("先去攒几条记录");return;}
+ var jd=(val("jdBox")||"").trim();
+ if(!jd){toast("先把目标岗位 JD 粘进来");return;}
+ var lim=Math.max(40,Math.min(400,parseInt(val("jdLimit"),10)||150));
+ state.jd=jd;state.jdLimit=lim;
+ if(!(state.useAI&&state.apiKey)){toast("AI 未开启,无法按 JD 定制");return;}
+ state.jdBusy=true;renderExport();
+ var exp=state.entries.map(function(e,i){return (i+1)+". "+e.bullet+(e.q4?(" |真实结果:"+e.q4):"");}).join("\n");
+ jdTailorAI(jd,lim,exp).then(function(r){state.jdResult=r;state.jdBusy=false;renderExport();})
+  .catch(function(err){state.jdBusy=false;renderExport();toast("定制失败,稍后重试("+(err&&err.message||"网络错误")+")");});
+}
+function jdTailorAI(jd,lim,exp){
+ var sys="你是顶级大厂简历教练,按岗位 JD 把候选人真实经历改写成「一眼就很强」的简历 bullet。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心关键词;\n2. 从候选人经历里挑与 JD 最相关的,改写成 4-6 条【简历 bullet 条目】(绝不是一整段流水账!),JD 最相关的排在最前面;\n3. 每条都按「动词开头 + 做了什么 + 怎么做 + 量化结果」的强简历句式,要专业、有信息密度,读起来像大厂正式简历,而不是岗位职责复述。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(经历里没有化学背景就绝不能写「化学专业背景」)。\n- 绝不编造数字、成果、公司名;经历里有的真实数字必须保留并突出,经历里没有的数字坚决不能出现、不能瞎编百分比。\n- 不要写「相关能力可迁移至…」「具备…能力可胜任…」这类自我评价或求职信式句子,绝不写「协助…定期…维护…」这种被动职责复述,只输出有结果、有亮点的经历 bullet 本身。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话套话。\n- 每条 bullet 30-55 字,所有 bullet 正文合计不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"bullets\":[\"…\"]} —— 不要任何多余文字,不要 markdown 代码块。";
+ var usr="【目标岗位 JD】\n"+jd+"\n\n【候选人真实经历】\n"+exp;
+ return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
+  headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.3,max_tokens:1000,messages:[{role:"system",content:sys},{role:"user",content:usr}]})
+ }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
+  var t=(j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"").trim();
+  t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
+  var obj;try{obj=JSON.parse(t);}catch(e){obj=null;}
+  if(!obj||typeof obj!=="object")obj={keywords:[],bullets:[]};
+  if(!obj.keywords||!obj.keywords.length)obj.keywords=[];
+  var rawb=(obj.bullets&&obj.bullets.length)?obj.bullets:[t];
+  // 不管 AI 给的是 bullet 还是一整段,统一按句号/分号强制拆成条目
+  var split=[];
+  rawb.forEach(function(b){String(b||"").split(/[；;。\n]+/).forEach(function(s){split.push(s);});});
+  split=split.map(function(s){return s.replace(/^[·\-\d\.\s、]+/,"").replace(/\s+/g," ").trim();})
+    .filter(function(s){return s.length>4;})
+    // 删掉求职信式自我评价句
+    .filter(function(s){return !/(可迁移|迁移至|可胜任|相关能力|具备[^,，]{0,14}能力)/.test(s);});
+  // 真正按字数上限截断(AI 经常无视)
+  var total=0,kept=[];
+  for(var k=0;k<split.length;k++){var L=split[k].length;if(kept.length>0&&total+L>lim)break;kept.push(split[k]);total+=L;}
+  obj.bullets=kept;
+  if(!obj.bullets.length)throw new Error("空结果");
+  return obj;
+ });
+}
+
+/* 通用简历:把全部真实记录「合成」成一份经历段(合并重复、按方向归类、限定总字数、零虚构) */
+function exSynth(){
+ if(!state.entries.length){toast("先去攒几条记录");return;}
+ var e2=document.getElementById("exLimit");if(e2)state.exLimit=Math.max(60,Math.min(600,parseInt(e2.value,10)||200));
+ state.showExport=true;
+ if(!(state.useAI&&state.apiKey)){state.exResult=localSynth(state.exLimit);renderExport();return;}
+ state.exBusy=true;state.exResult=null;renderExport();
+ var recs=state.entries.map(function(e,i){return (i+1)+". "+e.bullet+(e.q4?(" |真实结果:"+e.q4):"");}).join("\n");
+ exSynthAI(recs,state.exLimit).then(function(r){state.exResult=r;state.exBusy=false;renderExport();})
+  .catch(function(err){state.exBusy=false;state.exResult=localSynth(state.exLimit);renderExport();toast("AI 合成失败,已用本地精选兜底("+(err&&err.message||"网络")+")");});
+}
+function exSynthAI(recs,lim){
+ var sys="你是资深中文简历教练。下面是候选人攒的多条真实工作记录(可能重复、零散、表述不一)。把它们整合成一份简历『实习/项目经历』段落。\n要求:\n1. 合并重复或高度相似的记录,同一件事绝不重复出现;\n2. 按能力方向归类(最多 3 类),每类 2-4 条 bullet;\n3. 有量化结果(数字)的优先靠前;\n4. 绝对不许编造记录里没有的事实、背景、专业、数字、公司名,只能基于给定记录;\n5. 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话,每条要具体写清做了什么、对什么、结果如何;\n6. 所有 bullet 正文合计不超过 "+lim+" 个汉字;\n7. 动词开头,简历书面语。\n只输出 JSON:{\"sections\":[{\"theme\":\"…\",\"bullets\":[\"…\"]}]},不要任何多余文字,不要 markdown 代码块。";
+ return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
+  headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
+  body:JSON.stringify({model:"deepseek-chat",temperature:0.2,max_tokens:900,messages:[{role:"system",content:sys},{role:"user",content:"候选人真实记录:\n"+recs}]})
+ }).then(function(r){if(!r.ok)throw new Error("HTTP "+r.status);return r.json();}).then(function(j){
+  var t=(j&&j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content||"").trim();
+  t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
+  var obj=JSON.parse(t);
+  if(!obj||!obj.sections||!obj.sections.length)throw new Error("空结果");
+  // 真正按总字数上限截断(AI 经常无视上限,会超很多)
+  var total=0,out=[];
+  for(var s=0;s<obj.sections.length;s++){
+    var sec=obj.sections[s],bs=[];
+    var arr=(sec.bullets||[]);
+    for(var b=0;b<arr.length;b++){var txt=(arr[b]||"").trim();if(!txt)continue;var L=txt.length;if(total>0&&total+L>lim){break;}bs.push(txt);total+=L;}
+    if(bs.length)out.push({theme:sec.theme,bullets:bs});
+    if(total>=lim)break;
+  }
+  if(out.length)obj.sections=out;
+  return obj;
+ });
+}
+/* 无 AI 时的本地兜底:按方向分组 + 去重 + 按字数上限截断 */
+function localSynth(lim){
+ var groups={},order=[];
+ for(var i=0;i<state.entries.length;i++){var th=themeOf(state.entries[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(state.entries[i]);}
+ var sections=[],cum=0,done=false;
+ for(var g=0;g<order.length&&!done;g++){var arr=curateBullets(groups[order[g]],3),bs=[];
+  for(var m=0;m<arr.length;m++){var L=(arr[m].bullet||"").length+1;if(cum>0&&cum+L>lim){done=true;break;}bs.push(arr[m].bullet);cum+=L;}
+  if(bs.length)sections.push({theme:order[g],bullets:bs});}
+ return {sections:sections};
+}
+
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function fmt(ts){var d=new Date(ts);return (d.getMonth()+1)+"/"+("0"+d.getDate()).slice(-2);}
+function sod(ts){var d=new Date(ts);d.setHours(0,0,0,0);return d.getTime();}
+function dkey(ts){var d=new Date(ts);return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();}
+function firstTs(){if(!state.entries.length)return Date.now();var min=state.entries[0].ts;for(var i=0;i<state.entries.length;i++)if(state.entries[i].ts<min)min=state.entries[i].ts;return min;}
+function dayNo(e){return Math.max(1,Math.round((sod(e.ts)-sod(firstTs()))/DAY)+1);}
+function byDay(){var m={};for(var i=0;i<state.entries.length;i++){var k=dkey(state.entries[i].ts);(m[k]=m[k]||[]).push(state.entries[i]);}return m;}
+function hl(s){return esc(s).replace(/(\d[\d,\.]*\s?(?:%|％|\+|＋)?\s?(?:类|项|场|条|家|次|个|周|小时|分钟)?)/g,function(m){return /\d/.test(m)?'<span class="mtr">'+m+'</span>':m;});}
+function val(id){var e=document.getElementById(id);return e?e.value:"";}
+function uid(){return "e"+Date.now()+Math.floor(Math.random()*999);}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function daysSpan(){if(!state.entries.length)return 0;var min=state.entries[0].ts;for(var i=0;i<state.entries.length;i++)if(state.entries[i].ts<min)min=state.entries[i].ts;return Math.max(1,Math.round((Date.now()-min)/DAY));}
+function syncStats(){var a=document.getElementById("cnt");if(a)a.textContent=state.entries.length;var d=document.getElementById("days");if(d)d.textContent=daysSpan();renderKoi();}
+
+var KLV=[
+ {n:"锦鲤宝宝",min:0},{n:"奶油锦鲤",min:2},{n:"草莓锦鲤",min:4},{n:"蜜桃锦鲤",min:7},
+ {n:"樱花锦鲤",min:10},{n:"薄荷锦鲤",min:14},{n:"葡萄锦鲤",min:18},{n:"星河锦鲤",min:23},
+ {n:"黄金锦鲤",min:28},{n:"月光锦鲤",min:34},{n:"彩虹锦鲤",min:40},{n:"锦鲤奶龙",min:50}
+];
+function koiLevel(n){var i=0;for(var k=0;k<KLV.length;k++)if(n>=KLV[k].min)i=k;return i;}
+function renderKoi(){
+ var n=state.entries.length,i=koiLevel(n),cur=KLV[i],nx=KLV[i+1];
+ var pond=document.getElementById("pond");if(pond)pond.className="pond lv"+(i+1);
+ var kw=document.querySelector("#pond .koi");if(kw)kw.innerHTML=koiSVG(i,138,68,"hero",true);
+ var el=document.getElementById("koilv");if(!el)return;
+ var pct,nextLine;
+ if(nx){var span=nx.min-cur.min,done=n-cur.min;pct=Math.max(7,Math.round(done/span*100));nextLine="再 "+(nx.min-n)+" 条进阶「"+nx.n+"」";}
+ else{pct=100;nextLine="已满级 · 锦鲤化龙 🐉";}
+ el.innerHTML='<div class="klvtop"><span class="klvbadge'+(nx?'':' max')+'">Lv.'+(i+1)+' '+cur.n+'</span>'+
+   '<span class="klvnext">'+nextLine+'</span></div>'+
+   '<div class="klvtrack"><div class="klvfill" style="width:'+pct+'%"></div></div>';
+}
+
+function polish(s){return (s||"").trim().replace(/^[\s,，。;；、]+|[\s,，。;；、]+$/g,"");}
+function translateLocal(f){
+ var q1=polish(f.q1),q2=polish(f.q2),q3=polish(f.q3),q4=polish(f.q4);
+ var strong=/^(主导|牵头|负责|独立|参与|协助|搭建|建立|设计|梳理|推动|完成|输出|策划|执行|优化|分析|统筹|沉淀)/;
+ var act=strong.test(q1)?q1:((q3||q4)?"独立负责":"负责")+q1;
+ // 结果导向:先抛成果,再讲怎么做的
+ var how=[act];
+ if(q3)how.push(q3);
+ if(q2)how.push("以支撑"+q2);
+ var howStr=how.join(",");
+ if(q4){
+  var resVerb=/^(提升|下线|缩短|增长|减少|提高|降低|完成|输出|沉淀|覆盖|达成|实现|推动|节省|拿下|促成)/;
+  var res=resVerb.test(q4)?q4:((/\d/.test(q4)?"实现":"推动")+q4);
+  return res+"——"+howStr+"。";
+ }
+ if(q2)return "为"+q2+"提供有效支撑——"+act+(q3?","+q3:"")+"。";
+ return howStr+"。";
+}
+
+var THEMES=[
+ {t:"用户研究与需求洞察",k:["反馈","调研","访谈","问卷","用户","痛点","需求","回访","客诉"]},
+ {t:"数据分析与指标体系",k:["数据","报表","看板","指标","埋点","分析","转化","漏斗","留存","日活","ROI","路径"]},
+ {t:"活动运营与增长复盘",k:["活动","拉新","复盘","投放","渠道","增长","裂变","转化率"]},
+ {t:"内容运营与传播",k:["文案","内容","公众号","排版","推送","push","素材","笔记","视频","稿"]},
+ {t:"竞品与策略分析",k:["竞品","对比","定价","策略","市场","矩阵","价格"]},
+ {t:"项目协作与流程优化",k:["流程","SOP","手册","协作","纪要","对接","跟进","上线","checklist","测试","bug","校对","标签"]}
+];
+function themeOf(e){
+ var text=(e.q1||"")+(e.bullet||"")+(e.q4||"");
+ var best=null,bn=0;
+ for(var i=0;i<THEMES.length;i++){var c=0,ks=THEMES[i].k;for(var j=0;j<ks.length;j++){if(text.indexOf(ks[j])>=0)c++;}if(c>bn){bn=c;best=THEMES[i].t;}}
+ return best||"项目实践与执行";
+}
+/* 简历是排优先级的:去重 + 有量化成果的优先 + 每个方向只留最强的几条 */
+function curateBullets(arr,cap){
+ var sorted=arr.slice().sort(function(a,b){
+  var am=/\d/.test((a.q4||"")+(a.bullet||""))?1:0,bm=/\d/.test((b.q4||"")+(b.bullet||""))?1:0;
+  if(am!==bm)return bm-am;
+  return b.ts-a.ts;
+ });
+ var seen={},out=[];
+ for(var i=0;i<sorted.length;i++){var k=(sorted[i].bullet||"").trim();if(seen[k])continue;seen[k]=1;out.push(sorted[i]);}
+ return out.slice(0,cap||3);
+}
+
+var panel=document.getElementById("panel");
+
+function findEntry(id){for(var i=0;i<state.entries.length;i++)if(state.entries[i].id===id)return state.entries[i];return null;}
+
+function renderToday(){
+ var ed=state.editing?findEntry(state.editing):null;
+ var v=ed||state.draft||{q1:"",q2:"",q3:"",q4:""};
+ var tl="";
+ if(state.entries.length===0){tl='<div class="empty">池子还空着。今天那件最不起眼的小事,就是你投喂的第一条锦鲤。</div>';}
+ else{tl=buildCalendar();}
+ var resultHtml="";
+ if(state.result){var r=state.result;
+  resultHtml='<div class="luck'+(r.rare?' rare':'')+'" id="luckCard">'+
+   '<div class="lucktop"><span class="luckstamp">真东西 +1</span><span class="luckname">'+esc(r.name)+'</span></div>'+
+   '<div class="luckmsg">'+esc(r.msg)+'</div>'+
+   '<div class="luckbullet"><div class="bltag">翻译好的简历 bullet</div><div class="blbody">'+esc(r.bullet)+'</div></div>'+
+   (r.tip?'<div class="luckcopy">'+esc(r.tip)+'</div>':'')+
+   '<div class="luckcopy">想再稳一点? <a id="copyBl">复制这条</a></div>'+
+  '</div>';}
+ var editbar=state.editing?'<div class="editbar">正在编辑第 #'+(state.entries.length-state.entries.indexOf(ed))+' 条 · 改完点「保存修改」<a id="cancelEdit">取消</a></div>':'';
+ var demoEx=(state.editing||state.result)?'':'<div class="demoex"><div class="dl">📎 看个示范 · 照着填就行</div>'+
+   '<div class="drow"><span class="draw">原始:帮 mentor 整理竞品的价格页截图</span> <span class="dgt">→ 翻译后:</span></div>'+
+   '<div class="dout">产出的竞品对比矩阵被采纳进团队定价决策——系统梳理 6 家竞品定价策略,按档位与权益维度拆解为结构化对比。</div></div>';
+ var now=new Date();var wk=["日","一","二","三","四","五","六"][now.getDay()];
+ var dateStr=now.getFullYear()+" 年 "+(now.getMonth()+1)+" 月 "+now.getDate()+" 日 · 周"+wk;
+ var aiOn=state.useAI&&state.apiKey;
+ var demo=demoMode();
+ var setHtml=(demo&&state.showSet)?'<div class="setpanel">'+
+   '<div class="sethd">🤖 AI 翻译(DeepSeek)<span class="setpill '+(aiOn?'on':'off')+'">'+(aiOn?'已开启':'未开启 · 用本地规则')+'</span></div>'+
+   '<label class="setrow"><input type="checkbox" id="setUse"'+(state.useAI?' checked':'')+'> 用 AI 翻译(更自然;关掉则用内置离线规则,完全不联网)</label>'+
+   '<div class="setlbl">你的 DeepSeek API Key</div>'+
+   '<input type="password" id="setKey" class="setkey" placeholder="sk-..." value="'+esc(state.apiKey)+'" autocomplete="off">'+
+   '<div class="setbtns"><button class="setsave" id="setSave" type="button">保存</button><button class="setclr" id="setClr" type="button">清除</button></div>'+
+   '<div class="setnote">🔒 Key 只存在你自己浏览器的 localStorage,不会写进文件、不上传任何第三方。开源版本不含任何 key,每个人填自己的。去 <b>platform.deepseek.com</b> 免费申请。请求直接发给 DeepSeek 官方接口。</div>'+
+  '</div>':'';
+ panel.innerHTML=
+  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="demoNai">🐉 解锁奶龙</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
+  setHtml+
+  demoEx+
+  '<div class="card">'+editbar+
+   '<div class="q"><div class="qlabel"><span class="qnum">01</span>今天他们让你具体做了啥?</div><textarea id="q1" rows="2" placeholder="一句话,别美化。">'+esc(v.q1)+'</textarea></div>'+
+   '<div class="q"><div class="qlabel"><span class="qnum">02</span>这事在整个项目里是哪一环?为了解决什么?</div><textarea id="q2" rows="2" placeholder="不知道?那这就是今天最该搞清的。">'+esc(v.q2)+'</textarea>'+
+    '<div class="askflag" id="askflag"'+(v.q2?' style="display:none"':'')+'><b>去问一句 →</b><span>明天逮个空问 mentor:"我做的这块,是整个项目里的哪一环?" 这栏空着,翻译就缺了最值钱的一半。</span></div></div>'+
+   '<div class="q"><div class="qlabel"><span class="qnum">03</span>你当时怎么想的?卡在哪?试了几种办法?</div><textarea id="q3" rows="2" placeholder="这部分你三个月后一定忘,所以现在写。">'+esc(v.q3)+'</textarea></div>'+
+   '<div class="q"><div class="qlabel"><span class="qnum">04</span>最后交出去什么?带来了什么变化或数字?</div><textarea id="q4" rows="2" placeholder="没数字也行,写清\'之前怎样、之后怎样\'。">'+esc(v.q4)+'</textarea></div>'+
+   '<div class="btnrow"><button class="btn" id="goTranslate">'+(state.busy?(aiOn?"AI 翻译中…":"投喂中…"):(state.editing?"保存修改":"投喂锦鲤 · 翻译成简历"))+'</button><span class="hint">'+(aiOn?"AI 翻译 · ":"")+"≈ 90 秒 / 天</span></div>"+
+  '</div>'+resultHtml+
+  '<div class="sec"><div class="sechead"><span>已攒下的真东西</span><span class="cnt">'+state.entries.length+' 条</span></div>'+tl+'</div>';
+
+ var q2=document.getElementById("q2");
+ q2.addEventListener("input",function(){document.getElementById("askflag").style.display=q2.value.trim()?"none":"flex";});
+ document.getElementById("goTranslate").addEventListener("click",doTranslate);
+ var df=document.getElementById("demoFill");if(df)df.addEventListener("click",demoFill);
+ var bg=document.getElementById("backGate");if(bg)bg.addEventListener("click",relock);
+ var fr=document.getElementById("forceRare");if(fr)fr.addEventListener("click",function(){state.forceRare=true;toast("已锁定:下一条投喂必出 0.1% 隐藏款 🌟 去点「投喂锦鲤」");});
+ var dn=document.getElementById("demoNai");if(dn)dn.addEventListener("click",demoNailong);
+ var st=document.getElementById("setToggle");if(st)st.addEventListener("click",function(){state.showSet=!state.showSet;renderToday();});
+ var ss=document.getElementById("setSave");if(ss)ss.addEventListener("click",function(){state.apiKey=val("setKey").trim();state.useAI=document.getElementById("setUse").checked;persistAI();renderToday();toast(state.useAI&&state.apiKey?"已开启 AI 翻译":(state.useAI?"勾了 AI 但没填 Key,先用本地规则":"已保存,使用本地规则"));});
+ var sc=document.getElementById("setClr");if(sc)sc.addEventListener("click",function(){state.apiKey="";state.useAI=false;persistAI();renderToday();toast("已清除 Key");});
+ var ce=document.getElementById("cancelEdit");if(ce)ce.addEventListener("click",function(){state.editing=null;renderToday();});
+ var cb=document.getElementById("copyBl");if(cb)cb.addEventListener("click",function(){copyText(state.result.bullet);});
+ panel.querySelectorAll("[data-edit]").forEach(function(a){a.addEventListener("click",function(){state.editing=a.getAttribute("data-edit");state.result=null;renderToday();window.scrollTo({top:0,behavior:"smooth"});});});
+ panel.querySelectorAll("[data-del]").forEach(function(a){a.addEventListener("click",function(){var id=a.getAttribute("data-del");if(confirm("删掉这条记录?")){state.entries=state.entries.filter(function(e){return e.id!==id;});if(state.editing===id)state.editing=null;persist();syncStats();renderToday();}});});
+ var cp=document.getElementById("calPrev");if(cp)cp.addEventListener("click",function(){state.calM--;if(state.calM<0){state.calM=11;state.calY--;}renderToday();});
+ var cn=document.getElementById("calNext");if(cn)cn.addEventListener("click",function(){state.calM++;if(state.calM>11){state.calM=0;state.calY++;}renderToday();});
+ panel.querySelectorAll("[data-day]").forEach(function(c){c.addEventListener("click",function(){state.selKey=c.getAttribute("data-day");renderToday();});});
+ if(state.result){if(state.result.rare)rareFx();else confetti();}
+}
+
+function buildCalendar(){
+ var map=byDay();
+ var latest=state.entries[0].ts;for(var i=0;i<state.entries.length;i++)if(state.entries[i].ts>latest)latest=state.entries[i].ts;
+ if(state.calY===null){var ld=new Date(latest);state.calY=ld.getFullYear();state.calM=ld.getMonth();}
+ if(!state.selKey||!map[state.selKey]){state.selKey=dkey(latest);}
+ var y=state.calY,mo=state.calM;
+ var first=new Date(y,mo,1),lead=first.getDay(),dim=new Date(y,mo+1,0).getDate();
+ var today=new Date();today.setHours(0,0,0,0);
+ var lv=koiLevel(state.entries.length);
+ var WK=["日","一","二","三","四","五","六"];
+ var h='<div class="cal"><div class="calhd"><span class="mn">'+y+' 年 '+(mo+1)+' 月</span>'+
+   '<div class="calnav"><button id="calPrev" type="button">‹</button><button id="calNext" type="button">›</button></div></div>'+
+   '<div class="calgrid">';
+ for(var w=0;w<7;w++)h+='<div class="calwk">'+WK[w]+'</div>';
+ for(var b=0;b<lead;b++)h+='<div class="calcell empty"></div>';
+ for(var d=1;d<=dim;d++){var k=y+"-"+(mo+1)+"-"+d;var arr=map[k];var cls="calcell";
+  var isToday=(new Date(y,mo,d).getTime()===today.getTime());
+  if(arr){cls+=" has";if(k===state.selKey)cls+=" sel";}
+  if(isToday)cls+=" today";
+  var inner=arr?'<span class="cd">'+d+'</span>'+miniKoi(lv)+(arr.length>1?'<span class="cnt">×'+arr.length+'</span>':''):d;
+  h+='<div class="'+cls+'"'+(arr?' data-day="'+k+'"':'')+'>'+inner+'</div>';}
+ h+='</div></div>';
+ var sel=map[state.selKey]||[];
+ sel=sel.slice().sort(function(a,b){return b.ts-a.ts;});
+ var sd=sel.length?new Date(sel[0].ts):null; h+='<div class="selday"><div class="seldayhd">'+(sd?(sd.getMonth()+1)+' 月 '+sd.getDate()+' 日 · Day '+dayNo(sel[0])+' · 这天攒了 '+sel.length+' 条':'')+'</div>';
+ for(var s=0;s<sel.length;s++){var e=sel[s];var ednow=state.editing===e.id;
+  h+='<div class="entry'+(ednow?' edny':'')+'"><div class="emeta"><span>Day '+dayNo(e)+' · '+fmt(e.ts)+'</span>'+
+     '<span class="acts"><a data-edit="'+e.id+'">编辑</a><a data-del="'+e.id+'">删除</a></span></div>'+
+     '<div class="etask"><b>原始:</b>'+esc(e.q1)+' <span class="earrow">→ 翻译后:</span></div>'+
+     '<div class="ebullet">'+esc(e.bullet)+'</div></div>';}
+ h+='</div>';
+ return h;
+}
+
+function doTranslate(){
+ var f={q1:val("q1"),q2:val("q2"),q3:val("q3"),q4:val("q4")};
+ if(!f.q1.trim()){toast("先写一句今天做了啥");return;}
+ state.busy=true;renderToday();
+ function finish(bullet){
+  // AI 判定信息太少:不硬编,提示补充,不入池
+  if(/^NEED_MORE\b/i.test((bullet||"").trim())){
+   state.busy=false;renderToday();
+   toast("信息太少啦~ 把「做了什么」写具体一点(做了哪件事、对什么),锦鲤才不会瞎编 🐟");
+   return;}
+  var tip=f.q2.trim()?"想更值钱,下次补个具体数字。":"这条还缺「全局位置」——明天问一句 mentor,它会更扛追问。";
+  if(state.editing){var e=findEntry(state.editing);if(e){e.q1=f.q1;e.q2=f.q2;e.q3=f.q3;e.q4=f.q4;e.bullet=bullet;}state.editing=null;state.busy=false;persist();syncStats();renderToday();toast("已更新这条");return;}
+  state.draft=null;
+  var prevLv=koiLevel(state.entries.length);
+  state.entries.unshift({id:uid(),q1:f.q1,q2:f.q2,q3:f.q3,q4:f.q4,bullet:bullet,ts:Date.now()});
+  var newLv=koiLevel(state.entries.length);
+  var lvUp=newLv>prevLv;
+  var mile=MILE[state.entries.length];
+  // 万分之一隐藏签:演示模式可强制必出;否则仅在非升级、非里程碑普通投喂时 0.2% 触发
+  var rare=null;
+  if(state.forceRare){rare=RARE[Math.floor(Math.random()*RARE.length)];state.forceRare=false;}
+  else if(!lvUp&&!mile&&Math.random()<0.002){rare=RARE[Math.floor(Math.random()*RARE.length)];}
+  // 每次投喂都抽一个签并点亮收集册(升级/里程碑也照抽)
+  var sg=pick(LUCKNAME);recordSign(sg);
+  var nm=sg,msg;
+  if(rare){msg=rare;nm="🌟 万分之一签";recordSign(RARE_SIGN);}
+  else if(lvUp){msg="锦鲤进阶啦!你的锦鲤升到「"+KLV[newLv].n+"」(Lv."+(newLv+1)+")——攒得越多,它越可爱,你也越扛追问。";nm="🎉 升 Lv."+(newLv+1)+" · "+sg;}
+  else if(mile){msg=mile;nm="🎉 里程碑 · "+sg;}
+  else{msg=pick(LUCKY);if(msg===state._lastLucky&&LUCKY.length>1){msg=pick(LUCKY);}state._lastLucky=msg;}
+  state.result={bullet:bullet,tip:tip,msg:msg,name:nm,rare:rare?true:false};
+  state.busy=false;persist();syncStats();renderToday();
+ }
+ if(state.useAI&&state.apiKey){
+  translateAI(f).then(finish).catch(function(err){toast("AI 翻译失败,已用本地规则兜底("+(err&&err.message||"网络错误")+")");finish(translateLocal(f));});
+ }else{
+  setTimeout(function(){finish(translateLocal(f));},550);
+ }
+}
+
+/* 演示用:一键把池子填到 20 条,下一条真填就进阶到「招福锦鲤」 */
+var DEMO_POOL=[
+ {q1:"整理用户问卷的开放题回答",q2:"给改版方向提供用户声音",q3:"把零散回答按主题归类打标",q4:"输出 5 个高频诉求,被改版需求采纳",bullet:"输出的 5 个高频用户诉求被改版需求直接采纳——独立归类问卷开放题回答并按主题打标,沉淀结构化用户声音。"},
+ {q1:"帮运营排公众号推文的版式",q2:"提升当期推文的阅读完成率",q3:"调整了配图与小标题节奏",q4:"完读率较上期提升约 12%",bullet:"推动公众号推文完读率较上期提升约 12%——主导版式与小标题节奏优化,统一图文呈现规范。"},
+ {q1:"统计一次直播活动的实时数据",q2:"为复盘提供各环节转化依据",q3:"按进入、停留、转化拆漏斗",q4:"定位到中段流失最严重的环节",bullet:"定位直播中段最严重的流失环节、支撑活动复盘——独立拆解进入到转化的全链路漏斗数据。"},
+ {q1:"维护项目的需求跟进表",q2:"让跨组对齐每个需求的进度",q3:"统一状态口径、加了优先级标记",q4:"跨组同步效率明显提升,漏跟为零",bullet:"实现需求零漏跟、提升跨组同步效率——重构需求跟进表口径并引入优先级标记,统一多方进度视图。"},
+ {q1:"做竞品 App 的功能体验记录",q2:"为产品迭代提供外部参考",q3:"按核心路径逐一截图标注差异",q4:"输出体验差异清单,进了迭代讨论",bullet:"产出的竞品体验差异清单进入产品迭代讨论——系统走查竞品核心路径并标注关键差异。"},
+ {q1:"协助筹备一场线下沙龙",q2:"保障当天流程不出岔子",q3:"列了 checklist 并对接各环节",q4:"活动零事故、嘉宾到场率 100%",bullet:"保障线下沙龙零事故、嘉宾到场率 100%——独立梳理全流程 checklist 并统筹各环节对接。"}
+];
+/* 额外的不重复样例:让演示账号能凑满 30 条且条条不同 */
+var EXTRA_DEMO=[
+ {q1:"把一个月的客服工单按问题类型归类统计",q2:"帮客服团队找出最高频的问题来源",q3:"自己定了 8 个问题标签,逐条打标再汇总",q4:"发现退换货类占四成,建议加了自助入口",bullet:"梳理近一月客服工单并归为 8 类,定位退换货类占比约 40% 的主要诉求,推动上线自助退换入口。"},
+ {q1:"清洗销售导出的几千条客户线索",q2:"为销售跟进去掉重复和无效号码",q3:"用表格函数去重、校验手机号格式",q4:"清出约 1200 条有效线索交给销售",bullet:"清洗销售线索表近 3000 条,去重并校验号码格式,产出约 1200 条有效线索供团队跟进。"},
+ {q1:"用 SQL 拉新用户的次日、7 日留存",q2:"给运营评估一次活动的留存效果",q3:"自己写了几版 SQL 核对口径",q4:"出了一张留存对比表,进了复盘",bullet:"独立用 SQL 取数并计算新用户次日 / 7 日留存,产出留存对比表纳入活动复盘。"},
+ {q1:"设计一份用户满意度问卷并回收",q2:"为产品改版收集量化反馈",q3:"参考量表设计题目、控制题量",q4:"回收 300+ 份有效问卷",bullet:"独立设计用户满意度问卷并组织回收,获取 300+ 份有效样本支撑产品改版决策。"},
+ {q1:"每天统计几个用户群的活跃和咨询量",q2:"让运营掌握社群每日健康度",q3:"固化成日报模板、定时发群",q4:"日报被运营每天直接引用",bullet:"搭建社群每日活跃 / 咨询量日报模板,固化口径并定时输出,成为运营日常决策参考。"},
+ {q1:"帮内容组找短视频选题、写脚本框架",q2:"提升账号更新效率和选题命中",q3:"扒了同类爆款,拆开头钩子和结构",q4:"提供 10 个选题,其中 3 条被采用拍摄",bullet:"拆解同类爆款结构并产出 10 个短视频选题脚本框架,其中 3 条被采纳拍摄。"},
+ {q1:"写电商商品详情页的卖点文案",q2:"提升商品页的转化",q3:"按用户关心点重排卖点顺序",q4:"参与的几个 SKU 详情页上线",bullet:"为多个 SKU 撰写商品详情页卖点文案,按用户关注点重排信息结构并推动上线。"},
+ {q1:"帮财务核对一批报销单据",q2:"保证月底报销数据准确",q3:"逐张比对发票与申请金额",q4:"挑出 7 处金额或发票不符并退回",bullet:"核对当月报销单据,逐张比对发票与申请金额,发现并退回 7 处不一致项。"},
+ {q1:"整理一个新功能的数据埋点需求",q2:"让开发知道每个按钮要上报什么",q3:"按用户路径列出事件和参数",q4:"输出埋点文档,开发按它实现",bullet:"产出新功能埋点需求文档,按用户路径定义事件与参数,作为开发上报口径依据。"},
+ {q1:"配合做一个活动落地页的两版测试",q2:"看哪版能带来更高注册",q3:"只改了首屏标题和按钮文案做对比",q4:"胜出版注册转化高约 9%",bullet:"主导活动落地页首屏 A/B 测试,通过标题与按钮文案对比,使注册转化提升约 9%。"},
+ {q1:"整理一批候选人的简历信息进表格",q2:"方便面试官快速筛选",q3:"提取学校、经历、技能做成结构字段",q4:"整理 80+ 份,面试官按表筛人",bullet:"将 80+ 份候选人简历结构化录入信息表,提炼关键字段支撑面试官快速筛选。"},
+ {q1:"做小红书账号一个月的内容排期表",q2:"保证更新节奏和主题不撞",q3:"按节点和主题排期、标注负责人",q4:"排期表被内容组按它执行",bullet:"搭建小红书月度内容排期表,按营销节点与主题统筹节奏,成为内容组执行依据。"},
+ {q1:"按消费情况做一版用户分层",q2:"帮运营针对性做触达",q3:"用 RFM 思路把用户分成几档",q4:"输出分层名单交给运营触达",bullet:"基于 RFM 思路对用户分层,产出分档名单支撑运营差异化触达。"},
+ {q1:"维护一次活动的预算和花费表",q2:"保证花费不超预算、能对上账",q3:"逐项登记实际支出、和预算比对",q4:"活动结束账目对平、无超支",bullet:"维护活动预算与支出对账表,逐项登记并比对预算,实现结项账目对平、无超支。"},
+ {q1:"把常见用户问题整理成 FAQ 知识库",q2:"减少客服重复回答",q3:"归并相似问题、写标准答复",q4:"沉淀 40 条 FAQ,客服直接复用",bullet:"沉淀 40 条标准 FAQ 知识库,归并高频相似问题,降低客服重复应答成本。"},
+ {q1:"盯核心数据大盘、发现异常上报",q2:"及时发现数据掉量等问题",q3:"对比历史波动设了关注阈值",q4:"提前发现一次掉量并上报排查",bullet:"日常监控核心数据大盘,依历史波动设定关注阈值,提前发现一次异常掉量并上报。"},
+ {q1:"翻译并校对一份海外产品文档",q2:"给国内团队同步功能说明",q3:"逐段翻译再统一术语",q4:"完成约 20 页文档翻译交付",bullet:"翻译并校对约 20 页海外产品文档,统一术语口径,供国内团队同步功能理解。"},
+ {q1:"招募并排期一批用户访谈",q2:"保证研究按时拿到样本",q3:"按画像筛人、协调双方时间",q4:"两周内约满 12 场访谈",bullet:"按目标画像招募用户并协调排期,两周内完成 12 场用户访谈的组织落地。"},
+ {q1:"做周会纪要并跟进 todo",q2:"让会上决定的事不落空",q3:"会后整理待办、标负责人和时间",q4:"每周跟进闭环,事项不漏",bullet:"负责周会纪要与待办跟进,明确事项负责人与时限并周周闭环,保障决议落地。"},
+ {q1:"收集竞品的用户评论做简单分析",q2:"了解竞品口碑和槽点",q3:"按好评差评归类、找高频词",q4:"输出竞品口碑摘要给产品",bullet:"采集竞品用户评论并按褒贬归类提炼高频词,输出竞品口碑摘要供产品参考。"}
+];
+/* 演示用现场可讲的样例:填进 4 个输入框,作者手动点「投喂」即可现场跑一遍 AI 翻译 */
+var DEMO_DRAFT={
+ q1:"帮运营核对了一场直播活动的后台数据,把异常的几条挑出来标注",
+ q2:"这场直播是季度大促的一个环节,数据要给复盘会用,不能有错",
+ q3:"先对了一遍埋点口径,发现两个环节数字对不上,逐条回溯找到是统计重复",
+ q4:"挑出 3 条异常数据并修正口径,复盘会用的是我核对后的版本"
+};
+function demoFill(){
+ // 随机铺一个「不撞里程碑(30)」的条数,这样提交后多半落在随机鸡汤区,每次演示文案都不同
+ var opts=[24,25,26,27,31,32];var target=opts[Math.floor(Math.random()*opts.length)];
+ // 每次点都重铺成「不重复」的干净样例(覆盖旧的、可能含重复的数据)
+ var src=SEED.concat(DEMO_POOL).concat(EXTRA_DEMO);var base=Date.now();
+ var add=Math.min(target,src.length);var list=[];
+ for(var i=0;i<add;i++){var s=src[i];
+  list.push({id:uid()+"_d"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
+ state.entries=list;
+ // 演示:随机点亮约 10 个签,让「签名收集册」看起来有内容
+ var spool=LUCKNAME.slice();state.signs=[];
+ for(var z=0;z<10&&spool.length;z++){state.signs.push(spool.splice(Math.floor(Math.random()*spool.length),1)[0]);}
+ // 同时把 4 个输入框填上现场样例:你手动点「投喂锦鲤」就能演示 AI 实时翻译,并刚好进阶到化龙 🐉
+ state.draft={q1:DEMO_DRAFT.q1,q2:DEMO_DRAFT.q2,q3:DEMO_DRAFT.q3,q4:DEMO_DRAFT.q4};
+ state.calY=null;state.selKey=null;state.result=null;
+ persist();syncStats();renderToday();
+ toast("已铺好底("+state.entries.length+" 条)+ 填好样例 · 现在手动点「投喂锦鲤」现场演示 🐉");
+}
+/* 演示:一键铺到 49 条,下一条投喂即解锁满级「锦鲤奶龙」 */
+function demoNailong(){
+ var src=SEED.concat(DEMO_POOL).concat(EXTRA_DEMO),base=Date.now(),list=[];
+ for(var i=0;i<49;i++){var s=src[i%src.length];list.push({id:uid()+"_n"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
+ state.entries=list;
+ state.signs=LUCKNAME.slice();
+ state.draft={q1:DEMO_DRAFT.q1,q2:DEMO_DRAFT.q2,q3:DEMO_DRAFT.q3,q4:DEMO_DRAFT.q4};
+ state.calY=null;state.selKey=null;state.result=null;
+ persist();syncStats();renderToday();
+ toast("已铺到 49 条 · 现在点「投喂锦鲤」解锁满级奶龙 🐉");
+}
+
+function copyText(t){
+ function fallback(){var ta=document.createElement("textarea");ta.value=t;ta.setAttribute("readonly","");
+  ta.style.position="fixed";ta.style.top="0";ta.style.left="0";ta.style.opacity="0";document.body.appendChild(ta);
+  ta.focus();ta.select();ta.setSelectionRange(0,t.length);var ok=false;try{ok=document.execCommand("copy");}catch(e){}
+  document.body.removeChild(ta);toast(ok?"已复制,去小红书粘贴 🧧":"复制失败,长按选中文字手动复制");}
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){toast("已复制,去小红书粘贴 🧧");},fallback);}
+ else{fallback();}
+}
+var toastT;
+function toast(msg){var old=document.querySelector(".toast");if(old)old.remove();var d=document.createElement("div");d.className="toast";d.textContent=msg;document.body.appendChild(d);clearTimeout(toastT);toastT=setTimeout(function(){d.remove();},1800);}
+
+function confetti(){
+ var card=document.getElementById("luckCard");if(!card)return;
+ var cols=["#E0694A","#C0922F","#5F8270","#F3D2C4"];
+ for(var i=0;i<16;i++){(function(i){
+  var p=document.createElement("span");p.className="petal";
+  p.style.left=(6+Math.random()*88)+"%";p.style.background=cols[i%cols.length];
+  var dur=1.1+Math.random()*.9,dx=(Math.random()*40-20);
+  p.style.animation="fall"+(i%2)+" "+dur+"s ease-in "+(Math.random()*.25)+"s forwards";
+  p.style.setProperty("--dx",dx+"px");
+  card.appendChild(p);setTimeout(function(){p.remove();},dur*1000+400);
+ })(i);}
+}
+/* 0.1% 隐藏签:全屏金色花瓣雨 + 锦鲤化龙高光 */
+function rareFx(){
+ confetti(); // 卡片上也来一波
+ var ov=document.createElement("div");ov.className="rarefx";
+ // 中央化龙高光
+ var dragon=document.createElement("div");dragon.className="rfxdragon";
+ dragon.innerHTML=(typeof koiSVG==="function")?koiSVG(11,260,178,"rfx"):"🐉";
+ ov.appendChild(dragon);
+ var halo=document.createElement("div");halo.className="rfxhalo";ov.appendChild(halo);
+ var tip=document.createElement("div");tip.className="rfxtip";tip.textContent="✨ 万分之一 · 欧皇时刻 ✨";ov.appendChild(tip);
+ // 全屏金色花瓣雨
+ var gold=["#F3C24B","#E0A92E","#FFD96B","#C9881E","#FFE9A0","#E0694A"];
+ for(var i=0;i<70;i++){(function(i){
+  var p=document.createElement("span");p.className="rfxpetal";
+  p.style.left=(Math.random()*100)+"%";p.style.background=gold[i%gold.length];
+  var dur=2.2+Math.random()*1.8,dx=(Math.random()*120-60);
+  p.style.animation="rfxfall "+dur+"s cubic-bezier(.3,.2,.5,1) "+(Math.random()*.8)+"s forwards";
+  p.style.setProperty("--dx",dx+"px");
+  p.style.width=p.style.height=(7+Math.random()*8)+"px";
+  ov.appendChild(p);
+ })(i);}
+ document.body.appendChild(ov);
+ setTimeout(function(){ov.classList.add("out");},2600);
+ setTimeout(function(){if(ov.parentNode)ov.parentNode.removeChild(ov);},3400);
+}
+
+function renderExport(){
+ var can=state.entries.length>0;
+ var lim=state.jdLimit||150,jr=state.jdResult;
+ var jdCard='<div class="card jdcard">'+
+   '<div class="jdhd">🎯 按目标岗位定制简历段</div>'+
+   '<div class="jdsub">把想投的岗位 JD 粘进来,AI 会从你攒的真东西里挑<b>最匹配</b>的,改写成<b>可直接抄进简历的 bullet 条目</b>(JD 最相关的排最前)——只用你真填过的,不编。</div>'+
+   '<textarea id="jdBox" class="jdbox" placeholder="把目标岗位的 JD / 任职要求整段粘到这里…">'+esc(state.jd||"")+'</textarea>'+
+   '<div class="jdrow"><label>字数上限</label><input type="number" id="jdLimit" min="40" max="400" value="'+lim+'"><span class="jdunit">字</span>'+
+   '<button class="btn" id="jdGo"'+(can?"":" disabled")+'>'+(state.jdBusy?"匹配中…":(jr?"重新定制":"按 JD 定制"))+'</button></div>'+
+   (can?"":'<div class="hint" style="margin-top:6px">先去「今日投喂」记几条</div>')+
+   (jr?('<div class="jdout"><div class="jdkw">匹配关键词:'+(jr.keywords&&jr.keywords.length?jr.keywords.map(function(k){return '<span class="kw">'+esc(k)+'</span>';}).join(""):'<span style="color:var(--dim)">—</span>')+'</div>'+
+     '<div class="jdpara">'+jr.bullets.map(function(b){return '<div class="rfbul"><span class="rfdash">·</span><span class="rftext">'+esc(b)+'</span></div>';}).join("")+'</div>'+
+     (function(){var tc=jr.bullets.join("").length;return '<div class="jdcount">共 '+jr.bullets.length+' 条 · '+tc+' 字'+(tc>lim?' · ⚠️ 略超上限,可点「重新定制」再压':' · 在 '+lim+' 字内 ✓')+'</div>';})()+
+     '<button class="btn ghost" id="jdCopy" style="width:100%;margin-top:10px">复制这段 📋</button></div>'):"")+
+   '</div>';
+ var exlim=state.exLimit||200;
+ var intro='<div class="card"><div style="font-size:14.5px;line-height:1.7;color:var(--ink-2)">不挑岗位的话,也可以把你攒的 <b>'+state.entries.length+' 条真东西</b>,合成一份通用简历项目段 + 面试深挖回溯——全部来自你真实填的,经得起追问。</div>'+
+   '<div class="jdrow" style="margin-top:10px"><label>简历段总字数上限</label><input type="number" id="exLimit" min="60" max="600" value="'+exlim+'"><span class="jdunit">字</span></div>'+
+   '<div class="btnrow"><button class="btn" id="goExport"'+(can?'':' disabled')+'>'+(state.showExport?"重新生成":"生成通用简历 + 面试深挖")+'</button>'+(can?'':'<span class="hint">先去「今日投喂」记几条</span>')+'</div></div>';
+ var body="";
+ if(state.showExport&&can){
+  var EXLIM=Math.max(60,Math.min(600,state.exLimit||200));
+  // PART2 深挖用:本地按方向去重挑代表条目(保留 q 字段供追问还原)
+  var pgroups={},porder=[];
+  for(var i=0;i<state.entries.length;i++){var pth=themeOf(state.entries[i]);if(!pgroups[pth]){pgroups[pth]=[];porder.push(pth);}pgroups[pth].push(state.entries[i]);}
+  var flat=[];for(var g=0;g<porder.length;g++){flat=flat.concat(curateBullets(pgroups[porder[g]],3));}
+  // PART1 成品段:来自 AI 合成(合并重复 + 按方向归类 + 限字数)
+  var p1,finalText="项目经历\n";
+  if(state.exBusy){
+   p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">正在把你攒的 '+state.entries.length+' 条记录合并、归类、压到 '+EXLIM+' 字内…</div><div class="rgnote" style="margin-top:10px">AI 合成中,约 5–15 秒…</div></div>';
+  }else{
+   var secs=(state.exResult&&state.exResult.sections)||[];
+   var finalHtml="",nbul=0,cum=0;
+   for(var s=0;s<secs.length;s++){var th=secs[s].theme||("方向"+(s+1)),bs=secs[s].bullets||[];
+    finalHtml+='<div class="rfgroup"><div class="rfhead">'+esc(th)+'</div>';finalText+="\n【"+th+"】\n";
+    for(var m=0;m<bs.length;m++){finalHtml+='<div class="rfbul"><span class="rfdash">·</span><span class="rftext">'+hl(bs[m])+'</span></div>';finalText+="· "+bs[m]+"\n";nbul++;cum+=(bs[m]||"").length;}
+    finalHtml+='</div>';}
+   p1='<div class="paper"><div class="eyebrow">PART 1 · 写进简历</div><div class="ptitle">简历项目段 · 成品</div><div class="psub">已把你 '+state.entries.length+' 条记录<b>合并去重、按方向归类</b>,压到 '+EXLIM+' 字内——同一件事不再重复,有数字的优先</div>'+
+    '<div class="exsum"><div class="sm"><b>'+nbul+'</b><span>条 bullet</span></div>'+
+    '<div class="sm"><b>'+secs.length+'</b><span>个能力方向</span></div>'+
+    '<div class="sm"><b>'+cum+'</b><span>约 / '+EXLIM+' 字</span></div></div>'+
+    '<div class="rfinal">'+finalHtml+'</div>'+
+    '<button class="btn" id="copyResume" style="width:100%;margin-top:14px">一键复制整段简历项目段 📋</button>'+
+    '<div class="rgnote" style="margin-top:14px">已融合你全部 '+state.entries.length+' 条记录、重复的自动合并。想更长 / 更短,改上面「字数上限」再点「重新生成」。完整原始记录在「今日投喂」日历里随时可回溯。</div></div>';
+  }
+  var divr='<div class="exdivider"><span>注水的简历,深挖三层就穿;你的每一条,都能回溯到你真做过的细节。</span></div>';
+  var p2='<div class="paper"><div class="eyebrow">PART 2 · 进面试前</div><div class="ptitle">面试深挖回溯</div><div class="psub">面试官会逐条追问,先预演他怎么挖、你怎么用记录接住</div>'+
+    '<div class="flowbox"><div class="flowcap">面试官的「深挖逻辑」长这样 ↓ 每条经历都会走一遍</div>'+
+    '<div class="flownode start">简历上的一句话</div>'+
+    '<div class="flowar">↓ 听起来不错,展开讲讲</div>'+
+    '<div class="flownode"><b>怎么做的?</b> 把完整流程讲一遍</div>'+
+    '<div class="flowar">↓ 追问动机</div>'+
+    '<div class="flownode"><b>为什么这么做?</b> 在项目里是哪一环</div>'+
+    '<div class="flowar">↓ 验真伪</div>'+
+    '<div class="flownode"><b>结果怎么衡量?</b> 数据 / 口径从哪来</div>'+
+    '<div class="flowar">↓ 看深度</div>'+
+    '<div class="flownode"><b>哪是你独立判断的?重来会怎么改?</b></div>'+
+    '<div class="flowar">↓ 你接住</div>'+
+    '<div class="flownode endn">用真实记录,一句句答上去 → 稳</div>'+
+    '</div>';
+  var seen={},ivlist=[];for(var fi=0;fi<flat.length;fi++){var fe=flat[fi];var fk=(fe.bullet||'').trim();if(seen[fk])continue;seen[fk]=1;ivlist.push(fe);}
+  ivlist=ivlist.slice(0,5);
+  for(var k=0;k<ivlist.length;k++){var e=ivlist[k];
+   var dig=["这件事你具体是怎么做的?从头到尾把流程讲一遍。"];
+   dig.push(e.q2?"它在整个项目里是哪一环?如果这一步没做好,会连累后面什么?":"这件事在项目里处在什么位置?为什么非做不可?");
+   dig.push(e.q3?"你当时为什么选这个办法?有没有考虑过别的方案,为什么没用它?":"过程中最卡、最难的点是什么?你是怎么啃下来的?");
+   dig.push(e.q4&&/\d/.test(e.q4)?"这个数字是怎么算出来的?口径、样本靠谱吗?":"最后怎么衡量做得好不好?有没有更硬的量化结果?");
+   dig.push("这件事里,哪部分是你独立判断的,哪部分是别人定的?");
+   dig.push("如果现在让你重做一遍,你会改哪里?为什么?");
+   var layers="";for(var d=0;d<dig.length;d++){layers+='<div class="layer"><span class="lnode">'+(d+1)+'</span><span class="lq">'+esc(dig[d])+'</span></div>';}
+   var trace='<p><b>背景 / 全局:</b>'+(e.q2?esc(e.q2):'<span class="miss">这条没记全局位置——面试官最爱挖这里,面试前务必补一句</span>')+'</p>'+
+     '<p><b>我的做法:</b>'+(e.q3?esc(e.q3):'<span class="miss">当时的思路没记,凭印象也要还原出来</span>')+'</p>'+
+     '<p><b>交付 / 结果:</b>'+(e.q4?esc(e.q4):'<span class="miss">结果没记——哪怕定性也写清"之前怎样、之后怎样"</span>')+'</p>'+
+     '<p><b>一句话收尾:</b>这条每个细节我都真做过、能展开,不是简历上的一句空话。</p>';
+   var tip=e.q4&&/\d/.test(e.q4)?'被追问数据时:先讲口径和来源,再给结论。数字记不清就说区间,千万别现编。':'这条暂时没有硬数据:用"之前 X、之后 Y"的对比来代替,变化本身就是成果。';
+   p2+='<div class="ivcard"><span class="ivchip">简历这么写</span><div class="ivline">'+hl(e.bullet)+'</div>'+
+       '<div class="diglab">面试官会一层层往下挖 · 共 '+dig.length+' 层</div><div class="layers">'+layers+'</div>'+
+       '<div class="ivans"><div class="anslab">用你的真实记录,一句句接住</div>'+trace+'</div>'+
+       '<div class="ivtip"><b>追问应对 →</b> '+esc(tip)+'</div></div>';
+  }
+  p2+='</div>';
+  var hook='<div class="hook"><div class="hookwrap">'+
+    '<div class="hooktitle">这份简历,是「实习<em>翻译机</em>」帮你攒出来的</div>'+
+    '<div class="hooksub">简历还想再稳一点? 把它发我,免费帮你诊断、<br>点出最该改的 3 处 · 也能一起规划职业方向</div>'+
+    '<a class="hookbtn" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">免费诊断简历 / 找我聊聊 →</a>'+
+    '<div class="hooknote">点击跳转作者主页 · 备注「锦鲤」优先回</div>'+
+    '</div></div>';
+  body=p1+divr+p2+hook;
+ }
+ var migCard='<div class="card">'+
+   '<div class="jdhd">🧳 数据迁移包 · 防丢/换设备</div>'+
+   '<div class="jdsub">换手机、换浏览器,或作者换网址时,先在<b>老页面</b>点「打包」复制那串迁移码(也可下载成文件存微信收藏),到<b>新页面</b>这张卡片下半部分粘进去点「恢复」,你攒的记录就全搬过去了。建议每攒一阵就备份一次。</div>'+
+   '<button class="btn" id="migPack" style="width:100%;margin-top:10px"'+(can?'':' disabled')+'>📦 打包我的全部记录('+state.entries.length+' 条)</button>'+
+   (can?'':'<div class="hint" style="margin-top:6px">还没有记录可打包</div>')+
+   '<textarea id="migOut" class="jdbox" readonly placeholder="点上面按钮,这里会出现一串迁移码,复制它保存好…" style="margin-top:10px;min-height:70px"></textarea>'+
+   '<div class="btnrow"><button class="btn ghost" id="migCopy">复制迁移码 📋</button><button class="btn ghost" id="migFile">下载备份文件 💾</button></div>'+
+   '<div style="border-top:1px dashed var(--border);margin:16px 0 12px"></div>'+
+   '<div class="jdsub"><b>恢复数据</b>:把之前打包的迁移码粘到下面,点恢复(会用迁移码里的记录覆盖当前邀请码下的数据)。</div>'+
+   '<textarea id="migIn" class="jdbox" placeholder="把迁移码粘到这里…" style="margin-top:8px;min-height:70px"></textarea>'+
+   '<button class="btn" id="migRestore" style="width:100%;margin-top:8px">⬇️ 用迁移码恢复记录</button>'+
+   '</div>';
+ panel.innerHTML=jdCard+intro+body+migCard;
+ var jb=document.getElementById("jdBox");if(jb)jb.addEventListener("input",function(){state.jd=jb.value;});
+ var jg=document.getElementById("jdGo");if(jg&&!jg.disabled)jg.addEventListener("click",jdTailor);
+ var jc=document.getElementById("jdCopy");if(jc)jc.addEventListener("click",function(){if(state.jdResult)copyText(state.jdResult.bullets.map(function(b){return "· "+b;}).join("\n"));});
+ var el=document.getElementById("exLimit");if(el)el.addEventListener("input",function(){state.exLimit=Math.max(60,Math.min(600,parseInt(el.value,10)||200));});
+ var ge=document.getElementById("goExport");
+ if(ge&&!ge.disabled)ge.addEventListener("click",exSynth);
+ var cr=document.getElementById("copyResume");if(cr)cr.addEventListener("click",function(){copyText(finalText);});
+ var hb=document.getElementById("hookBtn");
+ if(hb)hb.addEventListener("click",function(){alert("这里换成你的关注主页 / 进群二维码链接");});
+ var mp=document.getElementById("migPack");if(mp&&!mp.disabled)mp.addEventListener("click",function(){var o=document.getElementById("migOut");if(o){o.value=packData();o.focus();o.select();}toast("已打包,复制这串迁移码存好 📦");});
+ var mc=document.getElementById("migCopy");if(mc)mc.addEventListener("click",function(){var o=document.getElementById("migOut");if(!o||!o.value){toast("先点上面「打包」");return;}copyText(o.value);});
+ var mf=document.getElementById("migFile");if(mf)mf.addEventListener("click",function(){var o=document.getElementById("migOut");var data=(o&&o.value)||packData();downloadText("实习翻译机-备份-"+ymdStr(new Date())+".txt",data);});
+ var mr=document.getElementById("migRestore");if(mr)mr.addEventListener("click",doMigRestore);
+}
+/* ── 数据迁移包:打包/恢复 ── */
+function packData(){var payload={v:1,code:activeCode(),ts:Date.now(),n:state.entries.length,entries:state.entries};
+ try{return "KOI1:"+btoa(unescape(encodeURIComponent(JSON.stringify(payload))));}catch(e){return "KOI1:"+btoa(encodeURIComponent(JSON.stringify(payload)));}}
+function unpackData(str){str=(str||"").trim().replace(/\s/g,"");if(!str)throw new Error("迁移码是空的");
+ if(str.indexOf("KOI1:")===0)str=str.slice(5);
+ var json;try{json=decodeURIComponent(escape(atob(str)));}catch(e){json=decodeURIComponent(atob(str));}
+ var obj=JSON.parse(json);
+ if(!obj||!obj.entries||Object.prototype.toString.call(obj.entries)!=="[object Array]")throw new Error("迁移码格式不对");
+ return obj;}
+function doMigRestore(){var ta=document.getElementById("migIn");var raw=ta?ta.value:"";
+ var obj;try{obj=unpackData(raw);}catch(e){toast("恢复失败:"+(e.message||"迁移码无效"));return;}
+ var incoming=obj.entries.length;
+ var msg=state.entries.length>0?("当前邀请码下已有 "+state.entries.length+" 条,迁移码里有 "+incoming+" 条。\n确定用迁移码【覆盖】当前数据吗?(当前这些会被替换)"):("将恢复 "+incoming+" 条记录,确定?");
+ if(!confirm(msg))return;
+ state.entries=obj.entries;state.result=null;state.editing=null;persist();syncStats();render();
+ toast("已恢复 "+incoming+" 条记录 🎉");}
+function downloadText(name,text){try{var blob=new Blob([text],{type:"text/plain;charset=utf-8"});var url=URL.createObjectURL(blob);
+ var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();
+ setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);toast("已下载备份文件 💾");}
+ catch(e){toast("此浏览器不支持下载,请改用「复制迁移码」");}}
+
+/* ── 周报:框定时间段,把这段时间攒的记录导出成一份实习周报 ── */
+function ymdStr(d){return d.getFullYear()+"-"+("0"+(d.getMonth()+1)).slice(-2)+"-"+("0"+d.getDate()).slice(-2);}
+function parseYmd(s){var p=(s||"").split("-");return new Date(+p[0],(+p[1]||1)-1,+p[2]||1);}
+function repDefault(){if(!state.repFrom||!state.repTo){var t=new Date();var f=new Date();f.setDate(t.getDate()-6);state.repTo=ymdStr(t);state.repFrom=ymdStr(f);}}
+function repSetRange(kind){var t=new Date(),f=new Date();
+ if(kind==="thisweek"){var dw=(t.getDay()+6)%7;f.setDate(t.getDate()-dw);}
+ else if(kind==="lastweek"){var dw2=(t.getDay()+6)%7;t.setDate(t.getDate()-dw2-1);f=new Date(t);f.setDate(t.getDate()-6);}
+ else if(kind==="d7"){f.setDate(t.getDate()-6);}
+ else if(kind==="d30"){f.setDate(t.getDate()-29);}
+ state.repFrom=ymdStr(f);state.repTo=ymdStr(t);renderReport();}
+function repEntries(){var a=parseYmd(state.repFrom);a.setHours(0,0,0,0);var b=parseYmd(state.repTo);b.setHours(23,59,59,999);
+ var lo=a.getTime(),hi=b.getTime();return state.entries.filter(function(e){return e.ts>=lo&&e.ts<=hi;}).sort(function(x,y){return x.ts-y.ts;});}
+function repText(){
+ var arr=repEntries();var fd=parseYmd(state.repFrom),td=parseYmd(state.repTo);
+ var head=(fd.getMonth()+1)+"月"+fd.getDate()+"日 - "+(td.getMonth()+1)+"月"+td.getDate()+"日";
+ var groups={},order=[];for(var i=0;i<arr.length;i++){var th=themeOf(arr[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(arr[i]);}
+ var t="实习周报("+head+")\n本周共完成 "+arr.length+" 项工作,覆盖 "+order.length+" 个方向。\n";
+ for(var g=0;g<order.length;g++){var arr2=groups[order[g]];t+="\n【"+order[g]+"】\n";for(var m=0;m<arr2.length;m++){t+="· "+arr2[m].bullet+"\n";}}
+ t+="\n—— 由「实习翻译机·锦鲤版」整理";return t;}
+function renderReport(){
+ repDefault();var arr=repEntries();
+ var fd=parseYmd(state.repFrom),td=parseYmd(state.repTo);
+ var head=(fd.getMonth()+1)+" 月 "+fd.getDate()+" 日 — "+(td.getMonth()+1)+" 月 "+td.getDate()+" 日";
+ var ctrl='<div class="card"><div style="font-size:14.5px;line-height:1.7;color:var(--ink-2)">框一段时间,把这期间攒的记录一键整理成<b>实习周报</b>——发给导师 / 写进周会汇报都能直接用。</div>'+
+  '<div class="repquick"><button class="rqb" data-rk="thisweek">本周</button><button class="rqb" data-rk="lastweek">上周</button><button class="rqb" data-rk="d7">近 7 天</button><button class="rqb" data-rk="d30">近 30 天</button></div>'+
+  '<div class="reprow"><label>从</label><input type="date" id="repFrom" value="'+state.repFrom+'"><label>到</label><input type="date" id="repTo" value="'+state.repTo+'"></div></div>';
+ var body="";
+ if(!arr.length){
+  body='<div class="card" style="text-align:center;color:var(--muted);font-size:13.5px;padding:26px 16px">这段时间('+head+')还没有记录~<br>换个时间段,或先去「今日投喂」记几条。</div>';
+ }else{
+  var groups={},order=[];for(var i=0;i<arr.length;i++){var th=themeOf(arr[i]);if(!groups[th]){groups[th]=[];order.push(th);}groups[th].push(arr[i]);}
+  var gh="";for(var g=0;g<order.length;g++){var th=order[g],a2=groups[th];
+   gh+='<div class="rgroup"><div class="rgrouphead"><span class="rgnum">'+("0"+(g+1)).slice(-2)+'</span><span class="rgtheme">'+esc(th)+'</span><span class="rgcount">'+a2.length+' 条</span></div><div class="rgbody">';
+   for(var m=0;m<a2.length;m++){var d=new Date(a2[m].ts);gh+='<div class="rgitem"><span class="rgday">'+(d.getMonth()+1)+'/'+d.getDate()+'</span><span class="rgtext">'+hl(a2[m].bullet)+'</span></div>';}
+   gh+='</div></div>';}
+  body='<div class="paper"><div class="eyebrow">实习周报</div><div class="ptitle">'+head+'</div><div class="psub">本周共完成 '+arr.length+' 项工作,覆盖 '+order.length+' 个方向——下面整段可直接复制</div>'+
+   '<div class="exsum"><div class="sm"><b>'+arr.length+'</b><span>项工作</span></div><div class="sm"><b>'+order.length+'</b><span>个方向</span></div><div class="sm"><b>'+Math.max(1,Math.round((td-fd)/DAY)+1)+'</b><span>天跨度</span></div></div>'+
+   gh+
+   '<button class="btn" id="copyReport" style="width:100%;margin-top:16px">一键复制整份周报 📋</button>'+
+   '<button class="btn ghost" id="dlReport" style="width:100%;margin-top:10px">下载为 .txt</button>'+
+   '</div>';
+ }
+ panel.innerHTML=ctrl+body;
+ var rqs=document.querySelectorAll(".rqb");for(var q=0;q<rqs.length;q++){rqs[q].addEventListener("click",function(ev){repSetRange(ev.target.getAttribute("data-rk"));});}
+ var rf=document.getElementById("repFrom"),rt=document.getElementById("repTo");
+ if(rf)rf.addEventListener("change",function(){state.repFrom=rf.value;if(rt&&rt.value<rf.value)state.repTo=rf.value;renderReport();});
+ if(rt)rt.addEventListener("change",function(){state.repTo=rt.value;if(rf&&rf.value>rt.value)state.repFrom=rt.value;renderReport();});
+ var cp=document.getElementById("copyReport");if(cp)cp.addEventListener("click",function(){copyText(repText());});
+ var dl=document.getElementById("dlReport");if(dl)dl.addEventListener("click",function(){
+  var blob=new Blob([repText()],{type:"text/plain;charset=utf-8"});var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="实习周报.txt";a.click();});
+}
+
+/* 把战绩卡渲染成一张真正可保存的 PNG(离线、无第三方库)。手机可长按图片存相册,也可点下载。 */
+function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function wrapCenter(ctx,text,cx,y,maxW,lh){var line="",yy=y,out=[];for(var i=0;i<text.length;i++){var t=line+text[i];if(ctx.measureText(t).width>maxW&&line){out.push(line);line=text[i];}else line=t;}out.push(line);for(var j=0;j<out.length;j++){ctx.fillText(out[j],cx,yy+j*lh);}return yy+out.length*lh;}
+function buildCardImage(cb){
+ var n=state.entries.length,lv=koiLevel(n),lvname=KLV[lv].n,isMax=lv===KLV.length-1;
+ var line=MILE[n]||"每一条都是你真做过的事——这,就是你上岸的底气。";
+ var proof=[];for(var i=0;i<Math.min(2,n);i++){var b=state.entries[i].bullet;if(b.length>46)b=b.slice(0,44)+"…";proof.push(b);}
+ var W=600,H=920,S=2;
+ var cv=document.createElement("canvas");cv.width=W*S;cv.height=H*S;var ctx=cv.getContext("2d");ctx.scale(S,S);
+ var g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#FBF3E6");g.addColorStop(1,"#F1E2C9");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ rrect(ctx,26,26,W-52,H-52,30);ctx.fillStyle="#FFFDF8";ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#EAD9BC";ctx.stroke();
+ var im=new Image();
+ im.onload=function(){draw(im);};im.onerror=function(){draw(null);};
+ im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(koiSVG(lv,200,100,"cardimg",false));
+ function draw(koiImg){
+  if(koiImg)ctx.drawImage(koiImg,200,70,200,100);
+  ctx.textAlign="center";
+  // 等级 pill
+  ctx.font="600 19px -apple-system,'PingFang SC',sans-serif";var ct="Lv."+(lv+1)+" · "+lvname;var cw=ctx.measureText(ct).width;
+  rrect(ctx,300-cw/2-16,186,cw+32,34,17);ctx.fillStyle=isMax?"#8A3D12":"#C0922F";ctx.fill();
+  ctx.fillStyle="#FFF8E8";ctx.fillText(ct,300,209);
+  // 标题
+  ctx.fillStyle="#C24E32";ctx.font="800 42px -apple-system,'PingFang SC',sans-serif";ctx.fillText("我必上岸",300,272);
+  // 数字
+  ctx.fillStyle="#E0694A";ctx.font="800 66px -apple-system,'PingFang SC',sans-serif";ctx.fillText(String(n),300,360);
+  ctx.fillStyle="#9A8F7E";ctx.font="600 18px -apple-system,'PingFang SC',sans-serif";ctx.fillText("条「真东西」· 已入池",300,392);
+  // 寄语
+  ctx.fillStyle="#6E6457";ctx.font="500 20px -apple-system,'PingFang SC',sans-serif";
+  var yy=wrapCenter(ctx,line,300,438,440,30)+18;
+  // 节选
+  ctx.fillStyle="#B3A793";ctx.font="600 15px -apple-system,'PingFang SC',sans-serif";ctx.fillText("我已经攒下的(节选)",300,yy);yy+=20;
+  ctx.textAlign="left";
+  for(var k=0;k<proof.length;k++){
+   ctx.font="500 16px -apple-system,'PingFang SC',sans-serif";
+   var lines=[],ln="";for(var c=0;c<proof[k].length;c++){var tt=ln+proof[k][c];if(ctx.measureText(tt).width>420&&ln){lines.push(ln);ln=proof[k][c];}else ln=tt;}lines.push(ln);
+   var bh=lines.length*24+20;
+   rrect(ctx,70,yy,460,bh,12);ctx.fillStyle="#FBF3E7";ctx.fill();ctx.strokeStyle="#EEDFC6";ctx.lineWidth=1;ctx.stroke();
+   ctx.fillStyle="#4A4337";for(var m=0;m<lines.length;m++)ctx.fillText(lines[m],86,yy+28+m*24);
+   yy+=bh+14;
+  }
+  // 水印
+  ctx.textAlign="center";ctx.fillStyle="#C3B79F";ctx.font="500 14px -apple-system,'PingFang SC',sans-serif";
+  ctx.fillText("实习翻译机 · 锦鲤版 · 我必上岸",300,H-46);
+  cb(cv.toDataURL("image/png"));
+ }
+}
+function sgCollHtml(){
+ var col=state.signs||[],lit=0;
+ var cells=LUCKNAME.map(function(s){var on=col.indexOf(s)>=0;if(on)lit++;
+  return '<div class="sgcell'+(on?' lit':' dark')+'">'+(on?('<span class="ic">🎴</span><span class="sn">'+s+'</span>'):'<span class="ic">🔒</span><span class="sn">？签</span>')+'</div>';}).join("");
+ var rareOn=col.indexOf(RARE_SIGN)>=0;
+ var rareCell='<div class="sgcell rare'+(rareOn?' lit':' dark')+'">'+(rareOn?'<span class="ic">🌟</span><span class="sn">万分之一签 · 0.1%</span>':'<span class="ic">❓</span><span class="sn">？？？ 隐藏款</span>')+'</div>';
+ return '<div class="sgcoll"><div class="sgh"><span class="sgt">🎴 签名收集册</span><span class="sgp">已点亮 '+lit+'/'+LUCKNAME.length+(rareOn?' ✨':'')+'</span></div>'+
+  '<div class="sggrid">'+cells+'</div>'+
+  '<div class="sgrarewrap">'+rareCell+'</div>'+
+  '<div class="sgnote">每次投喂随机抽一个签,抽到就点亮,暗着的还没遇到~ 集齐 16 签靠缘分,🌟 万分之一签是 0.1% 隐藏款。</div></div>';
+}
+function renderCard(){
+ var n=state.entries.length;
+ if(n===0){panel.innerHTML='<div class="card"><div class="empty">先去「今日投喂」记下第一条,再回来生成你的锦鲤战绩卡 🧧</div></div>';return;}
+ var lv=koiLevel(n);var lvname=KLV[lv].n;var isMax=lv===KLV.length-1;
+ var line=MILE[n]||"每一条都是你真做过的事——这,就是你上岸的底气。";
+ var proof="";var pn=Math.min(2,n);
+ for(var i=0;i<pn;i++){var b=state.entries[i].bullet;if(b.length>44)b=b.slice(0,42)+"…";proof+='<div class="pb">'+esc(b)+'</div>';}
+ var rips='<span class="rp" style="left:28px;top:78px;width:72px;height:20px"></span><span class="rp" style="right:44px;top:40px;width:38px;height:11px"></span>';
+ var lvchip='<div class="achvlv'+(isMax?' max':'')+'">Lv.'+(lv+1)+' · '+lvname+'</div>';
+ panel.innerHTML=
+  '<div class="shothint">攒下的真东西越多,锦鲤越进阶、卡越好看 🧧 长按 / 截图保存这张卡,去小红书晒</div>'+
+  '<div class="achvwrap"><div class="achv lv'+(lv+1)+'">'+
+   '<div class="achvtop">'+rips+'<div class="gseal">必上岸</div><div class="gkoi">'+koiSVG(lv,124,62,"card",false)+'</div></div>'+
+   lvchip+
+   '<div class="achvhz">我必上岸</div>'+
+   '<div class="achvstat"><b>'+n+'</b><span>条「真东西」· 已入池</span></div>'+
+   '<div class="achvmile">'+esc(line)+'</div>'+
+   '<div class="achvproof"><div class="pl">我已经攒下的(节选)</div>'+proof+'</div>'+
+   '<div class="achvwm">实习翻译机 · 锦鲤版 · 我必上岸</div>'+
+  '</div></div>'+
+  sgCollHtml()+
+  '<div id="cardImgBox"></div>'+
+  '<button class="cbtn" id="saveCard">💾 生成并保存这张卡(图片)</button>'+
+  '<div class="achvcta"><div class="gw">'+
+   '<div class="gift">晒出这张卡,免费领<em>《秋招投递大礼包》</em><span class="price">¥99</span></div>'+
+   '<div class="steps">① 点上方<b>「生成并保存」</b>把卡存成图片(手机可长按图片存相册)<br>② 发<b>小红书</b>,配下方一键复制的文案<br>③ 把发布截图发我 → <b>免费领大礼包</b></div>'+
+   '<button class="cbtn" id="copyWen">一键复制晒卡文案 📋</button>'+
+   '<a class="cbtn alt" href="https://work.weixin.qq.com/ca/cawcdecd5308b30992" target="_blank" rel="noopener">截图发我 · 领大礼包 →</a>'+
+  '</div></div>';
+ var wen="实习天天打杂、简历空空的姐妹,这个工具有点东西…\n每天花一分钟把今天干的活记一下,它直接帮我翻译成能写进简历的话😭\n已经攒 "+n+" 条了,焦虑都少了点哈哈🧧\n#秋招 #实习 #简历 #求职 #应届生";
+ var cw=document.getElementById("copyWen");if(cw)cw.addEventListener("click",function(){copyText(wen);});
+ var sc=document.getElementById("saveCard");if(sc)sc.addEventListener("click",function(){
+  sc.textContent="生成中…";
+  buildCardImage(function(url){
+   var box=document.getElementById("cardImgBox");
+   box.innerHTML='<div class="cardimgtip">↓ 长按图片保存到相册 / 或点下方按钮下载</div><img class="cardimg" src="'+url+'" alt="锦鲤战绩卡">';
+   var a=document.createElement("a");a.href=url;a.download="锦鲤战绩卡.png";document.body.appendChild(a);a.click();document.body.removeChild(a);
+   sc.textContent="✅ 已生成 · 可长按上图保存";
+   toast("卡片已生成,长按图片即可存相册 🧧");
+  });
+ });
+}
+
+function render(){if(state.tab==="today")renderToday();else if(state.tab==="card")renderCard();else if(state.tab==="report")renderReport();else renderExport();}
+
+document.getElementById("tabs").addEventListener("click",function(ev){
+ var b=ev.target.closest(".tab");if(!b)return;
+ state.tab=b.getAttribute("data-tab");
+ var tabs=document.querySelectorAll(".tab");
+ for(var i=0;i<tabs.length;i++){tabs[i].classList.toggle("on",tabs[i]===b);}
+ render();
+});
+document.getElementById("reset").addEventListener("click",function(){
+ if(confirm("清空所有记录?不可恢复。")){state.entries=[];state.result=null;state.showExport=false;state.editing=null;persist();syncStats();render();}
+});
+
+/* petal keyframes injected */
+var kf=document.createElement("style");
+kf.textContent="@keyframes fall0{0%{opacity:0;transform:translateY(0) translateX(0) rotate(0);}10%{opacity:1;}100%{opacity:0;transform:translateY(220px) translateX(var(--dx)) rotate(220deg);}}"+
+ "@keyframes fall1{0%{opacity:0;transform:translateY(0) translateX(0) rotate(0);}10%{opacity:1;}100%{opacity:0;transform:translateY(240px) translateX(var(--dx)) rotate(-200deg);}}";
+document.head.appendChild(kf);
+
+/* ── 邀请码解锁(导流私域) ──
+   下面 INVITE_CODES 里就是你对外发放的码,自己随意增删。 */
+var INVITE_CODES=["SHANG2026","OFFER66","LUCKY88","JINLI77","BISHANGAN"];
+var UKEY="shixi-koi-unlocked";
+function mint(body){body=(body||"").toString().toUpperCase().slice(0,4);var h=0,map="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";for(var i=0;i<body.length;i++)h=(h*131+body.charCodeAt(i))%1296;return body+map[Math.floor(h/36)]+map[h%36];}
+function codeOK(raw){var c=(raw||"").trim().toUpperCase().replace(/\s/g,"");
+ if(INVITE_CODES.indexOf(c)>=0)return true;
+ if(!/^[A-Z0-9]{6}$/.test(c))return false;
+ return c===mint(c.slice(0,4));}
+function unlocked(){try{return localStorage.getItem(UKEY)==="1";}catch(e){return false;}}
+/* 轻量计数器:每台设备首次解锁(非演示码)给计数器 +1,刷新不重复计 */
+var CNT_NS="jinli-koi-live-0601",CNT_KEY="shixi-koi-counted";
+function countUnlock(){try{if(localStorage.getItem(CNT_KEY)==="1")return;localStorage.setItem(CNT_KEY,"1");
+  var im=new Image();im.src="https://api.counterapi.dev/v1/"+CNT_NS+"/unlock/up?_="+Date.now();}catch(e){}}
+var HOOK_URL="https://work.weixin.qq.com/ca/cawcdecd5308b30992";
+function tryCode(){var raw=document.getElementById("codeInput").value;
+ var c=(raw||"").trim().toUpperCase().replace(/\s/g,"");
+ if(!c){/* 没填码 = 还没领码,直接带去找作者领 */
+  document.getElementById("codeErr").textContent="还没邀请码?这就带你去找作者免费领 →";
+  var w=window.open(HOOK_URL,"_blank");if(!w)location.href=HOOK_URL;return;}
+ var isDemo=(c===DEMO_CODE);
+ if(isDemo||codeOK(c)){
+  try{localStorage.setItem(UKEY,"1");localStorage.setItem(CKEY,c);}catch(e){}
+  if(isDemo){try{localStorage.setItem(DKEY,"1");}catch(e){}load();if(state.entries.length===0)loadDemoData();}
+  else{try{localStorage.removeItem(DKEY);}catch(e){}load();countUnlock();}
+  syncStats();render();
+  var g=document.getElementById("gate");g.style.opacity="0";setTimeout(function(){g.style.display="none";},350);
+  toast(isDemo?"演示版已解锁 🐉":"解锁成功 · 开始攒锦鲤 🧧");}
+ else{document.getElementById("codeErr").textContent="邀请码不对~ 关注作者回复「上岸」领一个 →";}}
+/* 回到邀请码门页(管理员/演示用,数据保留,只是重新锁上展示门页) */
+function relock(){try{localStorage.removeItem(UKEY);}catch(e){}
+ var ci=document.getElementById("codeInput");if(ci)ci.value="";
+ var ce=document.getElementById("codeErr");if(ce)ce.textContent="";
+ openGate();window.scrollTo(0,0);}
+var _gateBound=false;
+function openGate(){var g=document.getElementById("gate");g.style.display="flex";g.style.opacity="1";
+ if(_gateBound)return;_gateBound=true;
+ document.getElementById("codeBtn").addEventListener("click",tryCode);
+ document.getElementById("codeInput").addEventListener("keydown",function(e){if(e.key==="Enter")tryCode();});}
+
+/* 外链跳转兜底:微信/小红书内置浏览器对 target=_blank 支持差,这里强制跳转 */
+document.addEventListener("click",function(e){
+ var a=e.target.closest&&e.target.closest("a");if(!a)return;
+ var href=a.getAttribute("href")||"";
+ if(/^https?:\/\//.test(href)){e.preventDefault();var w=window.open(href,"_blank");if(!w)location.href=href;}
+});
+
+load();loadAI();
+/* 纯使用版:免邀请码门 + 预填示例数据,方便录屏演示 */
+if(state.entries.length===0)loadDemoData();
+if(!state.signs||!state.signs.length){var _sp=LUCKNAME.slice();state.signs=[];for(var _i=0;_i<9&&_sp.length;_i++)state.signs.push(_sp.splice(Math.floor(Math.random()*_sp.length),1)[0]);persist();}
+syncStats();render();
+</script>
+<!-- 访问统计:VerCount(不蒜子兼容,国内可达),后台 stat.html 读取 -->
+<script defer src="https://cn.vercount.one/js"></script>
+</body>
+</html>
