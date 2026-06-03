@@ -224,6 +224,9 @@ textarea::placeholder{color:var(--dim);}
 .mtr{font-family:var(--serif);font-weight:700;color:var(--koi-deep);}
 .paperfoot{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);font-size:11px;color:var(--dim);text-align:right;}
 /* 投喂示范 */
+.langtog{margin-left:auto;display:inline-flex;border:1px solid var(--koi-line);border-radius:20px;overflow:hidden;background:#fff;flex:none;}
+.langtog .lt{font-size:11.5px;font-weight:700;color:var(--dim);padding:4px 11px;cursor:pointer;line-height:1.4;}
+.langtog .lt.on{background:var(--koi);color:#fff;}
 .demoex{background:var(--sage-bg);border:1px solid var(--sage-line);border-radius:14px;padding:14px 15px;margin-bottom:14px;}
 .demoex .dl{font-family:var(--serif);font-size:12px;font-weight:600;color:var(--sage);margin-bottom:8px;}
 .demoex .drow{font-size:13px;line-height:1.6;color:var(--ink-2);}
@@ -817,7 +820,7 @@ function miniKoi(lv){lv=Math.max(0,Math.min(KPAL.length-1,lv));var p=KPAL[lv];
   '<ellipse cx="72" cy="36" rx="12" ry="8" fill="'+p.patch+'" opacity=".85"/>'+
   '<circle cx="106" cy="40" r="5" fill="#3B2D2B"/><circle cx="108" cy="38" r="1.6" fill="#fff"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[],forceRare:false};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[],forceRare:false,lang:"zh"};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -843,12 +846,14 @@ function loadDemoData(){
   arr.push({id:"demo"+i,q1:s.q1,q2:s.q2,q3:s.q3,q4:s.q4,bullet:s.bullet,ts:base-Math.round((i*1.05+1)*DAY)});}
  state.entries=arr;persist();
 }
-function loadAI(){try{var r=JSON.parse(localStorage.getItem(AKEY)||"{}");state.apiKey=r.key||"";state.useAI=!!r.use;}catch(e){state.apiKey="";state.useAI=false;}
+function loadAI(){try{var r=JSON.parse(localStorage.getItem(AKEY)||"{}");state.apiKey=r.key||"";state.useAI=!!r.use;state.lang=(r.lang==="en"?"en":"zh");}catch(e){state.apiKey="";state.useAI=false;state.lang="zh";}
  if(!state.apiKey&&BUILTIN_KEY){state.apiKey=BUILTIN_KEY;state.useAI=true;}}
-function persistAI(){try{localStorage.setItem(AKEY,JSON.stringify({key:state.apiKey,use:state.useAI}));}catch(e){}}
+function persistAI(){try{localStorage.setItem(AKEY,JSON.stringify({key:state.apiKey,use:state.useAI,lang:state.lang}));}catch(e){}}
 /* 调用 DeepSeek(OpenAI 兼容)把四段回答翻译成一条结果导向的简历 bullet。key 仅存在本机 localStorage,不写进文件。 */
 function translateAI(f){
- var sys="你是资深中文简历教练。把实习生填写的真实记录,改写成 1 条能直接写进简历的中文 bullet。\n\n【铁律·最重要】\n1. 绝对不许编造输入里没有的任何事实——尤其是数字、百分比、金额、倍数、公司/产品名、人数、时间、排名、奖项。输入没给数字,成品里就绝对不能出现任何数字或百分比。\n2. 只能使用①②③④中真实出现的信息,不许添加输入中不存在的成果、影响或动机。\n3. 如果输入信息太少或无意义(例如只填了「1」「无」「123」、单字、乱填、看不出具体做了什么),不要硬编成绩,只输出一个词:NEED_MORE(全大写,别的什么都不要输出)。\n\n【写法】\n- 动词开头,按真实程度选词:信息足才用「主导/独立负责/推动」,一般情况用「负责/参与/完成/整理/协助/搭建/对接/跟进」,别一律拔高成「主导」。\n- 必须具体:写清做的对象和内容(做了什么事、对什么东西)。禁止「优化流程」「提升效率」「赋能」「实现…提升」这类空洞套话。\n- 有真实结果/数字才写结果;没有结果就只客观陈述做了什么,不要凑一个虚的成效。\n- 充分利用①②③④里的真实信息:他填得多,就把关键细节(做法、对象、结果)都收进来,别压缩得太干瘪。\n- 简历书面语,克制、不浮夸、不堆形容词。\n- 40-75 字一句话(信息少则短、信息多可到 75 字),只输出这一句,不要引号、解释、换行。";
+ var sys=(state.lang==="en")
+  ? "You are a senior resume coach. Rewrite the intern's real notes into ONE English resume bullet point.\n\n[Hard rules]\n1. Never fabricate anything not in the input — especially numbers, percentages, amounts, multiples, company/product names, headcounts, dates, rankings, awards. If no number is given, the output must contain NO number or percentage.\n2. Use only facts truly present in points 1-4; do not add results, impact, or motives that are not in the input.\n3. If the input is too little or meaningless (e.g. just '1','none','123', a single char, gibberish, or you cannot tell what was actually done), output exactly one word: NEED_MORE (uppercase, nothing else).\n\n[Style]\n- Start with a strong action verb (Built, Led, Analyzed, Coordinated, Streamlined, Compiled, Supported, Maintained...). Match the verb to how much was truly done; do not over-claim 'Led/Owned' if unwarranted, nor weaken to 'Participated in'.\n- Be specific about what and on what. Ban empty filler like 'optimized processes', 'improved efficiency', 'leveraged synergies'.\n- Include results/numbers only if real; otherwise just state what was done.\n- Professional resume English, concise, no fluff, under ~30 words.\n- Output ONLY the one bullet — no quotes, no explanation, no leading dash or bullet symbol."
+  : "你是资深中文简历教练。把实习生填写的真实记录,改写成 1 条能直接写进简历的中文 bullet。\n\n【铁律·最重要】\n1. 绝对不许编造输入里没有的任何事实——尤其是数字、百分比、金额、倍数、公司/产品名、人数、时间、排名、奖项。输入没给数字,成品里就绝对不能出现任何数字或百分比。\n2. 只能使用①②③④中真实出现的信息,不许添加输入中不存在的成果、影响或动机。\n3. 如果输入信息太少或无意义(例如只填了「1」「无」「123」、单字、乱填、看不出具体做了什么),不要硬编成绩,只输出一个词:NEED_MORE(全大写,别的什么都不要输出)。\n\n【写法】\n- 动词开头,按真实程度选词:信息足才用「主导/独立负责/推动」,一般情况用「负责/参与/完成/整理/协助/搭建/对接/跟进」,别一律拔高成「主导」。\n- 必须具体:写清做的对象和内容(做了什么事、对什么东西)。禁止「优化流程」「提升效率」「赋能」「实现…提升」这类空洞套话。\n- 有真实结果/数字才写结果;没有结果就只客观陈述做了什么,不要凑一个虚的成效。\n- 充分利用①②③④里的真实信息:他填得多,就把关键细节(做法、对象、结果)都收进来,别压缩得太干瘪。\n- 简历书面语,克制、不浮夸、不堆形容词。\n- 40-75 字一句话(信息少则短、信息多可到 75 字),只输出这一句,不要引号、解释、换行。";
  var usr="① 做了什么:"+(f.q1||"无")+"\n② 在项目里的位置/解决什么:"+(f.q2||"无")+"\n③ 怎么想的/试了什么:"+(f.q3||"无")+"\n④ 交付结果/变化或数字:"+(f.q4||"无");
  return fetch("https://api.deepseek.com/chat/completions",{
   method:"POST",
@@ -876,7 +881,9 @@ function jdTailor(){
   .catch(function(err){state.jdBusy=false;renderExport();toast("定制失败,稍后重试("+(err&&err.message||"网络错误")+")");});
 }
 function jdTailorAI(jd,lim,exp){
- var sys="你是顶级大厂简历教练,按岗位 JD 把候选人真实经历改写成「一眼就很强」的简历 bullet。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心关键词;\n2. 从候选人经历里挑与 JD 最相关的,改写成 4-6 条【简历 bullet 条目】(绝不是一整段流水账!),JD 最相关的排在最前面;\n3. 每条都按「动词开头 + 做了什么 + 怎么做 + 量化结果」的强简历句式,要专业、有信息密度,读起来像大厂正式简历,而不是岗位职责复述。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(经历里没有化学背景就绝不能写「化学专业背景」)。\n- 绝不编造数字、成果、公司名;经历里有的真实数字必须保留并突出,经历里没有的数字坚决不能出现、不能瞎编百分比。\n- 不要写「相关能力可迁移至…」「具备…能力可胜任…」这类自我评价或求职信式句子,绝不写「协助…定期…维护…」这种被动职责复述,只输出有结果、有亮点的经历 bullet 本身。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话套话。\n- 每条 bullet 30-55 字,所有 bullet 正文合计不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"bullets\":[\"…\"]} —— 不要任何多余文字,不要 markdown 代码块。";
+ var sys=(state.lang==="en")
+  ? "You are a top-tier resume coach. Tailor the candidate's REAL experience to a target job (JD) and rewrite it into impressive English resume bullets. Input: a list of the candidate's real internship experiences (each truly done), plus a target job description.\nTasks:\n1. Extract 3-6 core keywords from the JD;\n2. From the candidate's experiences, pick the ones MOST relevant to the JD and rewrite into 4-6 strong English resume bullet points (NOT one flowing paragraph!), most JD-relevant first;\n3. Each bullet = strong action verb + what + how + quantified result; professional, dense, reads like a real top-company resume, not a duty recital.\n\n[Hard rules]\n- Use ONLY facts truly present in the candidate's experiences. Never fabricate background, major, discipline, skills, certificates or language ability the candidate doesn't have based on the JD.\n- Never invent numbers, results, or company names; keep and highlight real numbers, but never make up percentages.\n- Do not write cover-letter / self-assessment sentences like 'transferable to...', 'capable of...'; do not write passive duty recitals like 'Assisted with / regularly maintained...'. Only output result-oriented experience bullets.\n- Ban filler like 'optimized processes', 'improved efficiency', 'leveraged synergies'.\n- Each bullet under ~25 words.\nOutput ONLY JSON: {\"keywords\":[\"...\"],\"bullets\":[\"...\"]} — no extra text, no markdown code block."
+  : "你是顶级大厂简历教练,按岗位 JD 把候选人真实经历改写成「一眼就很强」的简历 bullet。给你:候选人真实实习经历清单(每条都真做过),以及一段目标岗位 JD。任务:\n1. 从 JD 提取 3-6 个核心关键词;\n2. 从候选人经历里挑与 JD 最相关的,改写成 4-6 条【简历 bullet 条目】(绝不是一整段流水账!),JD 最相关的排在最前面;\n3. 每条都按「动词开头 + 做了什么 + 怎么做 + 量化结果」的强简历句式,要专业、有信息密度,读起来像大厂正式简历,而不是岗位职责复述。\n\n【铁律·必须遵守】\n- 只能用候选人经历里真实出现的事实。绝对不许根据 JD 杜撰候选人没有的背景、专业、学科、技能、证书、语言能力(经历里没有化学背景就绝不能写「化学专业背景」)。\n- 绝不编造数字、成果、公司名;经历里有的真实数字必须保留并突出,经历里没有的数字坚决不能出现、不能瞎编百分比。\n- 不要写「相关能力可迁移至…」「具备…能力可胜任…」这类自我评价或求职信式句子,绝不写「协助…定期…维护…」这种被动职责复述,只输出有结果、有亮点的经历 bullet 本身。\n- 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话套话。\n- 每条 bullet 30-55 字,所有 bullet 正文合计不超过 "+lim+" 个汉字。\n只输出 JSON:{\"keywords\":[\"…\"],\"bullets\":[\"…\"]} —— 不要任何多余文字,不要 markdown 代码块。";
  var usr="【目标岗位 JD】\n"+jd+"\n\n【候选人真实经历】\n"+exp;
  return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
   headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
@@ -887,17 +894,18 @@ function jdTailorAI(jd,lim,exp){
   var obj;try{obj=JSON.parse(t);}catch(e){obj=null;}
   if(!obj||typeof obj!=="object")obj={keywords:[],bullets:[]};
   if(!obj.keywords||!obj.keywords.length)obj.keywords=[];
+  var en=(state.lang==="en");
   var rawb=(obj.bullets&&obj.bullets.length)?obj.bullets:[t];
-  // 不管 AI 给的是 bullet 还是一整段,统一按句号/分号强制拆成条目
+  // 中文:按句号/分号强制拆条目;英文:只按换行拆(别在句号处切断英文句子)
   var split=[];
-  rawb.forEach(function(b){String(b||"").split(/[；;。\n]+/).forEach(function(s){split.push(s);});});
-  split=split.map(function(s){return s.replace(/^[·\-\d\.\s、]+/,"").replace(/\s+/g," ").trim();})
+  rawb.forEach(function(b){String(b||"").split(en?/\n+/:/[；;。\n]+/).forEach(function(s){split.push(s);});});
+  split=split.map(function(s){return s.replace(/^[·•\-\d\.\s、]+/,"").replace(/\s+/g," ").trim();})
     .filter(function(s){return s.length>4;})
-    // 删掉求职信式自我评价句
+    // 删掉求职信式自我评价句(中文)
     .filter(function(s){return !/(可迁移|迁移至|可胜任|相关能力|具备[^,，]{0,14}能力)/.test(s);});
-  // 真正按字数上限截断(AI 经常无视)
-  var total=0,kept=[];
-  for(var k=0;k<split.length;k++){var L=split[k].length;if(kept.length>0&&total+L>lim)break;kept.push(split[k]);total+=L;}
+  // 真正按字数上限截断(AI 经常无视;英文按字符约 6 倍预算)
+  var effLim=en?lim*6:lim,total=0,kept=[];
+  for(var k=0;k<split.length;k++){var L=split[k].length;if(kept.length>0&&total+L>effLim)break;kept.push(split[k]);total+=L;}
   obj.bullets=kept;
   if(!obj.bullets.length)throw new Error("空结果");
   return obj;
@@ -916,7 +924,9 @@ function exSynth(){
   .catch(function(err){state.exBusy=false;state.exResult=localSynth(state.exLimit);renderExport();toast("AI 合成失败,已用本地精选兜底("+(err&&err.message||"网络")+")");});
 }
 function exSynthAI(recs,lim){
- var sys="你是资深中文简历教练。下面是候选人攒的多条真实工作记录(可能重复、零散、表述不一)。把它们整合成一份简历『实习/项目经历』段落。\n要求:\n1. 合并重复或高度相似的记录,同一件事绝不重复出现;\n2. 按能力方向归类(最多 3 类),每类 2-4 条 bullet;\n3. 有量化结果(数字)的优先靠前;\n4. 绝对不许编造记录里没有的事实、背景、专业、数字、公司名,只能基于给定记录;\n5. 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话,每条要具体写清做了什么、对什么、结果如何;\n6. 所有 bullet 正文合计不超过 "+lim+" 个汉字;\n7. 动词开头,简历书面语。\n只输出 JSON:{\"sections\":[{\"theme\":\"…\",\"bullets\":[\"…\"]}]},不要任何多余文字,不要 markdown 代码块。";
+ var sys=(state.lang==="en")
+  ? "You are a senior resume coach. Below are the candidate's real work records (may be duplicated, scattered, inconsistent). Merge them into an English resume 'Internship/Project Experience' section.\nRequirements:\n1. Merge duplicate or highly similar records; never repeat the same thing;\n2. Group by competency theme (at most 3 themes), 2-4 bullets each;\n3. Bullets with real quantified results first;\n4. Never fabricate facts, background, major, numbers or company names not in the records;\n5. Ban filler like 'optimized processes', 'improved efficiency', 'leveraged synergies'; each bullet states clearly what was done, on what, with what result;\n6. Each bullet under ~25 words;\n7. Start each with a strong action verb, professional resume English.\nOutput ONLY JSON: {\"sections\":[{\"theme\":\"...\",\"bullets\":[\"...\"]}]} — no extra text, no markdown code block."
+  : "你是资深中文简历教练。下面是候选人攒的多条真实工作记录(可能重复、零散、表述不一)。把它们整合成一份简历『实习/项目经历』段落。\n要求:\n1. 合并重复或高度相似的记录,同一件事绝不重复出现;\n2. 按能力方向归类(最多 3 类),每类 2-4 条 bullet;\n3. 有量化结果(数字)的优先靠前;\n4. 绝对不许编造记录里没有的事实、背景、专业、数字、公司名,只能基于给定记录;\n5. 禁止「优化流程」「提升效率」「赋能」「责任心强」这类空话,每条要具体写清做了什么、对什么、结果如何;\n6. 所有 bullet 正文合计不超过 "+lim+" 个汉字;\n7. 动词开头,简历书面语。\n只输出 JSON:{\"sections\":[{\"theme\":\"…\",\"bullets\":[\"…\"]}]},不要任何多余文字,不要 markdown 代码块。";
  return fetch("https://api.deepseek.com/chat/completions",{method:"POST",
   headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.apiKey},
   body:JSON.stringify({model:"deepseek-chat",temperature:0.2,max_tokens:900,messages:[{role:"system",content:sys},{role:"user",content:"候选人真实记录:\n"+recs}]})
@@ -925,14 +935,14 @@ function exSynthAI(recs,lim){
   t=t.replace(/^```(json)?/i,"").replace(/```$/,"").trim();
   var obj=JSON.parse(t);
   if(!obj||!obj.sections||!obj.sections.length)throw new Error("空结果");
-  // 真正按总字数上限截断(AI 经常无视上限,会超很多)
-  var total=0,out=[];
+  // 真正按总字数上限截断(AI 经常无视;英文按字符约 6 倍预算)
+  var elim=(state.lang==="en")?lim*6:lim,total=0,out=[];
   for(var s=0;s<obj.sections.length;s++){
     var sec=obj.sections[s],bs=[];
     var arr=(sec.bullets||[]);
-    for(var b=0;b<arr.length;b++){var txt=(arr[b]||"").trim();if(!txt)continue;var L=txt.length;if(total>0&&total+L>lim){break;}bs.push(txt);total+=L;}
+    for(var b=0;b<arr.length;b++){var txt=(arr[b]||"").trim();if(!txt)continue;var L=txt.length;if(total>0&&total+L>elim){break;}bs.push(txt);total+=L;}
     if(bs.length)out.push({theme:sec.theme,bullets:bs});
-    if(total>=lim)break;
+    if(total>=elim)break;
   }
   if(out.length)obj.sections=out;
   return obj;
@@ -1063,7 +1073,9 @@ function renderToday(){
    '<div class="setnote">🔒 Key 只存在你自己浏览器的 localStorage,不会写进文件、不上传任何第三方。开源版本不含任何 key,每个人填自己的。去 <b>platform.deepseek.com</b> 免费申请。请求直接发给 DeepSeek 官方接口。</div>'+
   '</div>':'';
  panel.innerHTML=
-  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="demoNai">🐉 解锁奶龙</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
+  '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+
+  '<span class="langtog" title="简历输出语言"><a id="langZh" class="lt'+(state.lang!=="en"?" on":"")+'">中文</a><a id="langEn" class="lt'+(state.lang==="en"?" on":"")+'">EN</a></span>'+
+  (demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="demoNai">🐉 解锁奶龙</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
   setHtml+
   demoEx+
   '<div class="card">'+editbar+
@@ -1079,6 +1091,8 @@ function renderToday(){
  var q2=document.getElementById("q2");
  q2.addEventListener("input",function(){document.getElementById("askflag").style.display=q2.value.trim()?"none":"flex";});
  document.getElementById("goTranslate").addEventListener("click",doTranslate);
+ var lz=document.getElementById("langZh");if(lz)lz.addEventListener("click",function(){if(state.lang!=="zh"){state.lang="zh";persistAI();renderToday();toast("简历输出已切到中文");}});
+ var le=document.getElementById("langEn");if(le)le.addEventListener("click",function(){if(state.lang!=="en"){state.lang="en";persistAI();renderToday();toast("Resume output switched to English");}});
  var df=document.getElementById("demoFill");if(df)df.addEventListener("click",demoFill);
  var bg=document.getElementById("backGate");if(bg)bg.addEventListener("click",relock);
  var fr=document.getElementById("forceRare");if(fr)fr.addEventListener("click",function(){state.forceRare=true;toast("已锁定:下一条投喂必出 0.1% 隐藏款 🌟 去点「投喂锦鲤」");});
