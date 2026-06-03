@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>实习翻译机 · 卖点提炼</title>
+<style>
+:root{--koi:#E0694A;--koi-deep:#C24E32;--koi-line:#EAD2C5;--gold:#C0922F;
+ --ink:#2B2722;--ink-2:#4A463F;--muted:#B3A793;--dim:#9A8F7E;--border:#E8DECB;--surface-2:#FBF6EE;
+ --sage:#5E7A63;--sage-bg:#EDF2EC;--sage-line:#CFE0CF;--serif:"Noto Serif SC",ui-serif,Georgia,serif;}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent;}
+body{background:#FAF5EC;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);line-height:1.6;}
+.wrap{max-width:760px;margin:0 auto;padding:0 18px 60px;}
+.hero{text-align:center;padding:44px 18px 22px;}
+.hero .seal{display:inline-block;font-family:var(--serif);font-weight:700;color:#fff;background:var(--koi);border-radius:8px;padding:3px 13px;font-size:12.5px;letter-spacing:.14em;margin-bottom:14px;}
+.hero h1{font-family:var(--serif);font-size:30px;margin:6px 0 8px;}
+.hero h1 em{font-style:normal;color:var(--koi);}
+.oneline{font-family:var(--serif);font-size:18px;color:var(--ink-2);max-width:520px;margin:10px auto 0;line-height:1.7;}
+.oneline b{color:var(--koi-deep);}
+.herofish{margin:8px auto 0;width:150px;}
+section{margin-top:38px;}
+.shd{display:flex;align-items:baseline;gap:10px;margin-bottom:14px;}
+.shd .ic{font-size:20px;}
+.shd h2{font-family:var(--serif);font-size:21px;margin:0;}
+/* 一句话价值 */
+.bigval{background:linear-gradient(165deg,#FCF1EA,#FBF6EE);border:1px solid var(--koi-line);border-radius:20px;padding:24px 22px;text-align:center;}
+.bigval .v{font-family:var(--serif);font-weight:900;font-size:25px;line-height:1.5;}
+.bigval .v em{font-style:normal;color:var(--koi);}
+/* 闭环流程 */
+.flow{display:flex;align-items:stretch;gap:8px;flex-wrap:wrap;justify-content:center;}
+.fstep{flex:1;min-width:130px;background:#fff;border:1px solid var(--border);border-radius:15px;padding:15px 13px;text-align:center;box-shadow:0 10px 24px -20px rgba(180,140,90,.6);}
+.fstep .fi{font-size:24px;}
+.fstep .ft{font-family:var(--serif);font-weight:700;font-size:15px;margin:7px 0 4px;}
+.fstep .fd{font-size:12px;color:var(--dim);line-height:1.5;}
+.farr{display:flex;align-items:center;color:var(--koi);font-weight:700;font-size:18px;}
+@media(max-width:560px){.farr{transform:rotate(90deg);width:100%;justify-content:center;}}
+/* 卖点卡 */
+.sells{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:560px){.sells{grid-template-columns:1fr;}}
+.sell{background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 10px 24px -20px rgba(180,140,90,.6);}
+.sell .si{font-size:22px;}
+.sell .st{font-family:var(--serif);font-weight:700;font-size:16px;margin:8px 0 5px;}
+.sell .sd{font-size:13px;color:var(--ink-2);line-height:1.6;}
+.sell .sd b{color:var(--koi-deep);}
+/* 对比表 */
+.cmp{background:#fff;border:1px solid var(--border);border-radius:16px;overflow:hidden;}
+.crow{display:grid;grid-template-columns:1.1fr 1fr 1fr;border-bottom:1px solid var(--border);}
+.crow:last-child{border-bottom:none;}
+.crow>div{padding:11px 12px;font-size:12.5px;line-height:1.5;}
+.crow.h>div{font-weight:700;font-size:13px;background:var(--surface-2);}
+.crow .a{color:var(--ink);border-right:1px solid var(--border);font-weight:600;}
+.crow .o{color:#9C9281;border-right:1px solid var(--border);background:#FAF6EE;}
+.crow .n{color:var(--koi-deep);background:linear-gradient(160deg,#FFF7F1,#FCEAE0);font-weight:600;}
+.crow.h .n{color:var(--koi-deep);}
+/* 数据亮点 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:560px){.stats{grid-template-columns:1fr 1fr;}}
+.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:15px 8px;text-align:center;box-shadow:0 8px 20px -18px rgba(180,140,90,.6);}
+.stat b{display:block;font-family:var(--serif);font-size:30px;font-weight:900;color:var(--koi);line-height:1;}
+.stat span{font-size:11.5px;color:var(--ink-2);font-weight:600;}
+/* 人群 */
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{background:var(--sage-bg);border:1px solid var(--sage-line);color:var(--sage);font-size:13px;font-weight:600;border-radius:20px;padding:6px 13px;}
+/* cta */
+.cta{margin-top:44px;text-align:center;background:linear-gradient(170deg,#FCF1EA,#FBF6EE);border:1px solid var(--koi-line);border-radius:20px;padding:28px 22px;}
+.cta h3{font-family:var(--serif);font-size:20px;margin:0 0 8px;}
+.cta p{color:var(--dim);font-size:13px;margin:0 0 16px;}
+.cta a{display:inline-block;text-decoration:none;font-weight:700;color:#fff;background:linear-gradient(135deg,#F2845C,var(--koi) 55%,var(--koi-deep));border-radius:14px;padding:13px 28px;font-size:15.5px;box-shadow:0 12px 26px -8px rgba(224,105,74,.7);margin:4px;}
+.cta a.alt{background:none;color:var(--koi-deep);border:1px solid var(--koi-line);box-shadow:none;}
+.foot{text-align:center;color:var(--muted);font-size:11.5px;margin-top:22px;}
+</style>
+</head>
+<body>
+<div class="hero">
+ <span class="seal">产 品 卖 点</span>
+ <div class="herofish" id="hf"></div>
+ <h1>实习<em>翻译机</em> · 锦鲤版</h1>
+ <div class="oneline">给实习生的 <b>简历经历生成器</b>：每天 1 分钟,把<b>打杂(dirty work)</b>翻译成能写进简历、扛得住面试追问的真经历。</div>
+</div>
+<div class="wrap">
+
+ <section><div class="bigval"><div class="v">不教你<em>编</em>,帮你<em>翻译</em>——<br>把你真做过的杂活,<br>说成简历语言。</div></div></section>
+
+ <section>
+  <div class="shd"><span class="ic">🔁</span><h2>一条龙价值闭环</h2></div>
+  <div class="flow">
+   <div class="fstep"><div class="fi">📝</div><div class="ft">每天投喂</div><div class="fd">回答 4 个小问题,1 分钟</div></div>
+   <div class="farr">→</div>
+   <div class="fstep"><div class="fi">🤖</div><div class="ft">AI 翻译</div><div class="fd">杂活→一句简历 bullet</div></div>
+   <div class="farr">→</div>
+   <div class="fstep"><div class="fi">📄</div><div class="ft">汇总简历</div><div class="fd">合并去重·按方向归类</div></div>
+   <div class="farr">→</div>
+   <div class="fstep"><div class="fi">🔍</div><div class="ft">面试深挖</div><div class="fd">预演追问·稳接住</div></div>
+  </div>
+ </section>
+
+ <section>
+  <div class="shd"><span class="ic">⭐</span><h2>5 个核心卖点</h2></div>
+  <div class="sells">
+   <div class="sell"><div class="si">🛡️</div><div class="st">不瞎编 · 经得起追问</div><div class="sd">铁律:<b>绝不替你编数字成果</b>;动词不浮夸(不滥用"主导")也不弱成"参与"。面试官细问也不慌。</div></div>
+   <div class="sell"><div class="si">🎯</div><div class="st">按 JD 定制</div><div class="sd">粘贴目标岗位 JD,自动从你的经历里挑<b>最匹配</b>的,改写成可直接抄的简历 bullet 条目。</div></div>
+   <div class="sell"><div class="si">🐟</div><div class="st">养成式·不枯燥</div><div class="sd">记得越多锦鲤越进阶,<b>12 段</b>萌系换色,满级化身奶龙 🐉,还有 0.1% 隐藏款,坚持有反馈。</div></div>
+   <div class="sell"><div class="si">🗓️</div><div class="st">顺手出周报</div><div class="sd">框选时间段,一键把记录汇成<b>实习周报</b>,发导师 / 写周会汇报直接用。</div></div>
+   <div class="sell"><div class="si">🔒</div><div class="st">零注册 · 数据本地</div><div class="sd">不收手机号、不收集信息,数据<b>只存你自己手机</b>;换设备有「迁移包」一键搬走。</div></div>
+   <div class="sell"><div class="si">🧧</div><div class="st">免费 · 凭码解锁</div><div class="sd">完全免费,邀请码=你的账号。开箱即用,打开就能记第一条。</div></div>
+  </div>
+ </section>
+
+ <section>
+  <div class="shd"><span class="ic">⚔️</span><h2>凭什么比"手动包装"强</h2></div>
+  <div class="cmp">
+   <div class="crow h"><div class="a">对比项</div><div class="o">自己手动包装</div><div class="n">实习翻译机</div></div>
+   <div class="crow"><div class="a">怎么写</div><div class="o">对着教程憋,费时</div><div class="n">回答 4 问,AI 翻译,1 分钟</div></div>
+   <div class="crow"><div class="a">真实性</div><div class="o">容易包装过头、心虚</div><div class="n">铁律不编数字,只用真做过的</div></div>
+   <div class="crow"><div class="a">动词分寸</div><div class="o">要么夸大要么太弱</div><div class="n">自动分级,克制不浮夸</div></div>
+   <div class="crow"><div class="a">攒料</div><div class="o">事后回忆,容易忘</div><div class="n">当天记,日历沉淀,不丢</div></div>
+   <div class="crow"><div class="a">面试</div><div class="o">背简历,被追问就露</div><div class="n">预演 6 层深挖,有真实记录兜底</div></div>
+  </div>
+ </section>
+
+ <section>
+  <div class="shd"><span class="ic">📊</span><h2>数据亮点</h2></div>
+  <div class="stats">
+   <div class="stat"><b>1<span style="font-size:15px">分钟</span></b><span>每天投喂</span></div>
+   <div class="stat"><b>0</b><span>编造数字</span></div>
+   <div class="stat"><b>12</b><span>段锦鲤进化</span></div>
+   <div class="stat"><b>100%</b><span>数据本地</span></div>
+  </div>
+ </section>
+
+ <section>
+  <div class="shd"><span class="ic">🎯</span><h2>谁最该用</h2></div>
+  <div class="chips">
+   <span class="chip">实习天天打杂</span><span class="chip">简历没东西写</span><span class="chip">0 实习 / 经历平平</span>
+   <span class="chip">双非 / 普通背景</span><span class="chip">秋招 / 春招焦虑</span><span class="chip">怕面试被追问</span><span class="chip">想攒料但总忘</span>
+  </div>
+ </section>
+
+ <div class="cta">
+  <h3>每天一分钟,把打杂攒成上岸的底气</h3>
+  <p>工具免费 · 凭邀请码解锁 · 数据存你自己手机本地</p>
+  <a href="https://2899959170-hue.github.io/" target="_blank" rel="noopener">去体验 →</a>
+  <a class="alt" href="https://2899959170-hue.github.io/tujian.html" target="_blank" rel="noopener">看功能图鉴</a>
+ </div>
+ <div class="foot">实习翻译机 · 锦鲤版 · 卖点提炼一页纸 · 可截图分享 🧧</div>
+</div>
+<script>
+var KPAL11={b1:"#FFFBF6",b2:"#FFEFDA"};
+function nailong(w,h){var dg="dgm";return '<svg viewBox="0 0 152 104" width="'+w+'" height="'+h+'">'+
+ '<defs><radialGradient id="'+dg+'" cx="0.45" cy="0.38" r="0.78"><stop offset="0" stop-color="#FFF1B2"/><stop offset="1" stop-color="#F4C652"/></radialGradient></defs>'+
+ '<g fill="#FFE89A"><path d="M22,26 l1.8,3.8 3.8,1.8 -3.8,1.8 -1.8,3.8 -1.8,-3.8 -3.8,-1.8 3.8,-1.8 Z"/><circle cx="134" cy="30" r="2.2"/></g>'+
+ '<g fill="#F2B440"><ellipse cx="102" cy="30" rx="4" ry="6"/><ellipse cx="113" cy="41" rx="4" ry="6"/><ellipse cx="121" cy="55" rx="3.5" ry="5"/></g>'+
+ '<g fill="#F2B440"><ellipse cx="60" cy="20" rx="5.5" ry="9" transform="rotate(-12 60 20)"/><ellipse cx="82" cy="18" rx="5.5" ry="9" transform="rotate(8 82 18)"/></g>'+
+ '<ellipse cx="33" cy="66" rx="9" ry="7" fill="url(#'+dg+')"/>'+
+ '<path d="M120,80 q18,2 16,-12 q8,12 -4,18 q-8,3 -12,-6 Z" fill="url(#'+dg+')"/>'+
+ '<ellipse cx="74" cy="58" rx="46" ry="38" fill="url(#'+dg+')" stroke="#E3BB4E" stroke-width="1.5"/>'+
+ '<ellipse cx="74" cy="66" rx="29" ry="23" fill="#FFF8DC" opacity=".7"/>'+
+ '<ellipse cx="52" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/><ellipse cx="96" cy="58" rx="7" ry="4.5" fill="#FF9DB6" opacity=".5"/>'+
+ '<ellipse cx="62" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="63.6" cy="45.4" r="1.6" fill="#fff"/>'+
+ '<ellipse cx="86" cy="48" rx="4.4" ry="6" fill="#3B2D2B"/><circle cx="87.6" cy="45.4" r="1.6" fill="#fff"/>'+
+ '<path d="M68,57 q6,6 12,0" stroke="#C2683E" stroke-width="2" fill="none" stroke-linecap="round"/>'+
+ '<g fill="#FFD75E"><path d="M74,5 l2,4.4 4.4,2 -4.4,2 -2,4.4 -2,-4.4 -4.4,-2 4.4,-2 Z"/></g></svg>';}
+document.getElementById("hf").innerHTML=nailong(150,98);
+</script>
+</body>
+</html>
