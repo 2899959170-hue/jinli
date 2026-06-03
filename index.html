@@ -225,10 +225,6 @@ textarea::placeholder{color:var(--dim);}
 .paperfoot{margin-top:18px;padding-top:14px;border-top:1px dashed var(--border-strong);font-size:11px;color:var(--dim);text-align:right;}
 /* 投喂示范 */
 .demoex{background:var(--sage-bg);border:1px solid var(--sage-line);border-radius:14px;padding:14px 15px;margin-bottom:14px;}
-.onbd{background:linear-gradient(165deg,#FFF3EC,#FBE6DB);border:1px solid var(--koi-line);border-radius:16px;padding:16px 16px 15px;margin-bottom:14px;box-shadow:0 10px 26px -20px rgba(224,105,74,.6);}
-.onbd .obh{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--ink);}
-.onbd .obsub{font-size:13px;color:var(--ink-2);line-height:1.65;margin-top:6px;}
-.btn.obpulse{animation:codepulse 1.7s ease-in-out infinite;}
 .demoex .dl{font-family:var(--serif);font-size:12px;font-weight:600;color:var(--sage);margin-bottom:8px;}
 .demoex .drow{font-size:13px;line-height:1.6;color:var(--ink-2);}
 .demoex .draw{color:var(--muted);}.demoex .dgt{color:var(--koi);font-weight:700;}
@@ -821,7 +817,7 @@ function miniKoi(lv){lv=Math.max(0,Math.min(KPAL.length-1,lv));var p=KPAL[lv];
   '<ellipse cx="72" cy="36" rx="12" ry="8" fill="'+p.patch+'" opacity=".85"/>'+
   '<circle cx="106" cy="40" r="5" fill="#3B2D2B"/><circle cx="108" cy="38" r="1.6" fill="#fff"/></svg>';}
 
-var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[],forceRare:false,obPulse:false};
+var state={tab:"today",entries:[],result:null,busy:false,showExport:false,editing:null,calY:null,calM:null,selKey:null,showSet:false,apiKey:"",useAI:false,repFrom:null,repTo:null,draft:null,jd:"",jdLimit:240,jdResult:null,jdBusy:false,exLimit:300,exResult:null,exBusy:false,signs:[],forceRare:false};
 /* 每个邀请码 = 一个独立"账号":数据按邀请码分箱存储,互不串。换码=另一个空池子。
    (注:同一台手机/浏览器内有效;真正"换设备也能登回来"需要后端账号,见底部说明) */
 var SKEY_BASE="shixi-fanyiji-koi-v2";
@@ -840,10 +836,6 @@ function recordSign(s){if(!s)return;if(!state.signs)state.signs=[];if(state.sign
 var DKEY="shixi-koi-demo";
 var DEMO_CODE="AHAN2026";
 function demoMode(){try{return localStorage.getItem(DKEY)==="1";}catch(e){return false;}}
-var OBKEY="shixi-koi-onboarded";
-function onboarded(){try{return localStorage.getItem(OBKEY)==="1";}catch(e){return false;}}
-function markOnboarded(){try{localStorage.setItem(OBKEY,"1");}catch(e){}}
-var ONBOARD={q1:"帮 mentor 把上周的用户反馈整理成一张表",q2:"给产品下季度决定砍哪些功能做参考",q3:"反馈太杂,我自己定了几个标签把它们归了类",q4:"整理出 5 类高频问题,产品评审会直接用了这张表"};
 function loadDemoData(){
  var base=Date.now(),arr=[],pool=SEED.concat(DEMO_POOL).concat(EXTRA_DEMO);
  var n=Math.min(30,pool.length);
@@ -1055,15 +1047,9 @@ function renderToday(){
    '<div class="luckcopy">想再稳一点? <a id="copyBl">复制这条</a></div>'+
   '</div>';}
  var editbar=state.editing?'<div class="editbar">正在编辑第 #'+(state.entries.length-state.entries.indexOf(ed))+' 条 · 改完点「保存修改」<a id="cancelEdit">取消</a></div>':'';
- var draftFilled=state.draft&&(state.draft.q1||state.draft.q2);
- var demoEx=(state.editing||state.result||draftFilled)?'':'<div class="demoex"><div class="dl">📎 看个示范 · 照着填就行</div>'+
+ var demoEx=(state.editing||state.result)?'':'<div class="demoex"><div class="dl">📎 看个示范 · 照着填就行</div>'+
    '<div class="drow"><span class="draw">原始:帮 mentor 整理竞品的价格页截图</span> <span class="dgt">→ 翻译后:</span></div>'+
    '<div class="dout">产出的竞品对比矩阵被采纳进团队定价决策——系统梳理 6 家竞品定价策略,按档位与权益维度拆解为结构化对比。</div></div>';
- // 首次引导:新用户(空池子、没引导过、非演示)一键试填示例,体验"杂活→简历"
- var newbie=!demoMode()&&state.entries.length===0&&!onboarded()&&!state.editing&&!state.result&&!draftFilled;
- var onbd=newbie?'<div class="onbd"><div class="obh">👋 第一次来?10 秒看它怎么把「打杂」变简历</div>'+
-   '<div class="obsub">不用自己憋经历——先用一条示例,亲手点一下「投喂」,看看它怎么翻译。</div>'+
-   '<button class="btn" id="obFill" style="width:100%;margin-top:12px">① 一键填入示例 →</button></div>':'';
  var now=new Date();var wk=["日","一","二","三","四","五","六"][now.getDay()];
  var dateStr=now.getFullYear()+" 年 "+(now.getMonth()+1)+" 月 "+now.getDate()+" 日 · 周"+wk;
  var aiOn=state.useAI&&state.apiKey;
@@ -1079,7 +1065,6 @@ function renderToday(){
  panel.innerHTML=
   '<div class="datestrip"><span class="dsdate">📅 今天 '+dateStr+'</span>'+(demo?'<span class="dsright"><a class="dsset" id="setToggle">⚙️ AI'+(aiOn?' ●':'')+'</a><a class="dsdemo" id="demoFill">🎬 演示填充</a><a class="dsdemo" id="demoNai">🐉 解锁奶龙</a><a class="dsdemo" id="forceRare">🌟 必出隐藏款</a><a class="dsdemo" id="backGate">🔙 回邀请码页</a></span>':'')+'</div>'+
   setHtml+
-  onbd+
   demoEx+
   '<div class="card">'+editbar+
    '<div class="q"><div class="qlabel"><span class="qnum">01</span>今天他们让你具体做了啥?</div><textarea id="q1" rows="2" placeholder="一句话,别美化。">'+esc(v.q1)+'</textarea></div>'+
@@ -1087,14 +1072,13 @@ function renderToday(){
     '<div class="askflag" id="askflag"'+(v.q2?' style="display:none"':'')+'><b>去问一句 →</b><span>明天逮个空问 mentor:"我做的这块,是整个项目里的哪一环?" 这栏空着,翻译就缺了最值钱的一半。</span></div></div>'+
    '<div class="q"><div class="qlabel"><span class="qnum">03</span>你当时怎么想的?卡在哪?试了几种办法?</div><textarea id="q3" rows="2" placeholder="这部分你三个月后一定忘,所以现在写。">'+esc(v.q3)+'</textarea></div>'+
    '<div class="q"><div class="qlabel"><span class="qnum">04</span>最后交出去什么?带来了什么变化或数字?</div><textarea id="q4" rows="2" placeholder="没数字也行,写清\'之前怎样、之后怎样\'。">'+esc(v.q4)+'</textarea></div>'+
-   '<div class="btnrow"><button class="btn'+(state.obPulse?' obpulse':'')+'" id="goTranslate">'+(state.busy?(aiOn?"AI 翻译中…":"投喂中…"):(state.editing?"保存修改":"投喂锦鲤 · 翻译成简历"))+'</button><span class="hint">'+(aiOn?"AI 翻译 · ":"")+"≈ 90 秒 / 天</span></div>"+
+   '<div class="btnrow"><button class="btn" id="goTranslate">'+(state.busy?(aiOn?"AI 翻译中…":"投喂中…"):(state.editing?"保存修改":"投喂锦鲤 · 翻译成简历"))+'</button><span class="hint">'+(aiOn?"AI 翻译 · ":"")+"≈ 90 秒 / 天</span></div>"+
   '</div>'+resultHtml+
   '<div class="sec"><div class="sechead"><span>已攒下的真东西</span><span class="cnt">'+state.entries.length+' 条</span></div>'+tl+'</div>';
 
  var q2=document.getElementById("q2");
  q2.addEventListener("input",function(){document.getElementById("askflag").style.display=q2.value.trim()?"none":"flex";});
  document.getElementById("goTranslate").addEventListener("click",doTranslate);
- var ob=document.getElementById("obFill");if(ob)ob.addEventListener("click",function(){state.draft={q1:ONBOARD.q1,q2:ONBOARD.q2,q3:ONBOARD.q3,q4:ONBOARD.q4};state.obPulse=true;markOnboarded();renderToday();toast("示例填好啦~ 点「投喂锦鲤」看它怎么翻译 👇");window.scrollTo({top:document.body.scrollHeight*0.4,behavior:"smooth"});});
  var df=document.getElementById("demoFill");if(df)df.addEventListener("click",demoFill);
  var bg=document.getElementById("backGate");if(bg)bg.addEventListener("click",relock);
  var fr=document.getElementById("forceRare");if(fr)fr.addEventListener("click",function(){state.forceRare=true;toast("已锁定:下一条投喂必出 0.1% 隐藏款 🌟 去点「投喂锦鲤」");});
@@ -1149,7 +1133,7 @@ function buildCalendar(){
 function doTranslate(){
  var f={q1:val("q1"),q2:val("q2"),q3:val("q3"),q4:val("q4")};
  if(!f.q1.trim()){toast("先写一句今天做了啥");return;}
- state.obPulse=false;state.busy=true;renderToday();
+ state.busy=true;renderToday();
  function finish(bullet){
   // AI 判定信息太少:不硬编,提示补充,不入池
   if(/^NEED_MORE\b/i.test((bullet||"").trim())){
