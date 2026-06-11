@@ -839,7 +839,7 @@ function curSkey(){var c=activeCode();return SKEY_BASE+(c?"::"+c:"");}
 var AKEY="shixi-fanyiji-ai-v1";
 /* ★ 把你的 DeepSeek key 填到下面这对引号里,所有学生就共用你的 key,打开即用、无需各自申请。
    例:var BUILTIN_KEY="sk-xxxxxxxx";  留空则走「学生填自己的 key / 本地规则」。 */
-var BUILTIN_KEY="sk-585fa93e7b954d25b91b38d0fb80f918";
+var BUILTIN_KEY="sk-4024e873e1b5447b886759f7fe2fdb47";
 function load(){try{var r=localStorage.getItem(curSkey());if(r){var d=JSON.parse(r);state.entries=d.entries||[];state.signs=d.signs||[];}else{state.entries=[];state.signs=[];}}catch(e){state.entries=[];state.signs=[];}}
 function persist(){try{localStorage.setItem(curSkey(),JSON.stringify({entries:state.entries,signs:state.signs}));}catch(e){}}
 var RARE_SIGN="万分之一签";
